@@ -1,0 +1,31 @@
+{
+  "name": "saaskit",
+  "description": "Enterprise auth for B2B apps without writing protocols — login, sessions, SSO, SCIM, MCP OAuth, and RBAC in one stack.",
+  "version": "2.0.0",
+  "author": {
+    "name": "Scalekit Inc.",
+    "email": "hi@scalekit.com",
+    "url": "https://scalekit.com"
+  },
+  "homepage": "https://docs.scalekit.com",
+  "repository": "https://github.com/scalekit-inc/authstack",
+  "license": "MIT",
+  "keywords": ["scalekit", "saaskit", "authentication", "sso", "scim", "mcp-auth", "sessions", "rbac", "api-keys"],
+  "skills": [
+    "./skills/setup",
+    "./skills/implementing-saaskit",
+    "./skills/implementing-saaskit-nextjs",
+    "./skills/implementing-saaskit-python",
+    "./skills/implementing-modular-sso",
+    "./skills/implementing-scim-provisioning",
+    "./skills/adding-mcp-oauth",
+    "./skills/implementing-access-control",
+    "./skills/managing-saaskit-sessions",
+    "./skills/migrating-to-saaskit",
+    "./skills/adding-api-auth",
+    "./skills/testing-auth-setup",
+    "./skills/production-readiness-saaskit",
+    "./skills/scalekit-code-doctor"
+  ],
+  "mcpServers": ".mcp.json"
+}

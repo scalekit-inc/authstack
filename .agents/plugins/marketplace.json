@@ -1,0 +1,32 @@
+{
+  "name": "scalekit-authstack",
+  "interface": {
+    "displayName": "Scalekit AuthStack"
+  },
+  "plugins": [
+    {
+      "name": "agentkit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/agentkit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Authentication"
+    },
+    {
+      "name": "saaskit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/saaskit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Authentication"
+    }
+  ]
+}

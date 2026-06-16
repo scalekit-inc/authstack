@@ -1,0 +1,25 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "scalekit-authstack",
+  "description": "Auth infrastructure for developers — connect AI agents to 100+ OAuth services, or add enterprise SSO, SCIM, and MCP auth to your B2B app. Skip the protocol layer.",
+  "owner": {
+    "name": "Scalekit Inc",
+    "email": "support@scalekit.com"
+  },
+  "plugins": [
+    {
+      "name": "agentkit",
+      "description": "Give your AI agent authenticated access to Gmail, Slack, Salesforce, and 100+ services. OAuth flows, token vault, and tool discovery handled — write agent logic, not auth plumbing.",
+      "source": "./plugins/agentkit",
+      "category": "AI Agent Auth",
+      "homepage": "https://docs.scalekit.com/agentkit/overview/"
+    },
+    {
+      "name": "saaskit",
+      "description": "Enterprise auth for B2B apps without writing protocols. Login, sessions, SSO (Okta, Azure AD, Google), SCIM, MCP OAuth, RBAC, and API keys — any framework, any stack.",
+      "source": "./plugins/saaskit",
+      "category": "B2B App Auth",
+      "homepage": "https://docs.scalekit.com/authenticate/fsa/quickstart/"
+    }
+  ]
+}

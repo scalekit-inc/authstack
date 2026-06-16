@@ -1,0 +1,24 @@
+{
+  "name": "saaskit",
+  "version": "2.0.0",
+  "description": "Enterprise auth for B2B apps without writing protocols — login, sessions, SSO, SCIM, MCP OAuth, and RBAC in one stack.",
+  "author": {
+    "name": "Scalekit Inc.",
+    "email": "hi@scalekit.com",
+    "url": "https://scalekit.com"
+  },
+  "homepage": "https://docs.scalekit.com",
+  "repository": "https://github.com/scalekit-inc/authstack",
+  "license": "MIT",
+  "keywords": ["scalekit", "saaskit", "authentication", "sso", "scim", "mcp-auth", "sessions", "rbac", "api-keys"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "SaaSKit by Scalekit",
+    "shortDescription": "Enterprise auth for B2B apps without writing protocols — login, sessions, SSO, SCIM, MCP OAuth, and RBAC in one stack.",
+    "longDescription": "Every enterprise feature request — SSO, SCIM, MFA, RBAC, MCP server auth — is a different protocol to implement correctly. One wrong call in a token validation flow or session lifecycle and you're debugging auth at 2am instead of shipping.\n\nSaaSKit handles the full auth stack: hosted login pages, session management, enterprise SSO (Okta, Azure AD, Google), SCIM provisioning, MCP OAuth, and API key management. Add auth in ~100 lines. Any framework, any stack. Focus on your core product.",
+    "developerName": "Scalekit Inc.",
+    "category": "B2B App Auth",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://docs.scalekit.com"
+  }
+}
