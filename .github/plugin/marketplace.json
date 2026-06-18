@@ -13,13 +13,13 @@
       "name": "agentkit",
       "description": "Connect your AI agent to 3,000+ services without writing OAuth plumbing — users authorize once, agents act on their behalf.",
       "version": "2.0.0",
-      "source": "./plugins/agentkit"
+      "source": "./kits/agentkit"
     },
     {
       "name": "saaskit",
       "description": "Enterprise auth for B2B apps without writing protocols — login, sessions, SSO, SCIM, MCP OAuth, and RBAC in one stack.",
       "version": "2.0.0",
-      "source": "./plugins/saaskit"
+      "source": "./kits/saaskit"
     }
   ]
 }
