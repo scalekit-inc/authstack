@@ -1,13 +1,13 @@
 {
-  "name": "scalekit-authstack",
+  "name": "authstack",
   "owner": {
     "name": "Scalekit Inc.",
     "email": "support@scalekit.com"
   },
   "metadata": {
     "description": "Auth infrastructure for developers — connect AI agents to 100+ OAuth services, or add enterprise SSO, SCIM, and MCP auth to your B2B app. Skip the protocol layer.",
-    "version": "1.0.0",
-    "pluginRoot": "plugins"
+    "version": "1.0.4",
+    "pluginRoot": "kits"
   },
   "plugins": [
     {

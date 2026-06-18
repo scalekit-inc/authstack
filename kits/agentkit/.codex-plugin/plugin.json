@@ -1,6 +1,6 @@
 {
   "name": "agentkit",
-  "version": "2.0.0",
+  "version": "2.0.4",
   "description": "Connect your AI agent to 3,000+ services without writing OAuth plumbing — users authorize once, agents act on their behalf.",
   "author": {
     "name": "Scalekit Inc.",
@@ -10,7 +10,16 @@
   "homepage": "https://docs.scalekit.com/agentkit/overview/",
   "repository": "https://github.com/scalekit-inc/authstack",
   "license": "MIT",
-  "keywords": ["scalekit", "agentkit", "agent-auth", "oauth", "connectors", "tool-calling", "connected-accounts", "mcp"],
+  "keywords": [
+    "scalekit",
+    "agentkit",
+    "agent-auth",
+    "oauth",
+    "connectors",
+    "tool-calling",
+    "connected-accounts",
+    "mcp"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "AgentKit by Scalekit",
@@ -18,7 +27,10 @@
     "longDescription": "LLMs can't natively talk to Gmail, Slack, Salesforce, or any OAuth service. Every connector means custom OAuth flows, token storage, refresh logic, and scope enforcement — weeks of plumbing before your agent does anything useful.\n\nAgentKit handles the entire delegation layer: users authorize once, tokens never touch your code, agents call tools under user permissions with full audit trails. 3,000+ connectors. Works with any LLM or framework. Scoped to the user, not a service account.",
     "developerName": "Scalekit Inc.",
     "category": "AI Agent Auth",
-    "capabilities": ["Read", "Write"],
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
     "websiteURL": "https://docs.scalekit.com/agentkit/overview/"
   }
 }

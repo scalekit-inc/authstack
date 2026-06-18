@@ -2,7 +2,7 @@
   "name": "saaskit",
   "displayName": "SaaSKit by Scalekit",
   "description": "Enterprise auth for B2B apps without writing protocols — login, sessions, SSO, SCIM, MCP OAuth, and RBAC in one stack.",
-  "version": "2.0.0",
+  "version": "2.0.4",
   "author": {
     "name": "Scalekit Inc.",
     "email": "hi@scalekit.com"
@@ -10,7 +10,17 @@
   "homepage": "https://docs.scalekit.com",
   "repository": "https://github.com/scalekit-inc/authstack",
   "license": "MIT",
-  "keywords": ["scalekit", "saaskit", "authentication", "sso", "scim", "mcp-auth", "sessions", "rbac", "api-keys"],
+  "keywords": [
+    "scalekit",
+    "saaskit",
+    "authentication",
+    "sso",
+    "scim",
+    "mcp-auth",
+    "sessions",
+    "rbac",
+    "api-keys"
+  ],
   "skills": "./skills",
   "mcpServers": "./mcp.json"
 }
