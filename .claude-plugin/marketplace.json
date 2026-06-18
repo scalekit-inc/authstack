@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "scalekit-authstack",
+  "name": "authstack",
   "description": "Auth infrastructure for developers — connect AI agents to 100+ OAuth services, or add enterprise SSO, SCIM, and MCP auth to your B2B app. Skip the protocol layer.",
   "owner": {
     "name": "Scalekit Inc",
