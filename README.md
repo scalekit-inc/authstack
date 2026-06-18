@@ -1,11 +1,10 @@
-# Scalekit AuthStack
+# AuthStack
 
 **AgentKit and SaaSKit for AI coding tools.**
 Add agent OAuth, tool calling, SSO, SCIM, MCP auth, and session management to any AI coding tool.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/scalekit-inc/authstack/pulls)
-**[💬 Slack](https://join.slack.com/t/scalekit-community/shared_invite/zt-3gsxwr4hc-0tvhwT2b_qgVSIZQBQCWRw)**
 
 ---
 
@@ -42,3 +41,7 @@ This repo contains the complete Scalekit AuthStack — two kits that cover auth 
 ---
 
 Each kit ships with implementation skills — see [`kits/agentkit/skills/`](./kits/agentkit/skills/) and [`kits/saaskit/skills/`](./kits/saaskit/skills/).
+
+---
+
+[Join our Slack community](https://join.slack.com/t/scalekit-community/shared_invite/zt-3gsxwr4hc-0tvhwT2b_qgVSIZQBQCWRw)
