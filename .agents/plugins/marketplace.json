@@ -1,7 +1,7 @@
 {
-  "name": "scalekit-authstack",
+  "name": "authstack",
   "interface": {
-    "displayName": "Scalekit AuthStack"
+    "displayName": "Scalekit"
   },
   "plugins": [
     {
