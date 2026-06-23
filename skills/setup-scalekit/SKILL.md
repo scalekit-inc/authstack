@@ -5,13 +5,31 @@ description: Guides developers through Scalekit onboarding — installs the CLI,
 
 # Setup Scalekit
 
-## Step 1 — Install the CLI
+## Step 1 — Install the CLI (recommended)
+
+The Scalekit CLI detects your tools and installs the authstack plugin (AgentKit + SaaSKit) for you.
 
 ```bash
-npm i -g @scalekit-inc/cli
+npx @scalekit-inc/cli setup
 ```
 
-Verify: `scalekit --version` should print a version number.
+For repeated use:
+
+```bash
+npm install -g @scalekit-inc/cli
+scalekit setup
+```
+
+Target a specific tool:
+
+```bash
+scalekit setup claude
+scalekit setup cursor
+scalekit setup codex
+scalekit setup copilot
+```
+
+Verify the plugin appears in your agent's plugin list after setup.
 
 ## Step 2 — Choose your plugin
 
@@ -20,49 +38,39 @@ Verify: `scalekit --version` should print a version number.
 | `agentkit` | AI agent needs OAuth access to third-party services — connections, tool discovery, token storage / refresh |
 | `saaskit` | Web app needs login, sessions, SSO, SCIM, MCP server auth, RBAC, or API keys |
 
-## Step 3 — Install for your tool
+## Step 3 — Native / direct install commands (CLI is preferred)
+
+The commands below are the current native forms. Prefer the CLI in Step 1 for most users.
 
 ### Claude Code
 
 ```
-/plugin marketplace add scalekit-inc/claude-code-authstack
-/plugin install agentkit@claude-code-authstack   # or saaskit
+/plugin marketplace add scalekit-inc/authstack
+/plugin install agentkit@authstack   # or saaskit@authstack
 ```
 
 Verify: restart Claude Code, then run `/plugin list` — the plugin should appear as enabled.
 
-### GitHub Copilot CLI
+### GitHub Copilot
 
 ```bash
-copilot plugin marketplace add scalekit-inc/github-copilot-authstack
-copilot plugin install agentkit@github-copilot-authstack   # or saaskit
+copilot plugin marketplace add scalekit-inc/authstack
+copilot plugin install agentkit@authstack   # or saaskit@authstack
 ```
 
 Verify: `copilot plugin list` should show the plugin.
 
-### Codex
+### Codex and Cursor
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/scalekit-inc/codex-authstack/main/install.sh | bash
-```
-
-Post-install: restart Codex → Plugin Directory → select **Scalekit Auth Stack** → enable your plugin.
-
-### Cursor
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/scalekit-inc/cursor-authstack/main/install.sh | bash
-```
-
-Post-install: restart Cursor → **Settings → Cursor Settings → Plugins** → enable your plugin.
+The unified CLI (`scalekit setup codex` / `scalekit setup cursor`) handles download and placement for these tools. Direct installation is managed by the CLI.
 
 ### Other agents (OpenCode, Windsurf, Cline, Gemini CLI, 35+)
 
 ```bash
-npx skills add scalekit-inc/skills --list              # see available skills
-npx skills add scalekit-inc/skills --skill integrating-agentkit
-npx skills add scalekit-inc/skills --skill implementing-saaskit
-npx skills add scalekit-inc/skills --all                # or install everything
+npx skills add scalekit-inc/authstack --list              # see available skills
+npx skills add scalekit-inc/authstack --skill integrating-agentkit
+npx skills add scalekit-inc/authstack --skill implementing-saaskit
+npx skills add scalekit-inc/authstack --all                # or install everything
 ```
 
 ## Step 4 — Start building
