@@ -75,6 +75,8 @@ SCALEKIT_CLIENT_SECRET=<from dashboard>
 
 Get these from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
 
+**Self-hosted Scalekit**: Use the `SCALEKIT_ENVIRONMENT_URL` and credentials from your self-hosted admin dashboard (typically at `https://app.<your-domain>` after you deploy via the distribution portal). Run `/saaskit:self-hosted` for complete Kubernetes + Helm deployment guidance (or to get integration adjustments for an existing self-hosted instance).
+
 Use `/saaskit:testing-auth-setup` to validate credentials and connection end-to-end before writing any auth code.
 
 ---

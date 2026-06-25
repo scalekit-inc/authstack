@@ -1,7 +1,7 @@
 {
   "name": "saaskit",
   "description": "Enterprise auth for B2B apps without writing protocols. Login, sessions, SSO (Okta, Azure AD, Google), SCIM, MCP OAuth, RBAC, and API keys — any framework, any stack.",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "author": {
     "name": "Scalekit Inc.",
     "email": "hi@scalekit.com"
