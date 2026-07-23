@@ -39,11 +39,12 @@ Authentication Integration Progress:
 
 ## Step 1: Configure Modular Auth Mode
 
-**Action**: Configure environment for Modular SSO:
-1. Navigate to Dashboard > Authentication > General
-2. Under "Full-Stack Auth" section, click "Disable Full-Stack Auth"
+> **User action (dashboard)** — the coding agent cannot click the Scalekit UI. Instruct the user to complete these steps, then continue with Step 2 in code:
 
-**Result**: System ready for modular integration.
+1. Open [app.scalekit.com](https://app.scalekit.com) → **Authentication → General**
+2. Under "Full-Stack Auth", **Disable Full-Stack Auth** (enables Modular SSO mode)
+
+Confirm with the user that Modular Auth is disabled before generating integration code.
 
 ## Step 2: Install and Configure SDK
 
@@ -344,14 +345,13 @@ Your environment includes pre-configured test organization with domains:
 
 ### Testing Workflow
 
-1. **Find test organization**: Dashboard > Organizations
-2. **Use test selector**: Pass one of these in authorization URL:
+1. **Find test organization** (**user action**): Dashboard → Organizations (note `organization_id` / connection id)
+2. **Use test selector** (code): pass one of these in the authorization URL:
    - Email with `@example.com` domain
    - Test organization's connection ID
    - Organization ID
-3. **Simulate SSO flow**: IdP Simulator appears (mimics customer's IdP)
-4. **Complete authentication**: Enter test credentials
-5. **Verify callback**: Check user profile received correctly
+3. **Simulate SSO flow** (**user action**): complete the IdP Simulator in the browser
+4. **Verify callback** (agent): confirm your `/auth/callback` stores session + profile correctly
 
 ### Test Scenarios
 
@@ -368,21 +368,19 @@ Enable SSO for enterprise customers through self-service Admin Portal.
 
 ### Quick Onboarding
 
-**Create organization**: Dashboard > Organizations > New Organization
+**Create organization** (**user action**): Dashboard → Organizations → New Organization — or create via SDK if the app already provisions orgs.
 
-**Generate portal link** (Node.js):
+**Generate portal link** (agent/code — Node.js):
 ```javascript
 const portalLink = await scalekit.organization.generatePortalLink(
   'org_32656XXXXXX0438'
 );
 
-// Share this link with customer's IT admin
+// Print for the product owner to share with the customer's IT admin
 console.log('Admin Portal:', portalLink.location);
 ```
 
-**Share link**: Send to customer's IT administrator via email/Slack
-
-**Share setup guide**: Include the Scalekit [SSO setup guide](https://docs.scalekit.com/guides/integrations/sso-integrations/) — provider-specific steps for Okta, Azure AD, Google Workspace, and others.
+**Share link / setup guide** (**user/ops action**, not coding): product owner sends the portal URL + [SSO setup guide](https://docs.scalekit.com/guides/integrations/sso-integrations/) to the customer's IT admin (email/Slack).
 
 ### Embedded Portal (Advanced)
 
@@ -463,28 +461,14 @@ if (Date.now() / 1000 > accessTokenClaims.exp) {
 }
 ```
 
-## Integration with Existing Auth Systems
+## Integration with Existing Auth Systems (optional)
 
-### Auth0 Integration
+> Brief pointers only — not the primary Modular SSO path. Prefer full Scalekit SSO (Steps 2–7) unless the user already runs Auth0/Firebase/Cognito as the session layer.
 
-Configure Scalekit as Custom Social Connection in Auth0:
-1. Auth0 Dashboard > Authentication > Social > Create Connection
-2. Use Scalekit OAuth2 endpoints
-3. Map Scalekit user attributes to Auth0 profile
-
-### Firebase Integration
-
-Add Scalekit as Custom Auth Provider:
-1. Use Firebase Custom Token generation
-2. Exchange Scalekit tokens for Firebase tokens
-3. Maintain session with Firebase SDK
-
-### AWS Cognito Integration
-
-Configure Scalekit as SAML Identity Provider:
-1. Cognito User Pool > Identity Providers > SAML
-2. Use Scalekit metadata URL
-3. Map attributes to Cognito user attributes
+### Auth0 / Firebase / Cognito
+- **Auth0**: Custom Social Connection → Scalekit OAuth2 endpoints; map attributes.
+- **Firebase**: Exchange Scalekit tokens for Firebase custom tokens; keep Firebase session SDK.
+- **Cognito**: SAML IdP with Scalekit metadata URL; map attributes.
 
 ## Security Checklist
 
