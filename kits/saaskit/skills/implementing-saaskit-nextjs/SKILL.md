@@ -96,7 +96,7 @@ return NextResponse.json({ authUrl });
    - Permission claims checked in order: `permissions` → `https://scalekit.com/permissions` → `scalekit:permissions`
 5. Name resolution priority: `user.name` → `claims.name` → `givenName + familyName` → `email` → `preferred_username` → `'User'`
 6. `setSession({ user, tokens, roles, permissions })`
-7. Redirect to `/dashboard`
+7. Redirect to the stored `next` path if valid relative (`/...`), else `/dashboard` (see Deep link preservation)
 
 ### Logout (`app/api/auth/logout/route.ts` — POST)
 
@@ -113,9 +113,23 @@ return NextResponse.json({ logoutUrl });
 ### Token refresh (`app/api/auth/refresh/route.ts` — POST)
 
 ```ts
-const refreshResponse = await client.refreshAccessToken(session.tokens.refresh_token);
-// Decode exp from JWT using jose.decodeJwt(); fallback to 3600s if missing
-await setSession({ ...session, tokens: { ...session.tokens, access_token, refresh_token, expires_at, expires_in } });
+const session = await getSession();
+if (!session?.tokens.refresh_token) return NextResponse.json({ error: 'no session' }, { status: 401 });
+// Cross-tab lock (see Tactics → Token refresh race condition)
+if (session.refresh_in_progress) return new NextResponse(null, { status: 204 });
+await setSession({ ...session, refresh_in_progress: true });
+try {
+  const refreshResponse = await client.refreshAccessToken(session.tokens.refresh_token);
+  // Decode exp from JWT using jose.decodeJwt(); fallback to 3600s if missing
+  await setSession({
+    ...session,
+    tokens: { ...session.tokens, access_token, refresh_token, expires_at, expires_in },
+    refresh_in_progress: false,
+  });
+} catch {
+  await setSession({ ...session, refresh_in_progress: false });
+  return NextResponse.json({ error: 'refresh failed' }, { status: 401 });
+}
 ```
 
 ## Auth utilities (`lib/auth.ts`)
@@ -165,7 +179,7 @@ if (!allowed) redirect('/permission-denied');
 
 ```bash
 # Session cookies are HttpOnly + server-managed — no client cookie library needed.
-npm install @scalekit-sdk/node jose date-fns
+npm install @scalekit-sdk/node jose
 ```
 
 ## Tactics
