@@ -133,7 +133,7 @@ for conn in getattr(auth_state_response, "connections", []):
     )
 ```
 
-> **Note:** Open every printed auth link in a browser and complete OAuth before proceeding to Step 4.
+> **Note (user action):** Tell the user to open every printed auth link in a browser and complete OAuth before you proceed to Step 4 — the agent cannot complete the browser OAuth flow itself.
 
 ## Step 4 — Connect and invoke via MCP
 
@@ -150,7 +150,8 @@ async def main():
         }
     )
     tools = await client.get_tools()
-    agent = create_react_agent("openai:gpt-4.1", tools)
+    # Model id is provider-prefixed for LangGraph; use a real OpenAI chat model.
+    agent = create_react_agent("openai:gpt-4o", tools)
     response = await agent.ainvoke(
         {"messages": "get 1 latest email and create a calendar reminder event in next 15 mins for a duration of 15 mins."}
     )
