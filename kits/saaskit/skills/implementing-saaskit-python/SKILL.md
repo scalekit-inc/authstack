@@ -45,13 +45,13 @@ sc = ScalekitClient(
 
 ## Framework routing
 
-Each framework has different patterns for routes, middleware, and session storage:
+Each framework has different patterns for routes, middleware, and session storage. Companion files live **next to this `SKILL.md`** in the skill package — open them with the file tool when implementing that framework:
 
 | Framework | Auth middleware | Session store | Reference |
 |---|---|---|---|
-| Django | Custom middleware class | Django sessions (DB/cache) | [django-reference.md](django-reference.md) |
-| FastAPI | Dependency injection | Server-side or JWT | [fastapi-reference.md](fastapi-reference.md) |
-| Flask | `@login_required` decorator | Flask-Session | [flask-reference.md](flask-reference.md) |
+| Django | Custom middleware class | Django sessions (DB/cache) | [django-reference.md](django-reference.md) (bundled) |
+| FastAPI | Dependency injection | Server-side or JWT | **This file** — "Default workflow (FastAPI example)" below |
+| Flask | `@login_required` decorator | Flask-Session | [flask-reference.md](flask-reference.md) (bundled) |
 
 ## Default workflow (FastAPI example)
 
