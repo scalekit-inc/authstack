@@ -7,6 +7,13 @@ description: Implements Scalekit SaaSKit authentication in Python web frameworks
 
 Implements Scalekit authentication in Django, FastAPI, or Flask using `scalekit-sdk-python`.
 
+## Guardrails
+
+- **MUST** read `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET` from environment variables; **MUST NOT** hardcode credentials.
+- **MUST** compare the `oauth_state` cookie against the callback's `state` parameter before calling `authenticate_with_code`, and reject on mismatch (CSRF check).
+- **MUST** set the `oauth_state` cookie with `httponly`, `secure`, and `samesite="lax"`.
+- **MUST NOT** treat a successful callback as authenticated without completing `authenticate_with_code` and storing the result in the session — clear session/cookies on logout.
+
 ## Framework detection
 
 Before generating code, detect which framework is in use:

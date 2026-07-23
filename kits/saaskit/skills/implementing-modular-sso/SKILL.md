@@ -15,6 +15,12 @@ This skill covers Modular SSO for applications with existing user management.
 
 **Key concept — `organization_id`**: SSO in Scalekit is scoped to an organization. Pass `organization_id` (or the user's email domain) in the authorization URL to route the user to their identity provider (Okta, Azure AD, Google Workspace, etc.). Without it, Scalekit cannot determine which IdP to use.
 
+## Guardrails
+- **MUST** validate ID tokens and access tokens before trusting any claims; **MUST NOT** extract user identity from an unvalidated token.
+- **MUST** register every callback URL in Dashboard > Authentication > Redirect URLs before using it; **MUST NOT** redirect to an unregistered `redirect_uri` (causes an `Invalid redirect_uri` error).
+- **MUST** pass `organization_id`, `connectionId`, or `loginHint` in the authorization URL; **MUST NOT** omit all three — Scalekit cannot determine which IdP to route the user to.
+- **MUST** preserve `relay_state` from IdP-initiated login claims when building the authorization URL; **MUST NOT** discard it, to protect against SAML assertion replay.
+
 ## Implementation Workflow
 
 Copy this checklist and track progress:

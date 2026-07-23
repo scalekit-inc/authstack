@@ -8,9 +8,14 @@ description: Implements server-side RBAC and permission checks by validating and
 ## When to use
 After authentication is working and the app must authorize access to routes/actions by inspecting the user's access token for `roles` and `permissions`.
 
+## Guardrails
+- **MUST** validate the access token (expiry, issuer/audience) before trusting any decoded claims.
+- **MUST** enforce role and permission checks server-side at the route boundary; **MUST NOT** rely on client-side authorization alone.
+- **MUST** deny access (403) when a required role or permission is missing — never default to allow.
+
 ## Workflow
 1. Validate the access token (expiry, issuer/audience as applicable) and then decode it to extract `sub`, `oid`, `roles`, and `permissions`.
-2. Attach a normalized auth context to the request (e.g., `req.user = { id, organizationId, roles, permissions }`) so downstream handlers can authorize consistently.
+2. Attach a normalized auth context to the request (e.g., `req.user = { id, organizationId, roles, permissions }`) so downstream handlers authorize consistently.
 3. Enforce authorization at route boundaries using (a) role checks for broad access patterns and (b) permission checks for fine-grained actions (often `resource:action`).
 4. Combine checks when needed (examples: "admin bypass", "resource ownership", time-based restrictions for sensitive operations).
 5. Never rely on client-side authorization alone; enforce roles/permissions server-side.
@@ -102,7 +107,7 @@ def require_permission(permission):
 
 ## Verification
 
-After implementing, test these cases:
+Verify the implementation with these test cases:
 
 ```bash
 # Test with a valid token that has the required role
@@ -124,7 +129,7 @@ If 403 isn't returned for unauthorized users, check that the middleware chain or
 
 - Roles for broad tiers (admin/manager/member), permissions for granular actions (`projects:create`, `tasks:assign`)
 - Admin bypass: admins skip permission checks for operational tasks
-- Resource ownership: user can edit only their own resource unless role-elevated
+- Resource ownership: restrict edits to the resource owner; grant elevated roles broader access
 
 ## Checklist
 

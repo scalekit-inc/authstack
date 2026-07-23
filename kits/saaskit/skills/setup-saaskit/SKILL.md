@@ -1,9 +1,14 @@
 ---
-name: setup
-description: Starting point for any Scalekit SaaSKit integration. Use when the user says "I want to add auth", "set up Scalekit", "where do I start", or is new to SaaSKit and doesn't know which skill to use. Routes to the right skill based on framework and what they're building.
+name: setup-saaskit
+description: First stop for adding end-user authentication to a web app with Scalekit SaaSKit — login, sessions, enterprise SSO, SCIM directory sync, RBAC, and API keys. Use when the user says 'add login', 'set up SSO', or 'add auth to my app' and it is unclear which SaaSKit skill fits. Picks the right skill by framework and hands the build to it. Not for agents calling external tools — that is setup-agentkit.
 ---
 
 # SaaSKit — Where to Start
+
+## Guardrails
+- **MUST** route to the right SaaSKit skill and stop — this skill does NOT implement auth itself.
+- **MUST NOT** generate implementation code here; the target skill owns that.
+- **MUST** ask the Step 1 questions one at a time when the framework or what's-being-built is unclear, rather than guessing.
 
 > **IMPORTANT:** This skill routes to the right skill — it does NOT implement auth itself. Once you identify the right skill below, tell the user to invoke it and stop. Do not generate implementation code here.
 

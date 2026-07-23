@@ -1,12 +1,19 @@
 ---
 name: self-hosted
 description: |
-  This skill should be used when the user wants to deploy Scalekit self-hosted (on-premises / on-prem) using Kubernetes and Helm charts, or when they mention "self-hosted", "self hosted", "on prem", "on-prem", "onprem", "self-hosted Scalekit", "self-hosted deployment", or need to run their own Scalekit instance for data residency, compliance, or air-gapped environments. Provides complete guidance for self-hosting Scalekit with Kubernetes + Helm, following official patterns.
+  Use when the user wants to deploy Scalekit self-hosted (on-premises / on-prem) using Kubernetes and Helm charts, or says things like "deploy Scalekit self-hosted", "set up Scalekit on-prem", or "run our own Scalekit instance" — typically for data residency, compliance, or air-gapped requirements. Provides complete guidance for self-hosting Scalekit with Kubernetes + Helm, following official patterns.
 ---
 
 # Self-Hosted Scalekit Deployment
 
-**Before doing anything else**, load the reference files for the detailed procedures:
+## Guardrails
+
+- MUST point the app at the self-hosted `SCALEKIT_ENVIRONMENT_URL` (`https://app.<your-domain>`), not `app.scalekit.com`.
+- MUST NOT send registry tokens, SMTP credentials, or Postgres/Redis credentials in plaintext or commit them to version control — pass them as Kubernetes secrets / Helm `--set-file` values.
+- MUST NOT confuse the plugin's tooling MCP (`https://mcp.scalekit.com`, used only for setup guidance) with the self-hosted app's own auth service — the tooling MCP stays cloud-based; the app's `SCALEKIT_ENVIRONMENT_URL` is what runs air-gapped/on-prem.
+- MUST ask the decision-flow questions one at a time before recommending eval vs. production steps.
+
+These reference files hold the detailed procedures for each path (see decision flow below):
 
 - `references/quickstart.md` — Evaluation deployment (bundled databases)
 - `references/production-deployment.md` — Full production steps, setup script, and portal flow
@@ -51,11 +58,15 @@ Then load the matching reference:
 - `SCALEKIT_ENVIRONMENT_URL` from their deployment
 - Credentials from the self-hosted dashboard
 
+```bash
+export SCALEKIT_ENVIRONMENT_URL="https://app.<your-domain>"
+```
+
 Then route to the normal skills with those values:
 
 | Goal | Skill | Self-hosted note |
 |------|-------|------------------|
-| Login + sessions | `/saaskit:setup` (or framework variant) | Use the self-hosted URL + credentials |
+| Login + sessions | `/saaskit:setup-saaskit` (or framework variant) | Use the self-hosted URL + credentials |
 | Production readiness | `/saaskit:production-readiness-saaskit` | Adapt network checks for internal cluster |
 | Validate connection | `/saaskit:testing-auth-setup` | Point at self-hosted env |
 | SDK / auth errors | `/saaskit:scalekit-code-doctor` | Same code, different env values |

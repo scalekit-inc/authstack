@@ -7,6 +7,13 @@ description: Validates a Scalekit auth integration by running the dryrun CLI aga
 
 Runs the Scalekit dryrun CLI to validate that your auth integration is correctly configured against a live environment.
 
+## Guardrails
+
+- **MUST** confirm `SCALEKIT_ENVIRONMENT_URL` and `SCALEKIT_CLIENT_ID` are set before running the dryrun command.
+- **MUST** ask for `organization_id` before running `sso` mode if it wasn't provided.
+- **MUST** show the dryrun output and explain what passed/failed in plain language, not just report success or failure silently.
+- **MUST NOT** guess between `fsa` and `sso` mode when it's ambiguous — ask the user which to use.
+
 ## Modes
 
 | Mode | What it tests | When to use |

@@ -11,6 +11,12 @@ Scalekit lets you configure MCP endpoints that manage authentication, create per
 
 > **Note:** AgentKit MCP servers only support Streamable HTTP transport.
 
+## Guardrails
+
+- **MUST** use Streamable HTTP transport — stdio and SSE are not supported by AgentKit MCP servers.
+- **MUST** use the dashboard **Connection Name** verbatim as the `connection_name` in code — they must match exactly.
+- **MUST NOT** expose connector tools without per-user authenticated MCP URLs; each user authorizes their own connected account.
+
 ## What you'll build
 
 1. A Scalekit MCP server that fetches the user's latest email and creates a reminder calendar event

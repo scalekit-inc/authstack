@@ -1,7 +1,7 @@
 {
   "name": "agentkit",
   "description": "Connect your AI agent to 3,000+ services without writing OAuth plumbing — users authorize once, agents act on their behalf.",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": {
     "name": "Scalekit Inc.",
     "email": "hi@scalekit.com",
@@ -10,9 +10,18 @@
   "homepage": "https://docs.scalekit.com/agentkit/overview/",
   "repository": "https://github.com/scalekit-inc/authstack",
   "license": "MIT",
-  "keywords": ["scalekit", "agentkit", "agent-auth", "oauth", "connectors", "tool-calling", "connected-accounts", "mcp"],
+  "keywords": [
+    "scalekit",
+    "agentkit",
+    "agent-auth",
+    "oauth",
+    "connectors",
+    "tool-calling",
+    "connected-accounts",
+    "mcp"
+  ],
   "skills": [
-    "./skills/setup",
+    "./skills/setup-agentkit",
     "./skills/integrating-agentkit",
     "./skills/discovering-connector-tools",
     "./skills/exposing-agentkit-via-mcp",

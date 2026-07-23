@@ -12,6 +12,11 @@ description: Use when a user asks to generate, review, validate, or fix any code
 
 Never hallucinate a method name, parameter, or import — if it's not in the reference, verify against live sources before using it.
 
+## Guardrails
+- **MUST** cross-reference every SDK method, parameter, and import against `references/REFERENCE.md` (or a live source per Step 5); **MUST NOT** guess or hallucinate an API that isn't verified there.
+- **MUST** confirm the target SDK/language and product area (SaaSKit vs AgentKit) before generating or reviewing code; **MUST NOT** assume context that wasn't identified in Step 2.
+- **MUST** state "This method could not be verified" when a call can't be confirmed; **MUST NOT** output code containing an unverified method call.
+
 ## Step 1 — Detect mode
 
 **Generate mode** — User describes what they want but has no code yet.

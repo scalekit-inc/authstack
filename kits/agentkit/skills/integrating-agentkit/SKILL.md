@@ -1,6 +1,6 @@
 ---
 name: integrating-agentkit
-description: Integrates Scalekit AgentKit into a project so an agent can create connections, authorize users, discover tools, and execute authenticated tool calls on their behalf. Use when a user needs to set up a connection, create a connected account, generate an authorization link, or wire AgentKit tools into application code or an agent framework.
+description: Integrates Scalekit AgentKit into a project — create connections, authorize users, fetch OAuth tokens, call third-party APIs with those tokens, and optionally wire tools into LangChain/ADK agents. Use when a user needs to set up a connection, create a connected account, generate an authorization link, or wire AgentKit into application code or an agent framework.
 ---
 
 # AgentKit Integration
@@ -9,8 +9,15 @@ Scalekit handles the full OAuth lifecycle — authorization, token storage, and 
 
 **Required env vars**: `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`, `SCALEKIT_ENVIRONMENT_URL`
 → Get from [app.scalekit.com](https://app.scalekit.com): Developers → Settings → API Credentials
+→ Some docs/samples use `SCALEKIT_ENV_URL` for the same URL value; in this skill use `SCALEKIT_ENVIRONMENT_URL`.
 
-**Key concept — `connection_name`**: Every connector has a `connection_name` — the exact string set in the Scalekit Dashboard when creating the connection. It is used in all SDK calls (`get_or_create_connected_account`, `get_authorization_link`, `get_connected_account`). It may differ from the connector slug (e.g., the connector is "gmail" but the `connection_name` could be `"MY_GMAIL_PROD"`). Always use the exact dashboard value.
+**Key concept — connection name**: Every connector has a dashboard **Connection Name** — the exact string set when creating the connection. Pass it in every SDK call: Python `connection_name=...`, Node `connectionName: '...'`. It may differ from the connector slug (e.g. slug `"gmail"` but name `"MY_GMAIL_PROD"`). Always use the dashboard value, never invent a slug.
+
+## Guardrails
+
+- **MUST** pass the exact dashboard Connection Name in every SDK call (`connection_name` in Python, `connectionName` in Node) — never guess it from the connector slug, and never use a `connector` field for that value.
+- **MUST** read credentials from `SCALEKIT_CLIENT_ID` / `SCALEKIT_CLIENT_SECRET` / `SCALEKIT_ENVIRONMENT_URL` env vars; **MUST NOT** hardcode secrets in source.
+- **MUST NOT** create authorization links for any non-Gmail connector before it is configured in the dashboard — the call will fail.
 
 ## Setup
 
@@ -75,7 +82,7 @@ AgentKit Integration Progress:
 
 ### Step 1 — Create a connected account
 
-Replace `"user_123"` with the project's actual user ID. Replace `"gmail"` with the target connector.
+Replace `"user_123"` with the project's actual user ID. Replace `"gmail"` with the dashboard **Connection Name** (not necessarily the connector slug).
 
 **Python**
 ```python
@@ -89,7 +96,7 @@ connected_account = response.connected_account
 **Node.js**
 ```typescript
 const response = await connectedAccounts.getOrCreateConnectedAccount({
-  connector: 'gmail',
+  connectionName: 'gmail',
   identifier: 'user_123',
 });
 const connectedAccount = response.connectedAccount;
@@ -112,13 +119,19 @@ if connected_account.status != "ACTIVE":
 
 **Node.js**
 ```typescript
+import * as readline from 'node:readline/promises';
+
 if (connectedAccount?.status !== 'ACTIVE') {
   const linkResponse = await connectedAccounts.getMagicLinkForConnectedAccount({
-    connector: 'gmail',
+    connectionName: 'gmail',
     identifier: 'user_123',
   });
   console.log('Authorize here:', linkResponse.link);
-  // Web app: redirect user to linkResponse.link
+  // Web app: redirect the browser to linkResponse.link, then continue after callback.
+  // CLI/dev: pause until the user finishes OAuth, then continue (re-fetch account in Step 3).
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  await rl.question('Press Enter after authorizing…');
+  rl.close();
 }
 ```
 
@@ -140,17 +153,21 @@ refresh_token = tokens["refresh_token"]
 **Node.js**
 ```typescript
 const accountResponse = await connectedAccounts.getConnectedAccountByIdentifier({
-  connector: 'gmail',
+  connectionName: 'gmail',
   identifier: 'user_123',
 });
+// authorizationDetails is a oneof: when case is 'oauthToken', value holds the tokens
 const authDetails = accountResponse?.connectedAccount?.authorizationDetails;
-const accessToken = authDetails?.details?.case === 'oauthToken'
-  ? authDetails.details.value?.accessToken : undefined;
-const refreshToken = authDetails?.details?.case === 'oauthToken'
-  ? authDetails.details.value?.refreshToken : undefined;
+const oauth = authDetails?.details?.case === 'oauthToken'
+  ? authDetails.details.value
+  : undefined;
+const accessToken = oauth?.accessToken;
+const refreshToken = oauth?.refreshToken;
 ```
 
-### Step 4 — Call the third-party API
+### Step 4 — Call the third-party API (token path)
+
+This step uses the raw OAuth access token against the provider’s HTTP API. For framework tool calling (LangChain / Google ADK), see **Building agents** below; for catalog/schema discovery, switch to `discovering-connector-tools`.
 
 Use `access_token` from Step 3 as a Bearer token. Example: fetch 5 unread Gmail messages.
 
@@ -202,26 +219,30 @@ for (const msg of messages) {
 
 ## Adapting to other connectors
 
-Replace `"gmail"` with any supported connector name: `slack`, `notion`, `calendar`, etc.
+Replace the Connection Name value (`"gmail"` in the examples) with the dashboard name for that connection (e.g. `"slack"`, `"MY_NOTION_PROD"`). Configure non-Gmail connectors in the dashboard first.
 The SDK workflow (Steps 1–3) is identical for all connectors. Only the downstream API call (Step 4) changes.
 
 For connector-specific API details, see the [Scalekit Connectors catalog](https://docs.scalekit.com/agentkit/connectors/).
 
 ## Building agents
 
-Use Scalekit tools with AI frameworks to build agents that can execute actions on behalf of users.
+Use Scalekit tools with AI frameworks to build agents that can execute actions on behalf of users. Install the framework packages first; the Scalekit SDK alone is not enough for these snippets.
 
 ### LangChain agents
 
 Create conversational agents with LangChain that can autonomously call Scalekit tools based on user intent.
 
 **Python**
+```bash
+pip install scalekit-sdk-python langchain langchain-openai langchain-core
+```
 ```python
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain_core.prompts import ChatPromptTemplate
 
-# Fetch tools from Scalekit in LangChain format
+# providers = connector type slug for tool discovery (GMAIL, SLACK, …).
+# This is NOT the dashboard Connection Name used in Steps 1–3.
 tools = actions.langchain.get_tools(
     identifier="user_123",
     providers=["GMAIL"],
@@ -248,10 +269,14 @@ result = executor.invoke({"input": "fetch my last 5 unread emails and summarize 
 Build agents using Google's Agent Development Kit with native Gemini integration.
 
 **Python**
+```bash
+# Package: https://pypi.org/project/google-adk/ (Google Agent Development Kit)
+pip install scalekit-sdk-python google-adk
+```
 ```python
 from google.adk.agents import Agent
 
-# Fetch tools from Scalekit in Google ADK format
+# providers = connector type slug (not the dashboard Connection Name from Steps 1–3)
 gmail_tools = actions.google.get_tools(
     providers=["GMAIL"],
     identifier="user_123",

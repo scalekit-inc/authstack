@@ -5,6 +5,12 @@ description: Manages Scalekit SaaSKit user sessions by securely storing tokens, 
 
 # SaaSKit Session Management
 
+## Guardrails
+- **MUST** store access and refresh tokens in HttpOnly cookies, with `Secure` enabled in production.
+- **MUST** validate the access token on every protected request and transparently refresh it via the refresh token when expired.
+- **MUST NOT** let a failed refresh silently continue the request; return 401 and force re-login.
+- **MUST** revoke the corresponding session via the Scalekit session API on logout / "sign out this device".
+
 ## Inputs to collect (ask before coding)
 - App type: traditional server-rendered web app, SPA, mobile app, or hybrid.
 - Framework: Express/Fastify/Next (Node), Flask/Django/FastAPI (Python), Gin/Fiber (Go), Spring Boot (Java), etc.

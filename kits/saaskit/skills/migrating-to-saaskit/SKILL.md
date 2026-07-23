@@ -7,6 +7,12 @@ description: Audits the existing auth system, exports users and orgs, imports th
 
 Guides an incremental, reversible migration from an existing auth system to Scalekit. Follow these phases in order—do not skip phases.
 
+## Guardrails
+- **MUST** back up existing auth data and document a rollback procedure before importing anything into Scalekit.
+- **MUST** preserve original user/org identifiers by storing them in `external_id` during import.
+- **MUST NOT** skip migration phases or cut over all traffic before validating with a subset of migrated users.
+- **MUST** keep the rollback feature flag active through the initial rollout window before removing the legacy auth system.
+
 ## Migration checklist
 
 Copy and track progress:

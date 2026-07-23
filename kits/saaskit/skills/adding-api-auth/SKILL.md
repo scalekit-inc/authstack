@@ -5,6 +5,12 @@ description: Implements machine-to-machine authentication using Scalekit — eit
 
 # Adding API Key Auth (Scalekit)
 
+## Guardrails
+
+- **MUST** read `SCALEKIT_ENVIRONMENT_URL` / `SCALEKIT_CLIENT_ID` / `SCALEKIT_CLIENT_SECRET` from env vars when initializing the client; **MUST NOT** hardcode them.
+- **MUST** validate the opaque token or JWT server-side on every incoming API request; **MUST NOT** trust an unverified token.
+- **MUST** treat the plain-text `token` / `plain_secret` as returned only once at creation and store it securely (never logged or committed); use `token_id` (not the key itself) for list/invalidate lifecycle operations.
+
 ## Flow overview
 
 ```
