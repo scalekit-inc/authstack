@@ -79,16 +79,16 @@ while True:
 tool = sk_client.actions.get_tools(tool_name="gmail_fetch_mails")
 ```
 
-## Live tool discovery (Node.js)
+## Live tool discovery (Node.js / TypeScript)
 
 ```typescript
 import { ScalekitClient } from '@scalekit-sdk/node';
 import 'dotenv/config'; // loads SCALEKIT_* from .env
 
 const client = new ScalekitClient(
-  process.env.SCALEKIT_ENVIRONMENT_URL!,
-  process.env.SCALEKIT_CLIENT_ID!,
-  process.env.SCALEKIT_CLIENT_SECRET!
+  process.env.SCALEKIT_ENVIRONMENT_URL as string,
+  process.env.SCALEKIT_CLIENT_ID as string,
+  process.env.SCALEKIT_CLIENT_SECRET as string
 );
 
 // List ALL tools for a provider — page until exhausted
