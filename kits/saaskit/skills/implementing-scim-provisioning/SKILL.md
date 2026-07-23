@@ -95,8 +95,11 @@ Use for scheduled jobs, onboarding flows, or bulk imports. Integrate into existi
 
 **Fetch users and sync:**
 
+`orgId` / `org_id` is the Scalekit organization id (e.g. `org_…`) for the customer tenant — take it from the app's org/tenant record or from the webhook event payload, not from the directory list response.
+
 ```javascript
 // Node.js
+// orgId = Scalekit organization id for this tenant (from your DB / request context)
 // Note: this takes the first directory — fine for single-directory orgs.
 // For multi-directory orgs, select the target directory by ID from `directories` instead of indexing [0].
 const { directories } = await scalekit.directory.listDirectories(orgId);
@@ -110,6 +113,7 @@ for (const user of users) {
 
 ```python
 # Python
+# org_id = Scalekit organization id for this tenant (from your DB / request context)
 # Note: this takes the first directory — fine for single-directory orgs.
 # For multi-directory orgs, select the target directory by ID from `directories` instead of indexing [0].
 directory = scalekit_client.directory.list_directories(organization_id=org_id).directories[0]
@@ -136,7 +140,7 @@ Plug `upsertUser` / `syncGroupPermissions` into the project's **existing** user/
 
 Add a new route to the existing HTTP server/router. Match the framework pattern already in use (Express, FastAPI, Spring Boot, net/http, etc.).
 
-**ALWAYS verify the signature before processing. Return 400 on failure.**
+**ALWAYS verify the signature before processing. Return 401 Unauthorized on signature failure** (do not process the payload).
 
 **Node.js (Express):** mount the route with `express.raw({ type: 'application/json' })` so `req.body` is the raw `Buffer` — signature verification must run on the exact bytes that were signed.
 
@@ -147,7 +151,7 @@ app.post('/webhooks/scalekit', express.raw({ type: 'application/json' }), async 
     req.headers,
     req.body
   );
-  if (!ok) return res.status(401).end();
+  if (!ok) return res.status(401).end(); // invalid signature
 
   const { type, data } = JSON.parse(req.body.toString('utf8'));
   try {
