@@ -114,6 +114,11 @@ if connected_account.status != "ACTIVE":
         identifier="user_123"
     )
     print("Authorize here:", link_response.link)
+    # Interactive CLI only — non-interactive/agent: print link and stop; re-run from Step 3 after OAuth.
+    import sys
+    if not sys.stdin.isatty():
+        print("Complete OAuth in a browser, then re-run from Step 3 (fetch tokens).")
+        raise SystemExit(0)
     input("Press Enter after authorizing...")
 ```
 
