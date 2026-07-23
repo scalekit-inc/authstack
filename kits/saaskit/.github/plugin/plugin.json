@@ -12,7 +12,7 @@
   "license": "MIT",
   "keywords": ["scalekit", "saaskit", "authentication", "sso", "scim", "mcp-auth", "sessions", "rbac", "api-keys"],
   "skills": [
-    "./skills/setup",
+    "./skills/setup-saaskit",
     "./skills/implementing-saaskit",
     "./skills/implementing-saaskit-nextjs",
     "./skills/implementing-saaskit-python",

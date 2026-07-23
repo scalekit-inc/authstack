@@ -12,6 +12,12 @@ Scalekit handles the full OAuth lifecycle — authorization, token storage, and 
 
 **Key concept — `connection_name`**: Every connector has a `connection_name` — the exact string set in the Scalekit Dashboard when creating the connection. It is used in all SDK calls (`get_or_create_connected_account`, `get_authorization_link`, `get_connected_account`). It may differ from the connector slug (e.g., the connector is "gmail" but the `connection_name` could be `"MY_GMAIL_PROD"`). Always use the exact dashboard value.
 
+## Guardrails
+
+- **MUST** use the exact dashboard `connection_name` in every SDK call — never guess it from the connector slug.
+- **MUST** read credentials from `SCALEKIT_CLIENT_ID` / `SCALEKIT_CLIENT_SECRET` / `SCALEKIT_ENVIRONMENT_URL` env vars; **MUST NOT** hardcode secrets in source.
+- **MUST NOT** create authorization links for any non-Gmail connector before it is configured in the dashboard — the call will fail.
+
 ## Setup
 
 Install the SDK and initialize the client:

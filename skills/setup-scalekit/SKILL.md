@@ -1,9 +1,15 @@
 ---
 name: setup-scalekit
-description: Guides developers through Scalekit onboarding — installs the CLI, helps choose the right auth plugin (agentkit or saaskit), and walks through plugin setup for their AI coding tool. Use when a developer is new to Scalekit, needs to install the Scalekit plugin for Claude Code, Codex, Copilot CLI, Cursor, or other agents, wants to connect an AI agent to third-party services (Gmail, Slack, Notion, Google Calendar) via OAuth, or wants to add authentication (SSO, SCIM, sessions, RBAC) to a project but hasn't chosen an approach yet.
+description: Installs the Scalekit CLI and plugin, and picks which auth plugin (agentkit vs saaskit) — the pre-install onboarding step. Use when the plugin is not yet installed and the user says 'install Scalekit', 'add the Scalekit plugin for Claude Code / Codex / Copilot / Cursor', 'the plugin is not showing up', or 'which Scalekit plugin do I need'. After install, hand off to setup-agentkit or setup-saaskit; do not implement the integration here.
 ---
 
 # Setup Scalekit
+
+## Guardrails
+- **MUST** prefer the CLI (`scalekit setup`) over the native/direct install commands in Step 3 — those are a fallback only.
+- **MUST** verify the plugin appears in the agent's plugin list before moving on.
+- **MUST** stop after install + plugin choice and hand off to setup-agentkit or setup-saaskit — this skill does NOT implement the integration.
+- **MUST NOT** generate integration/implementation code here.
 
 ## Step 1 — Install the CLI (recommended)
 

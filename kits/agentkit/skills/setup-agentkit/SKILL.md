@@ -1,11 +1,15 @@
 ---
-name: setup
-description: Starting point for any Scalekit AgentKit integration. Use when the user says "I want to add agent auth", "set up AgentKit", "where do I start", or is new to AgentKit and doesn't know which skill to use. Routes to the right skill based on what they're building.
+name: setup-agentkit
+description: First stop for wiring an AI agent to third-party tools via Scalekit AgentKit — OAuth connections, connected accounts, and tool discovery for Gmail, Slack, Salesforce, and similar. Use when the user says 'add agent auth', 'set up AgentKit', or 'let my agent act in Gmail on a user behalf' and it is unclear which AgentKit skill fits. Routes only and hands the build to the target skill. Not for human sign-in features — that is setup-saaskit.
 ---
 
 # AgentKit — Where to Start
 
-> **IMPORTANT:** This skill routes to the right skill — it does NOT implement the integration itself. Once you identify the right skill below, tell the user to invoke it and stop. Do not generate implementation code here.
+## Guardrails
+
+- **MUST** route to the right AgentKit skill and stop — this skill does NOT implement the integration.
+- **MUST NOT** generate integration/implementation code here; the target skill owns that.
+- **MUST** treat the credential block in "Environment setup" as a checklist for the *user* to satisfy — do not attempt to read or write their environment yourself.
 
 ---
 
@@ -37,13 +41,13 @@ Pick the best match and tell the user: "Run `/agentkit:<skill>` to get started."
 | Pre-launch checklist, going to production | `/agentkit:production-readiness-agentkit` |
 | SDK errors, wrong imports, broken auth calls | `/saaskit:scalekit-code-doctor` |
 
-After telling the user which skill to run, **stop**. The target skill handles implementation.
+Before handing off, point the user at the environment checklist in Step 3. Then **stop** — the target skill handles implementation.
 
 ---
 
-## Step 3: Environment setup (if new project)
+## Step 3: Environment checklist for the user (if new project)
 
-Before starting any skill, verify credentials exist:
+Tell the user to confirm these credentials exist before they run the target skill (this is a user action — do not read or set their environment yourself):
 
 ```bash
 SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com
@@ -76,4 +80,4 @@ Flow: User authorizes → connected account created → agent discovers tools �
 
 - **Already know what you need?** Skip this skill and invoke the target directly.
 - **SDK errors?** Use `/saaskit:scalekit-code-doctor`.
-- **Want to add B2B auth (login, SSO, SCIM) to your app?** Switch to the `saaskit` plugin: `/saaskit:setup`.
+- **Want to add B2B auth (login, SSO, SCIM) to your app?** Switch to the `saaskit` plugin: `/saaskit:setup-saaskit`.

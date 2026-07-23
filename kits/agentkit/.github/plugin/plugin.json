@@ -12,7 +12,7 @@
   "license": "MIT",
   "keywords": ["scalekit", "agentkit", "agent-auth", "oauth", "connectors", "tool-calling", "connected-accounts", "mcp"],
   "skills": [
-    "./skills/setup",
+    "./skills/setup-agentkit",
     "./skills/integrating-agentkit",
     "./skills/discovering-connector-tools",
     "./skills/exposing-agentkit-via-mcp",

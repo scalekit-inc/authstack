@@ -5,6 +5,13 @@ description: Implements Scalekit SaaSKit authentication (sign-up, login, logout,
 
 # Scalekit SaaSKit (Full-Stack Authentication)
 
+## Guardrails
+
+- **MUST** validate the access token server-side (`scalekit.validateAccessToken`) before trusting a request; **MUST NOT** trust `idToken`/`accessToken` claims without validation.
+- **MUST** store `accessToken` and `refreshToken` in `HttpOnly`, `secure` cookies; **MUST NOT** persist tokens in localStorage or other client-readable storage.
+- **MUST** read `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`, and other credentials from environment variables; **MUST NOT** hardcode them.
+- **MUST** ensure `redirectUri` exactly matches an Allowed Redirect URI registered in the Scalekit dashboard.
+
 ## Setup
 
 Install the SDK and set credentials in `.env`:

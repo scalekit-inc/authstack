@@ -5,6 +5,12 @@ description: Guides users through adding OAuth 2.1 authorization to MCP servers 
 
 # Adding OAuth 2.1 Authorization to MCP Servers
 
+## Guardrails
+- **MUST** use Streamable HTTP transport — stdio does not support OAuth.
+- **MUST** validate the bearer token's audience (and required scopes, if enforcing scope-based authorization) before executing any tool logic.
+- **MUST NOT** protect the `/.well-known/oauth-protected-resource` discovery endpoint with auth middleware — it must remain publicly accessible.
+- **MUST** return 401 with a `WWW-Authenticate` header on missing or invalid tokens; a bare 401 causes AI hosts to fail silently.
+
 ## Prerequisite: HTTP transport
 
 MCP OAuth requires **Streamable HTTP** transport. Stdio does not support OAuth.

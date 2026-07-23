@@ -7,6 +7,13 @@ description: Sets up SCIM endpoints, handles directory webhook events, maps user
 
 Adds automated user lifecycle management (create, update, deactivate) via Scalekit's Directory API and real-time webhooks.
 
+## Guardrails
+
+- **MUST** verify the SCIM webhook signature before processing any event; **MUST NOT** act on a payload that fails verification.
+- **MUST** make user provisioning idempotent — `upsertUser` MUST handle duplicate directory events without creating duplicate users.
+- **MUST** deactivate users on `user_deleted` events; **MUST NOT** hard-delete unless the codebase already does so explicitly.
+- **MUST** return a 2xx response quickly and offload heavy processing to a queue; **MUST NOT** block the handler long enough to trigger Scalekit's retry backoff.
+
 ## Workflow
 
 Copy and track progress:
@@ -90,7 +97,8 @@ Use for scheduled jobs, onboarding flows, or bulk imports. Integrate into existi
 
 ```javascript
 // Node.js
-// Note: returns the first directory; multi-directory orgs need an explicit directory ID.
+// Note: this takes the first directory — fine for single-directory orgs.
+// For multi-directory orgs, select the target directory by ID from `directories` instead of indexing [0].
 const { directories } = await scalekit.directory.listDirectories(orgId);
 const directory = directories[0];
 const { users } = await scalekit.directory.listDirectoryUsers(orgId, directory.id);
@@ -102,7 +110,8 @@ for (const user of users) {
 
 ```python
 # Python
-# Note: returns the first directory; multi-directory orgs need an explicit directory ID.
+# Note: this takes the first directory — fine for single-directory orgs.
+# For multi-directory orgs, select the target directory by ID from `directories` instead of indexing [0].
 directory = scalekit_client.directory.list_directories(organization_id=org_id).directories[0]
 users = scalekit_client.directory.list_directory_users(org_id, directory.id)
 
@@ -119,7 +128,7 @@ for (const group of groups) {
 }
 ```
 
-Plug `upsertUser` / `syncGroupPermissions` into the project's **existing** user/role management functions — identify them by searching for `createUser`, `updateUser`, or equivalent patterns in the codebase.
+Plug `upsertUser` / `syncGroupPermissions` into the project's **existing** user/role management functions: search the codebase for functions named `createUser`, `updateUser`, `deactivateUser` (or the project's equivalent naming) and call those directly instead of writing new persistence logic.
 
 ---
 
@@ -213,16 +222,6 @@ After deploying the webhook endpoint:
    - `organization.directory.group_updated`
 4. Copy the webhook secret into `SCALEKIT_WEBHOOK_SECRET`
 5. Share the [SCIM setup guide](https://docs.scalekit.com/guides/integrations/scim-integrations/) with the customer's IT admin for their IdP-specific directory sync steps.
-
----
-
-## Guardrails
-
-- **Never hardcode credentials** — always `process.env` / `os.getenv` / `System.getenv`
-- **Idempotent operations** — `upsertUser` must handle duplicate events safely
-- **Return 2xx quickly** — offload heavy processing to a queue if needed; Scalekit retries on non-2xx with exponential backoff (up to 8 attempts over ~10 hours)
-- **Validate signatures** — every webhook request, every time
-- **Deactivate, don't delete** — unless codebase explicitly hard-deletes users
 
 ---
 

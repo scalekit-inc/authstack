@@ -80,12 +80,14 @@ const tool = await client.actions.getTools({ toolName: 'gmail_fetch_mails' });
 
 Use `connector` in explanations. Only use `provider` when the SDK or API filter field literally expects that name.
 
-## Key rules
+## Guardrails
 
-- `connection_name` is the exact dashboard value — may not equal the connector slug
-- Always use live tool metadata, not static docs
-- Restrict the tool set before handing to an LLM — fewer relevant tools improve selection accuracy
-- **Before executing any tool**: verify the connected account status is `ACTIVE`. Tool execution fails silently or errors if the account is not yet authorized.
+- **MUST** treat live tool metadata (`get_tools`) as the source of truth — never rely on static docs as a complete catalog.
+- **MUST** restrict the tool set before handing it to an LLM — fewer relevant tools improve selection accuracy.
+- **MUST NOT** execute tools or authorize connected accounts here — that belongs to `integrating-agentkit`. This skill only discovers and explains schemas.
+- `connection_name` is the exact dashboard value — may not equal the connector slug.
+
+**Pagination:** `get_tools` returns up to `page_size` results (100 in the examples). If a connector exposes more, page through until the result set is exhausted — do not assume one call returns every tool.
 
 **If `get_tools` returns empty:** verify the connector is configured in the dashboard and the connection name matches exactly.
 

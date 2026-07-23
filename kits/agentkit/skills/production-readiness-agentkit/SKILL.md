@@ -1,11 +1,17 @@
 ---
 name: production-readiness-agentkit
-description: Validates OAuth token flows, audits token storage security, verifies per-connector authorization, and checks monitoring configuration for Scalekit AgentKit implementations before production launch. Use when going live, doing a pre-launch review, or verifying AgentKit authorization and tool-calling setup is production-ready.
+description: Pre-launch checklist for a Scalekit AgentKit (agent-auth) integration — connected-account authorization, connector OAuth token vault, and tool-calling reliability. Use when taking an AgentKit agent live, or verifying per-connector authorization and tool execution are production-ready. For user-login/SSO/SCIM readiness, use production-readiness-saaskit instead.
 ---
 
 # Scalekit AgentKit Production Readiness
 
 Work through each section in order — earlier sections are blockers for later ones.
+
+## Guardrails
+
+- **MUST NOT** sign off as production-ready while any blocker item in an earlier section is unchecked.
+- **MUST** run against production credentials (`SCALEKIT_ENVIRONMENT_URL` ends in `.scalekit.com`, not `.scalekit.dev`).
+- **MUST NOT** ship with secrets in source — credentials live only in environment variables.
 
 ---
 

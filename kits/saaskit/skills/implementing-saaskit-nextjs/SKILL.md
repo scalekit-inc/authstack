@@ -7,6 +7,13 @@ description: Implements Scalekit SaaSKit authentication in a Next.js App Router 
 
 Reference repo: [scalekit-inc/scalekit-nextjs-auth-example](https://github.com/scalekit-inc/scalekit-nextjs-auth-example)
 
+## Guardrails
+
+- **MUST** validate auth in `middleware.ts` for protected paths AND re-check with `isAuthenticated()` in Server Components; **MUST NOT** rely on `middleware.ts` as the only auth check.
+- **MUST** store session tokens in the `scalekit_session` HttpOnly cookie; **MUST NOT** expose `access_token`/`refresh_token` to client-side JavaScript.
+- **MUST** set `sameSite: 'lax'` on `scalekit_session` and `oauth_state` cookies; **MUST NOT** use `'strict'` — it drops the cookie on the OAuth callback redirect.
+- **MUST** validate the `next` redirect param as a relative path server-side; **MUST NOT** redirect to an arbitrary URL (open redirect).
+
 ## Project structure
 
 ```
