@@ -24,17 +24,15 @@ Scalekit lets you configure MCP endpoints that manage authentication, create per
 
 ## Prerequisites
 
-- [ ] **Scalekit credentials**: [app.scalekit.com](https://app.scalekit.com) → Settings → Copy `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`, `SCALEKIT_ENVIRONMENT_URL`
-- [ ] **OpenAI API key**: `OPENAI_API_KEY`
+**User actions** (print the checklist and wait for confirmation — do not attempt to automate the dashboard UI):
 
-> **Gmail is the only connector that does not require dashboard setup.** All other connectors (including Google Calendar) must be created in the Scalekit Dashboard before use:
->
-> Go to **Scalekit Dashboard → AgentKit → Connections → + Create Connection → Select connector** → Set `Connection Name` → Save
+- [ ] **Scalekit credentials**: user copies `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`, `SCALEKIT_ENVIRONMENT_URL` from [app.scalekit.com](https://app.scalekit.com) → Settings into `.env`
+- [ ] **OpenAI API key**: user sets `OPENAI_API_KEY`
+- [ ] **Google Calendar connector** (required for this example; Gmail does not need dashboard setup): user creates it at Scalekit Dashboard → AgentKit → Connections → + Create Connection → Google Calendar → **Connection Name = `MY_CALENDAR`** → Save
 
-> **Important**: The **Connection Name** you set in the dashboard is exactly what you use as the `connection_name` parameter in your code. They must match exactly.
+> **Connection Name** set in the dashboard is exactly what you pass as `connection_name` in code. Non-Gmail connectors fail until the user finishes dashboard setup.
 
-For this example, create the Google Calendar connector:
-- [ ] **Google Calendar connector**: Scalekit Dashboard → AgentKit → Connections → Create Connection → Google Calendar → `Connection Name = MY_CALENDAR` → Save
+After the user confirms prerequisites, continue with code steps below.
 
 ## Step 1 — Set up your environment
 
@@ -104,12 +102,12 @@ cfg_response = my_mcp.create_config(
 config_name = cfg_response.config.name
 ```
 
-Create a server instance for a specific user (`john-doe`). Each user gets their own instance URL:
+Create a server instance for a specific user. Replace `user_identifier` with the app's real user id (each user gets their own instance URL):
 
 ```python
 inst_response = my_mcp.ensure_instance(
     config_name=config_name,
-    user_identifier="john-doe",
+    user_identifier="<your-app-user-id>",  # e.g. the logged-in user id — not a shared placeholder
 )
 mcp_url = inst_response.instance.url
 print("Instance URL:", mcp_url)
