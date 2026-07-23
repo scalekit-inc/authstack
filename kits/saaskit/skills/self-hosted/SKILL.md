@@ -13,13 +13,15 @@ description: |
 - MUST NOT confuse the plugin's tooling MCP (`https://mcp.scalekit.com`, used only for setup guidance) with the self-hosted app's own auth service — the tooling MCP stays cloud-based; the app's `SCALEKIT_ENVIRONMENT_URL` is what runs air-gapped/on-prem.
 - MUST ask the decision-flow questions one at a time before recommending eval vs. production steps.
 
-These reference files hold the detailed procedures for each path (see decision flow below):
+These reference files ship **next to this `SKILL.md`** under `references/` in the skill package. Open them with the file tool (absolute path under the installed skill dir, or relative from this skill folder):
 
 - `references/quickstart.md` — Evaluation deployment (bundled databases)
 - `references/production-deployment.md` — Full production steps, setup script, and portal flow
 - `references/configuration.md` — values.yaml field reference and examples
 - `references/troubleshooting.md` — Diagnostics and fixes
 - `references/upgrades.md` — Upgrades and maintenance
+
+If a `references/*.md` path is not readable in this session, tell the user and fall back to the high-level steps in this file plus Scalekit distribution docs.
 
 Use this skill when the user needs to stand up their own Scalekit instance on Kubernetes (Helm chart from the distribution portal) instead of using Scalekit Cloud.
 
@@ -62,14 +64,14 @@ Then load the matching reference:
 export SCALEKIT_ENVIRONMENT_URL="https://app.<your-domain>"
 ```
 
-Then route to the normal skills with those values:
+Then continue with the normal SaaSKit skills (same skill names; slash form `/saaskit:<name>` is for clients that support skill slash-commands — otherwise load the skill by name):
 
 | Goal | Skill | Self-hosted note |
 |------|-------|------------------|
-| Login + sessions | `/saaskit:setup-saaskit` (or framework variant) | Use the self-hosted URL + credentials |
-| Production readiness | `/saaskit:production-readiness-saaskit` | Adapt network checks for internal cluster |
-| Validate connection | `/saaskit:testing-auth-setup` | Point at self-hosted env |
-| SDK / auth errors | `/saaskit:scalekit-code-doctor` | Same code, different env values |
+| Login + sessions | `setup-saaskit` / framework variant | Use the self-hosted URL + credentials |
+| Production readiness | `production-readiness-saaskit` | Adapt network checks for internal cluster |
+| Validate connection | `testing-auth-setup` | Point at self-hosted env |
+| SDK / auth errors | `scalekit-code-doctor` | Same code, different env values |
 
 **MCP note**: The plugin tooling MCP (`https://mcp.scalekit.com`) stays cloud. Your app uses the self-hosted `SCALEKIT_ENVIRONMENT_URL`.
 
