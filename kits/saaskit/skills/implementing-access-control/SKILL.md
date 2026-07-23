@@ -13,6 +13,14 @@ After authentication is working and the app must authorize access to routes/acti
 - **MUST** enforce role and permission checks server-side at the route boundary; **MUST NOT** rely on client-side authorization alone.
 - **MUST** deny access (403) when a required role or permission is missing — never default to allow.
 
+## Prerequisites
+- Auth is already working via `implementing-saaskit` / `managing-saaskit-sessions` (or equivalent).
+- A Scalekit client is initialized (`scalekit` / `scalekit_client`) with env credentials — same as session middleware.
+- Token storage matches that skill:
+  - If cookies store **encrypted** tokens, keep using the app's `decrypt(...)` helper (app-owned, not a Scalekit API).
+  - If cookies store the raw JWT (or clients send `Authorization: Bearer`), skip `decrypt` and use the raw string.
+- Prefer reusing the existing session-validation middleware and adding role/permission guards on top rather than re-implementing crypto.
+
 ## Workflow
 1. Validate the access token (expiry, issuer/audience as applicable) and then decode it to extract `sub`, `oid`, `roles`, and `permissions`.
 2. Attach a normalized auth context to the request (e.g., `req.user = { id, organizationId, roles, permissions }`) so downstream handlers authorize consistently.
@@ -28,6 +36,8 @@ Validate+extract, then RBAC/PBAC guards.
 
 ```js
 // validate + extract
+// decrypt = app-owned helper if cookies are encrypted; otherwise use req.cookies.accessToken as-is
+// or: const accessToken = req.headers.authorization?.replace(/^Bearer\s+/i, "");
 const validateAndExtractAuth = async (req, res, next) => {
   try {
     const accessToken = decrypt(req.cookies.accessToken); // if encrypted
@@ -107,20 +117,19 @@ def require_permission(permission):
 
 ## Verification
 
-Verify the implementation with these test cases:
+Send the **same cookie value the browser would** (encrypted ciphertext if that's what `setSession` wrote), or use Bearer if the app reads `Authorization` instead of cookies:
 
 ```bash
-# Test with a valid token that has the required role
-curl -H "Cookie: accessToken=<valid_admin_token>" http://localhost:3000/api/admin/users
-# Expected: 200
+# Cookie path (value = whatever was set at login — may be encrypted ciphertext, not the raw JWT)
+curl -H "Cookie: accessToken=<cookie_value_from_login>" http://localhost:3000/api/admin/users
+# Expected: 200 for admin session; 403 for member session
 
-# Test with a token missing the required role
-curl -H "Cookie: accessToken=<valid_member_token>" http://localhost:3000/api/admin/users
-# Expected: 403 {"error": "Access denied. Required role: admin"}
+# Bearer path (only if middleware accepts Authorization and raw JWT)
+curl -H "Authorization: Bearer <raw_access_token>" http://localhost:3000/api/admin/users
 
-# Test with an expired/invalid token
-curl -H "Cookie: accessToken=expired_token" http://localhost:3000/api/projects
-# Expected: 401 {"error": "Invalid or expired token"}
+# Invalid / missing token
+curl http://localhost:3000/api/projects
+# Expected: 401
 ```
 
 If 403 isn't returned for unauthorized users, check that the middleware chain order is correct: `validateAndExtractAuth` must run before `requireRole`/`requirePermission`.
