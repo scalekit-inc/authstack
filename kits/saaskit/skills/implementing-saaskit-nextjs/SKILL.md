@@ -45,12 +45,27 @@ SCALEKIT_SCOPES=openid profile email offline_access  # optional, space-separated
 
 ## SDK client (`lib/scalekit.ts`)
 
-Singleton pattern — always use `getScalekitClient()`, never instantiate directly. Throws if env vars are missing.
+**Implement this module** (singleton — always use `getScalekitClient()`, never instantiate ad hoc). Throws if env vars are missing. Full pattern is also in the [reference repo](https://github.com/scalekit-inc/scalekit-nextjs-auth-example).
 
 ```ts
-import { getScalekitClient, getDefaultScopes } from '@/lib/scalekit';
+// lib/scalekit.ts
+import { ScalekitClient } from '@scalekit-sdk/node';
 
-const client = getScalekitClient();
+let client: ScalekitClient | null = null;
+
+export function getScalekitClient() {
+  if (client) return client;
+  const env = process.env.SCALEKIT_ENVIRONMENT_URL;
+  const id = process.env.SCALEKIT_CLIENT_ID;
+  const secret = process.env.SCALEKIT_CLIENT_SECRET;
+  if (!env || !id || !secret) throw new Error('Missing SCALEKIT_* env vars');
+  client = new ScalekitClient(env, id, secret);
+  return client;
+}
+
+export function getDefaultScopes() {
+  return (process.env.SCALEKIT_SCOPES ?? 'openid profile email offline_access').split(/\s+/);
+}
 ```
 
 ## Session shape (`lib/cookies.ts`)
@@ -120,12 +135,21 @@ if (session.refresh_in_progress) return new NextResponse(null, { status: 204 });
 await setSession({ ...session, refresh_in_progress: true });
 try {
   const refreshResponse = await client.refreshAccessToken(session.tokens.refresh_token);
-  // Decode exp from JWT using jose.decodeJwt(); fallback to 3600s if missing
+  const access_token = refreshResponse.accessToken;
+  const refresh_token = refreshResponse.refreshToken ?? session.tokens.refresh_token;
+  const expires_in = refreshResponse.expiresIn ?? 3600;
+  let expires_at = Math.floor(Date.now() / 1000) + expires_in;
+  try {
+    const { decodeJwt } = await import('jose');
+    const exp = decodeJwt(access_token).exp;
+    if (typeof exp === 'number') expires_at = exp;
+  } catch { /* keep expires_in fallback */ }
   await setSession({
     ...session,
     tokens: { ...session.tokens, access_token, refresh_token, expires_at, expires_in },
     refresh_in_progress: false,
   });
+  return NextResponse.json({ ok: true });
 } catch {
   await setSession({ ...session, refresh_in_progress: false });
   return NextResponse.json({ error: 'refresh failed' }, { status: 401 });
