@@ -144,6 +144,8 @@ Add a new route to the existing HTTP server/router. Match the framework pattern 
 
 **Node.js (Express):** mount the route with `express.raw({ type: 'application/json' })` so `req.body` is the raw `Buffer` — signature verification must run on the exact bytes that were signed.
 
+Verify the signature **before** any work, then acknowledge with 2xx and process off the request path (queue / background task). Do not `await` full user provisioning inside the HTTP handler in production.
+
 ```javascript
 app.post('/webhooks/scalekit', express.raw({ type: 'application/json' }), async (req, res) => {
   const ok = await scalekit.verifyWebhookPayload(
@@ -154,12 +156,11 @@ app.post('/webhooks/scalekit', express.raw({ type: 'application/json' }), async 
   if (!ok) return res.status(401).end(); // invalid signature
 
   const { type, data } = JSON.parse(req.body.toString('utf8'));
-  try {
-    await handleDirectoryEvent(type, data);
-    res.status(201).json({ status: 'processed' });
-  } catch (err) {
-    res.status(500).json({ error: 'Processing failed' });
-  }
+  // Ack fast; process asynchronously (replace with your queue: Bull, SQS, etc.)
+  setImmediate(() => {
+    handleDirectoryEvent(type, data).catch((err) => console.error('SCIM handler failed', err));
+  });
+  return res.status(202).json({ status: 'accepted' });
 });
 ```
 
@@ -167,7 +168,7 @@ app.post('/webhooks/scalekit', express.raw({ type: 'application/json' }), async 
 
 ```python
 @app.post("/webhooks/scalekit")
-async def scalekit_webhook(request: Request):
+async def scalekit_webhook(request: Request, background_tasks: BackgroundTasks):
     raw_body = await request.body()
     valid = scalekit_client.verify_webhook_payload(
         secret=os.getenv("SCALEKIT_WEBHOOK_SECRET"),
@@ -178,8 +179,9 @@ async def scalekit_webhook(request: Request):
         raise HTTPException(status_code=401, detail="Invalid signature")
 
     body = json.loads(raw_body)
-    await handle_directory_event(body.get("type"), body.get("data", {}))
-    return JSONResponse(status_code=201, content={"status": "processed"})
+    # Ack fast; process in background (or enqueue to Celery/RQ/etc.)
+    background_tasks.add_task(handle_directory_event, body.get("type"), body.get("data", {}))
+    return JSONResponse(status_code=202, content={"status": "accepted"})
 ```
 
 For Go and Java, see the [Scalekit SDK documentation](https://docs.scalekit.com/apis).
