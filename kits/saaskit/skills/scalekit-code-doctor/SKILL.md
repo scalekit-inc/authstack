@@ -5,7 +5,7 @@ description: Use when a user asks to generate, review, validate, or fix any code
 
 # Scalekit Code Doctor
 
-**Before doing anything else**, read the reference files:
+**Before doing anything else**, read the reference files bundled **next to this `SKILL.md`** under `references/` (open with the file tool from the skill package directory):
 - `references/REFERENCE.md` — Every correct SDK method signature and REST endpoint
 - `references/COMMON-MISTAKES.md` — Known anti-patterns with wrong → right corrections
 - `references/EXAMPLE-REPOS.md` — GitHub repos with working examples by framework
@@ -82,11 +82,37 @@ app.post('/auth/logout', (req, res) => {
 });
 ```
 
+**Correct AgentKit connected-account example (Node.js):**
+
+```typescript
+import { ScalekitClient } from '@scalekit-sdk/node';
+
+const scalekit = new ScalekitClient(
+  process.env.SCALEKIT_ENVIRONMENT_URL!, // alias: SCALEKIT_ENV_URL in some samples
+  process.env.SCALEKIT_CLIENT_ID!,
+  process.env.SCALEKIT_CLIENT_SECRET!
+);
+const { connectedAccounts } = scalekit;
+
+// connectionName = exact dashboard Connection Name (not necessarily the connector slug)
+const { connectedAccount } = await connectedAccounts.getOrCreateConnectedAccount({
+  connectionName: 'gmail',
+  identifier: 'user_123',
+});
+if (connectedAccount?.status !== 'ACTIVE') {
+  const { link } = await connectedAccounts.getMagicLinkForConnectedAccount({
+    connectionName: 'gmail',
+    identifier: 'user_123',
+  });
+  console.log('Authorize:', link); // user completes OAuth in browser
+}
+```
+
 **Mandatory checks before outputting generated code** — cross-reference every SDK call against `references/REFERENCE.md`:
 - [ ] Method names exist for the target SDK
 - [ ] Parameters match in name, order, and type
 - [ ] Import path is exactly correct
-- [ ] Environment variable names follow Scalekit conventions
+- [ ] Environment variable names follow Scalekit conventions (`SCALEKIT_ENVIRONMENT_URL` preferred)
 
 ## Step 4 — Review mode
 
@@ -98,7 +124,7 @@ Check these categories in order:
 
 **3. Security** — Cookies: `httpOnly`, `secure`, `sameSite: 'lax'`. State: cryptographically random. Redirects: only relative paths. Secrets: from env vars. Webhooks: signature verified before processing.
 
-**4. Environment** — `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`. Redirect URI matches dashboard. Domain format: `https://<subdomain>.scalekit.com`.
+**4. Environment** — Prefer `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`. Some samples/docs use `SCALEKIT_ENV_URL` for the same URL value — treat them as aliases when reviewing; generate new code with `SCALEKIT_ENVIRONMENT_URL`. Redirect URI matches dashboard. Domain format: `https://<subdomain>.scalekit.com`.
 
 **5. Best practices** — Client is singleton. Error handling uses typed exceptions. `window.location.href` for OAuth redirects (not `router.push`).
 
