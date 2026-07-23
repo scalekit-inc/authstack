@@ -1,6 +1,6 @@
 {
   "name": "agentkit",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Connect your AI agent to 3,000+ services without writing OAuth plumbing — users authorize once, agents act on their behalf.",
   "author": {
     "name": "Scalekit Inc.",

@@ -1,7 +1,7 @@
 {
   "name": "agentkit",
   "description": "Give your AI agent authenticated access to Gmail, Slack, Salesforce, and 100+ services. OAuth flows, token vault, and tool discovery handled — write agent logic, not auth plumbing.",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": {
     "name": "Scalekit Inc.",
     "email": "hi@scalekit.com"
