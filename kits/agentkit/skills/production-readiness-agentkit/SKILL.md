@@ -10,7 +10,7 @@ Work through each section in order — earlier sections are blockers for later o
 ## Guardrails
 
 - **MUST NOT** sign off as production-ready while any blocker item in an earlier section is unchecked.
-- **MUST** run against production credentials (`SCALEKIT_ENVIRONMENT_URL` ends in `.scalekit.com`, not `.scalekit.dev`).
+- **MUST** validate the **production** Scalekit environment before go-live (`SCALEKIT_ENVIRONMENT_URL` ends in `.scalekit.com`, not `.scalekit.dev`). You may exercise the full OAuth cycle first against a dedicated staging app that still points at production AgentKit credentials — that is still "production credentials," not a `.scalekit.dev` sandbox.
 - **MUST NOT** ship with secrets in source — credentials live only in environment variables.
 
 ---
@@ -18,7 +18,7 @@ Work through each section in order — earlier sections are blockers for later o
 ## Quick checks (run first)
 
 ```bash
-# Confirm production credentials are set (not dev/staging)
+# Confirm production credentials are set (not .scalekit.dev sandbox)
 echo $SCALEKIT_ENVIRONMENT_URL    # should be https://<subdomain>.scalekit.com (not .scalekit.dev)
 echo $SCALEKIT_CLIENT_ID  # should be set
 echo $SCALEKIT_CLIENT_SECRET  # should be set
@@ -30,7 +30,12 @@ curl -s -o /dev/null -w "%{http_code}" -X POST "$SCALEKIT_ENVIRONMENT_URL/oauth/
 ```
 
 - [ ] HTTPS enforced on all auth endpoints
-- [ ] API credentials in environment variables — `grep -r "skc_" src/` returns nothing
+- [ ] API credentials in environment variables — search the whole project for hardcoded secrets (adjust roots to the repo layout):
+  ```bash
+  # Prefer project roots that exist; skip node_modules/.git
+  rg -n --hidden -g '!**/.git/**' -g '!**/node_modules/**' 'skc_|SCALEKIT_CLIENT_SECRET\s*=' . || true
+  # Expect no real secrets committed — only env var *names* or placeholders
+  ```
 - [ ] Redirect URIs registered in dashboard match exactly what the app sends
 
 ---
@@ -76,9 +81,12 @@ curl -s -o /dev/null -w "%{http_code}" -X POST "$SCALEKIT_ENVIRONMENT_URL/oauth/
 
 ## Final smoke test
 
-Run the full cycle in staging with production credentials:
-1. Create a connected account for a test user → verify status returned
-2. Generate auth link → complete OAuth → verify status is `ACTIVE`
+Run the full cycle against the **production** Scalekit environment (URL ends in `.scalekit.com`). Prefer a non-customer test user. The host app may be local/staging — credentials must still be production AgentKit env vars.
+
+Use the SDK path from `integrating-agentkit` (or the Scalekit MCP server) for steps the agent can execute; step 2 still needs the **user** to complete browser OAuth:
+
+1. Create a connected account for a test user → verify status returned (`get_or_create_connected_account` / `getOrCreateConnectedAccount`)
+2. Generate auth link → **user** completes OAuth in a browser → re-fetch account → verify status is `ACTIVE`
 3. Fetch access token → make a downstream API call → verify success
-4. Wait for token expiry → re-fetch → verify auto-refresh works
+4. Wait for token expiry (or force-refresh) → re-fetch → verify auto-refresh works
 5. Revoke access in the third-party app → verify graceful error handling
