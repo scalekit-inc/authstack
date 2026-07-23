@@ -63,6 +63,8 @@ interface SessionData {
   tokens: { access_token, refresh_token, id_token, expires_at, expires_in };
   roles?: string[];
   permissions?: string[];
+  /** Short-lived lock for cross-tab refresh (see Token refresh race condition). */
+  refresh_in_progress?: boolean;
 }
 ```
 
@@ -162,7 +164,8 @@ if (!allowed) redirect('/permission-denied');
 ## Dependencies
 
 ```bash
-npm install @scalekit-sdk/node jose date-fns js-cookie
+# Session cookies are HttpOnly + server-managed — no client cookie library needed.
+npm install @scalekit-sdk/node jose date-fns
 ```
 
 ## Tactics
@@ -241,4 +244,9 @@ return new Response(html, {
 ```
 
 ### Token refresh race condition across tabs
-Multiple browser tabs can simultaneously trigger token refresh with the same refresh token — most IdPs reject the second attempt. Mitigation: set a short-lived `refresh_in_progress` flag in the session before calling the refresh endpoint, and check it at the start of the refresh route to skip concurrent calls.
+Multiple browser tabs can simultaneously trigger token refresh with the same refresh token — most IdPs reject the second attempt. Mitigation in `app/api/auth/refresh/route.ts`:
+
+1. `getSession()` — if `session.refresh_in_progress === true`, return 204 / skip refresh.
+2. `setSession({ ...session, refresh_in_progress: true })` before calling Scalekit.
+3. Call `client.refreshAccessToken(...)`, then `setSession({ ...session, tokens: {...}, refresh_in_progress: false })`.
+4. On failure, clear `refresh_in_progress` and force re-login.
