@@ -20,6 +20,7 @@ This skill covers Modular SSO for applications with existing user management.
 - **MUST** register every callback URL in Dashboard > Authentication > Redirect URLs before using it; **MUST NOT** redirect to an unregistered `redirect_uri` (causes an `Invalid redirect_uri` error).
 - **MUST** pass `organization_id`, `connectionId`, or `loginHint` in the authorization URL; **MUST NOT** omit all three — Scalekit cannot determine which IdP to route the user to.
 - **MUST** preserve `relay_state` from IdP-initiated login claims when building the authorization URL; **MUST NOT** discard it, to protect against SAML assertion replay.
+- **MUST NOT** attempt to automate the Scalekit dashboard UI. On any **user action** step: print the checklist, wait for the user to confirm done, then continue coding.
 
 ## Implementation Workflow
 
@@ -417,9 +418,9 @@ const connections = await scalekit.connections.listConnectionsByDomain({
 });
 
 if (connections.length > 0) {
-  // SSO available - redirect to IdP
+  // SSO available - redirect to IdP (loginHint carries email/domain routing)
   const authUrl = scalekit.getAuthorizationUrl(redirectUri, {
-    domainHint: domain
+    loginHint: email
   });
   return res.redirect(authUrl);
 } else {
