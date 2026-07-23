@@ -36,6 +36,7 @@ Pick the best match and tell the user: "Run `/agentkit:<skill>` to get started."
 | What you're building | Tell them to run |
 |---|---|
 | New agent calling third-party tools (Gmail, Slack, Salesforce…) on behalf of users | `/agentkit:integrating-agentkit` |
+| Existing agent — adding a connector or fixing connected-account / OAuth flow | `/agentkit:integrating-agentkit` |
 | Discover tools available for a connector, inspect schemas | `/agentkit:discovering-connector-tools` |
 | Expose AgentKit tools over MCP for Claude Desktop, Cursor, VS Code | `/agentkit:exposing-agentkit-via-mcp` |
 | Pre-launch checklist, going to production | `/agentkit:production-readiness-agentkit` |
@@ -47,7 +48,9 @@ Before handing off, point the user at the environment checklist in Step 3. Then 
 
 ## Step 3: Environment checklist for the user (if new project)
 
-Tell the user to confirm these credentials exist before they run the target skill (this is a user action — do not read or set their environment yourself):
+**Two different credential paths** — do not conflate them:
+
+1. **SDK / app integration** (needed for `integrating-agentkit`, `discovering-connector-tools`, production code): tell the user to confirm these env vars exist before they run the target skill (user action — do not read or set their environment yourself):
 
 ```bash
 SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com
@@ -57,7 +60,7 @@ SCALEKIT_CLIENT_SECRET=<from dashboard>
 
 Get these from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
 
-The Scalekit MCP server (`https://mcp.scalekit.com`) is pre-configured in `.mcp.json`. Claude Code handles OAuth 2.1 auth automatically — no additional setup needed.
+2. **Scalekit MCP server** (`https://mcp.scalekit.com`, pre-configured in `.mcp.json`): used for interactive tool validation in Claude Code / Cursor. OAuth 2.1 for the MCP connection is handled by the client — **no extra env vars for MCP itself**. That does **not** replace the SDK credentials above for application code.
 
 ---
 
