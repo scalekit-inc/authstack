@@ -54,7 +54,7 @@ Minimum user schema:
 | `last_name` | Optional |
 | `email_verified` | Optional (defaults `false`) |
 
-See [AUDIT-CHECKLIST.md](AUDIT-CHECKLIST.md) for full code audit patterns.
+See [AUDIT-CHECKLIST.md](AUDIT-CHECKLIST.md) (bundled next to this `SKILL.md` in the skill package — read that file when running the audit) for full code audit patterns.
 
 ---
 
@@ -87,7 +87,7 @@ const { user } = await scalekit.user.createUserAndMembership("org_scalekit_id", 
 - Batch imports in parallel; respect Scalekit rate limits
 - Validate `external_id` mappings match source data exactly
 
-For language-specific samples (Python, Go, Java, cURL): See [IMPORT-SAMPLES.md](IMPORT-SAMPLES.md).
+For language-specific samples (Python, Go, Java, cURL): see [IMPORT-SAMPLES.md](IMPORT-SAMPLES.md) in this skill directory (read that file when implementing Phase 2).
 
 ---
 
@@ -138,13 +138,16 @@ Verify:
 **Post-deployment verification:**
 
 ```bash
-# Verify token endpoint works with Scalekit credentials
-curl -s -o /dev/null -w "%{http_code}" -X POST "$SCALEKIT_ENVIRONMENT_URL/oauth/token" \
-  -d "client_id=$SCALEKIT_CLIENT_ID&client_secret=$SCALEKIT_CLIENT_SECRET&grant_type=client_credentials"
-# Expected: 200
+# 1) Obtain an access token (keep the JSON body — do not discard with -o /dev/null)
+TOKEN_RESP=$(curl -s -X POST "$SCALEKIT_ENVIRONMENT_URL/oauth/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=$SCALEKIT_CLIENT_ID&client_secret=$SCALEKIT_CLIENT_SECRET&grant_type=client_credentials")
+echo "$TOKEN_RESP" | jq -e '.access_token' >/dev/null  # fails if token missing
+TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token')
 
-# Verify a migrated user can be looked up
-curl -s -H "Authorization: Bearer $TOKEN" "$SCALEKIT_ENVIRONMENT_URL/api/v1/organizations/<org_id>/users?email=migrated-user@example.com" | jq .
+# 2) Verify a migrated user can be looked up (replace <org_id> and email)
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "$SCALEKIT_ENVIRONMENT_URL/api/v1/organizations/<org_id>/users?email=migrated-user@example.com" | jq .
 # Should return the user with correct external_id
 ```
 
