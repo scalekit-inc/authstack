@@ -46,17 +46,26 @@ npx @scalekit-sdk/dryrun --env_url=$SCALEKIT_ENVIRONMENT_URL --client_id=$SCALEK
 
 ## Choosing the mode
 
-If the user doesn't specify a mode:
+If the user doesn't specify a mode, **do not silently pick one**:
 
-1. Check the project context — if there's SSO configuration (identity providers, SAML metadata), suggest `sso`.
-2. Otherwise default to `fsa` as the most common starting point.
-3. If ambiguous, ask which mode to use.
+1. Scan the project for clear signals only (e.g. SAML/OIDC IdP config files, `organization_id` in env, SSO skill already applied).
+2. If signals strongly indicate SSO, **ask** to confirm `sso` (and collect `organization_id` if missing).
+3. If signals strongly indicate full-stack auth only, **ask** to confirm `fsa`.
+4. If ambiguous or no signals — **MUST ask** the user which mode (`fsa` or `sso`) to use. Never default without confirmation.
 
 ## After running
 
 - Show the command output.
 - Explain what passed and what failed in plain language.
-- If the test fails, suggest specific next steps based on the error (missing redirect URI, invalid credentials, organization not found, etc.).
+- If the test fails, map common failures to next steps:
+
+| Symptom / message | Likely cause | Next step |
+|---|---|---|
+| Invalid client / unauthorized | Wrong `SCALEKIT_CLIENT_ID` or env URL | Re-check credentials from app.scalekit.com → Settings |
+| redirect_uri mismatch | Callback not registered | Add exact callback under Allowed Redirect URIs |
+| organization not found | Bad/missing `organization_id` in `sso` mode | Confirm org id; re-run with `--organization_id=…` |
+| Connection refused / DNS | Wrong `SCALEKIT_ENVIRONMENT_URL` | Verify env URL includes `https://` and correct host |
+| Timeout / network | Firewall or offline | Retry; check network access to the Scalekit env |
 
 ## When to switch skills
 
