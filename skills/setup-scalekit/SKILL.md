@@ -35,7 +35,16 @@ scalekit setup codex
 scalekit setup copilot
 ```
 
-Verify the plugin appears in your agent's plugin list after setup.
+**Verify install** (pick the agent you set up):
+
+| Agent | Verify command / check |
+|-------|------------------------|
+| Claude Code | Restart session, then `/plugin list` — `agentkit` and/or `saaskit` enabled |
+| GitHub Copilot | `copilot plugin list` |
+| Cursor / Codex | Re-open the tool after `scalekit setup`; confirm plugins/skills from authstack are available |
+| Other (skills CLI) | `npx skills add scalekit-inc/authstack --list` shows expected skills |
+
+Do not proceed to Step 4 until verification succeeds.
 
 ## Step 2 — Choose your plugin
 
