@@ -128,10 +128,13 @@ if (connectedAccount?.status !== 'ACTIVE') {
   });
   console.log('Authorize here:', linkResponse.link);
   // Web app: redirect the browser to linkResponse.link, then continue after callback.
-  // CLI/dev: pause until the user finishes OAuth, then continue (re-fetch account in Step 3).
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  await rl.question('Press Enter after authorizing…');
-  rl.close();
+  // Agent/non-interactive: print the link, stop, and tell the user to re-run Step 3 after OAuth.
+  // Interactive CLI only (will hang if stdin is not a TTY):
+  if (process.stdin.isTTY) {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    await rl.question('Press Enter after authorizing…');
+    rl.close();
+  }
 }
 ```
 
@@ -227,6 +230,8 @@ For connector-specific API details, see the [Scalekit Connectors catalog](https:
 ## Building agents
 
 Use Scalekit tools with AI frameworks to build agents that can execute actions on behalf of users. Install the framework packages first; the Scalekit SDK alone is not enough for these snippets.
+
+> **Language note:** LangChain Tools + Google ADK helpers below are **Python-first** in the Scalekit SDK today. For Node, use the token path (Steps 1–4) or expose tools via MCP (`exposing-agentkit-via-mcp`) and bind them in your Node agent framework.
 
 ### LangChain agents
 
