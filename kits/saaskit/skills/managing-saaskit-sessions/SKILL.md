@@ -6,7 +6,10 @@ description: Manages Scalekit SaaSKit user sessions by securely storing tokens, 
 # SaaSKit Session Management
 
 ## Guardrails
-- **MUST** store access and refresh tokens in HttpOnly cookies, with `Secure` enabled in production.
+- **MUST** choose storage by app type (ask first — see Inputs):
+  - **Traditional / server-rendered web apps:** store access and refresh tokens in HttpOnly cookies, with `Secure` enabled in production.
+  - **SPAs:** keep the access token in memory (send via `Authorization: Bearer`); store the refresh token in an HttpOnly cookie or other secure storage — do not put the access token in `localStorage`.
+  - **Mobile:** use secure platform storage for refresh; keep access tokens short-lived in memory when feasible.
 - **MUST** validate the access token on every protected request and transparently refresh it via the refresh token when expired.
 - **MUST NOT** let a failed refresh silently continue the request; return 401 and force re-login.
 - **MUST** revoke the corresponding session via the Scalekit session API on logout / "sign out this device".
@@ -28,6 +31,8 @@ description: Manages Scalekit SaaSKit user sessions by securely storing tokens, 
   - Access token cookie: scope to `/api` (or your protected routes) when possible.
   - Refresh token cookie: scope to the refresh endpoint only (example `/auth/refresh`).
 - Rotate refresh tokens on each refresh if your Scalekit flow supports it (token rotation helps detect theft).
+
+**`encrypt` / `decrypt` helpers:** Snippets below call `encrypt(...)` / `decrypt(...)` as placeholders for the app's own crypto (KMS, libsodium, AES-GCM, framework session store). They are **not** Scalekit SDK methods. If the project has no crypto helpers yet, introduce one before wiring cookies — never store raw refresh tokens in plaintext cookies when an encryption layer is already standard in the codebase.
 
 ## Workflow (implementation sequence)
 1. Implement “store tokens” at login completion.
@@ -164,10 +169,21 @@ response.addCookie(refresh);
 ```
 
 ### SPA/mobile note (reduce CSRF exposure)
-For SPAs and mobile apps, prefer:
-- Access token stored in memory and sent via `Authorization: Bearer <token>`.
-- Refresh token stored in an HttpOnly cookie or secure device storage (platform dependent).
+For SPAs and mobile apps (see Guardrails), prefer:
+- Access token stored in **memory** and sent via `Authorization: Bearer <token>` — not in `localStorage`.
+- Refresh token stored in an HttpOnly cookie (browser) or secure device storage (mobile).
 If using cookies in a browser SPA, configure CSRF protections explicitly.
+
+**SPA API validation (all languages):** read the Bearer token from the `Authorization` header — not cookies. Cookie middleware in section 2 is for traditional web apps. Pattern:
+
+| Runtime | Resolve access token |
+|---|---|
+| Node | `req.headers.authorization?.replace(/^Bearer\s+/i, "")` |
+| Python | `request.headers.get("Authorization", "").removeprefix("Bearer ").strip()` |
+| Go | `strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")` |
+| Java | strip `"Bearer "` from `request.getHeader("Authorization")` |
+
+SPA refresh: call `/auth/refresh` (refresh cookie / secure store) → response body `{ accessToken, expiresIn }` → client updates in-memory token. **Do not** set an access-token cookie for SPAs.
 
 ## 2) Validate access token on every request (and refresh transparently)
 
@@ -176,9 +192,14 @@ If using cookies in a browser SPA, configure CSRF protections explicitly.
 - If access token is expired and refresh token exists: refresh, rotate, rewrite cookies/headers, proceed.
 - If refresh fails: return 401 and force re-login.
 
-### Node.js middleware (Express-style)
+### Node.js middleware (Express-style, cookie-based traditional web)
+
+> Cookie rewrite on refresh is for **traditional web apps only**. For SPAs, keep the access token in memory: refresh via a dedicated `/auth/refresh` endpoint that returns `{ accessToken, expiresIn }` in the JSON body, update client memory, and re-send `Authorization: Bearer` — do not write the access token into a cookie.
 ```js
+// encrypt/decrypt = app-owned helpers (see note under security rules)
+// Signature is app-defined (e.g. encrypt(plaintext) → ciphertext string).
 export async function verifySession(req, res, next) {
+  // Traditional web path: read encrypted tokens from cookies.
   const accessCookie = req.cookies?.accessToken;
   const refreshCookie = req.cookies?.refreshToken;
 
@@ -321,7 +342,9 @@ Use Scalekit session APIs to implement:
 - “Sign out this device” (revoke a single session).
 - “Sign out all devices” (revoke all sessions for a user).
 
-### Example (Node.js)
+SDK method names vary slightly by language; the operations are the same: get session, list user sessions, revoke one, revoke all.
+
+### Node.js
 ```js
 const sessionDetails = await scalekit.session.getSession("ses_1234567890123456");
 
@@ -333,6 +356,18 @@ const userSessions = await scalekit.session.getUserSessions("usr_123456789012345
 await scalekit.session.revokeSession("ses_1234567890123456");
 await scalekit.session.revokeAllUserSessions("usr_1234567890123456");
 ```
+
+### Python
+```python
+session_details = scalekit_client.session.get_session("ses_1234567890123456")
+user_sessions = scalekit_client.session.get_user_sessions(
+    "usr_1234567890123456", page_size=10, filter={"status": ["ACTIVE"]}
+)
+scalekit_client.session.revoke_session("ses_1234567890123456")
+scalekit_client.session.revoke_all_user_sessions("usr_1234567890123456")
+```
+
+> Go / Java: same four operations on the session client — check the installed SDK for exact method names if they differ.
 
 ## Testing checklist (must pass)
 - Cookies are `HttpOnly`, `Secure` (in prod), and `SameSite` is set intentionally.
