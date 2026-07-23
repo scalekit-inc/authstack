@@ -9,9 +9,33 @@ Use live AgentKit metadata as the source of truth for tool names, required input
 
 Do not rely on static connector notes as a complete catalog. Those may lag the live platform.
 
+## Prerequisites
+
+**Install the SDK** (pick the project's language):
+
+```bash
+# Python
+pip install scalekit-sdk-python python-dotenv
+
+# Node.js
+npm install @scalekit-sdk/node dotenv
+```
+
+**Environment variables** — put these in `.env` (or export them) before running discovery:
+
+```bash
+SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com
+SCALEKIT_CLIENT_ID=<from dashboard>
+SCALEKIT_CLIENT_SECRET=<from dashboard>
+```
+
+Get credentials from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
+
+**Connector / provider slugs:** `providers` in the SDK expects uppercase connector type slugs (e.g. `GMAIL`, `SLACK`, `SALESFORCE`, `NOTION`, `GITHUB`, `GOOGLECALENDAR`). Source of truth for available connectors: [Connectors catalog](https://docs.scalekit.com/agentkit/connectors/) and the Scalekit Dashboard → AgentKit → Connections. Prefer the live `get_tools` response over any static list.
+
 ## Discovery workflow
 
-1. Identify the target connector or exact tool name.
+1. Identify the target connector (slug from the catalog/dashboard above) or exact tool name.
 2. Use the Scalekit SDK to fetch live tool metadata (see code below).
 3. Summarize:
    - tool name
@@ -28,7 +52,7 @@ Do not rely on static connector notes as a complete catalog. Those may lag the l
 from scalekit import ScalekitClient
 import os
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv()  # loads SCALEKIT_* from .env
 
 sk_client = ScalekitClient(
     client_id=os.getenv("SCALEKIT_CLIENT_ID"),
@@ -36,7 +60,7 @@ sk_client = ScalekitClient(
     env_url=os.getenv("SCALEKIT_ENVIRONMENT_URL"),
 )
 
-# List all tools for a provider
+# List all tools for a provider (uppercase connector type slug)
 tools = sk_client.actions.get_tools(providers=["GMAIL"], page_size=100)
 for tool in tools.tools:
     print(f"Tool: {tool.name}")
@@ -52,7 +76,7 @@ tool = sk_client.actions.get_tools(tool_name="gmail_fetch_mails")
 
 ```typescript
 import { ScalekitClient } from '@scalekit-sdk/node';
-import 'dotenv/config';
+import 'dotenv/config'; // loads SCALEKIT_* from .env
 
 const client = new ScalekitClient(
   process.env.SCALEKIT_ENVIRONMENT_URL!,
@@ -60,7 +84,7 @@ const client = new ScalekitClient(
   process.env.SCALEKIT_CLIENT_SECRET!
 );
 
-// List all tools for a provider
+// List all tools for a provider (uppercase connector type slug)
 const tools = await client.actions.getTools({ providers: ['GMAIL'], pageSize: 100 });
 for (const tool of tools.tools) {
   console.log(`Tool: ${tool.name}`);
