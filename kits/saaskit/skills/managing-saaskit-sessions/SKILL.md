@@ -174,15 +174,16 @@ For SPAs and mobile apps (see Guardrails), prefer:
 - Refresh token stored in an HttpOnly cookie (browser) or secure device storage (mobile).
 If using cookies in a browser SPA, configure CSRF protections explicitly.
 
-**SPA API validation:** read the Bearer token from the `Authorization` header (not cookies). Cookie-only middleware below is for traditional web apps; for SPAs, resolve the access token as:
+**SPA API validation (all languages):** read the Bearer token from the `Authorization` header — not cookies. Cookie middleware in section 2 is for traditional web apps. Pattern:
 
-```js
-// Prefer Authorization header (SPA); fall back to cookie (traditional web)
-const bearer = req.headers.authorization?.startsWith("Bearer ")
-  ? req.headers.authorization.slice(7)
-  : null;
-const accessToken = bearer ?? decrypt(req.cookies?.accessToken);
-```
+| Runtime | Resolve access token |
+|---|---|
+| Node | `req.headers.authorization?.replace(/^Bearer\s+/i, "")` |
+| Python | `request.headers.get("Authorization", "").removeprefix("Bearer ").strip()` |
+| Go | `strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")` |
+| Java | strip `"Bearer "` from `request.getHeader("Authorization")` |
+
+SPA refresh: call `/auth/refresh` (refresh cookie / secure store) → response body `{ accessToken, expiresIn }` → client updates in-memory token. **Do not** set an access-token cookie for SPAs.
 
 ## 2) Validate access token on every request (and refresh transparently)
 
@@ -341,7 +342,9 @@ Use Scalekit session APIs to implement:
 - “Sign out this device” (revoke a single session).
 - “Sign out all devices” (revoke all sessions for a user).
 
-### Example (Node.js)
+SDK method names vary slightly by language; the operations are the same: get session, list user sessions, revoke one, revoke all.
+
+### Node.js
 ```js
 const sessionDetails = await scalekit.session.getSession("ses_1234567890123456");
 
@@ -353,6 +356,18 @@ const userSessions = await scalekit.session.getUserSessions("usr_123456789012345
 await scalekit.session.revokeSession("ses_1234567890123456");
 await scalekit.session.revokeAllUserSessions("usr_1234567890123456");
 ```
+
+### Python
+```python
+session_details = scalekit_client.session.get_session("ses_1234567890123456")
+user_sessions = scalekit_client.session.get_user_sessions(
+    "usr_1234567890123456", page_size=10, filter={"status": ["ACTIVE"]}
+)
+scalekit_client.session.revoke_session("ses_1234567890123456")
+scalekit_client.session.revoke_all_user_sessions("usr_1234567890123456")
+```
+
+> Go / Java: same four operations on the session client — check the installed SDK for exact method names if they differ.
 
 ## Testing checklist (must pass)
 - Cookies are `HttpOnly`, `Secure` (in prod), and `SameSite` is set intentionally.
