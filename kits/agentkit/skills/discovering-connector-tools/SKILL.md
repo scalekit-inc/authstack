@@ -60,13 +60,20 @@ sk_client = ScalekitClient(
     env_url=os.getenv("SCALEKIT_ENVIRONMENT_URL"),
 )
 
-# List all tools for a provider (uppercase connector type slug)
-tools = sk_client.actions.get_tools(providers=["GMAIL"], page_size=100)
-for tool in tools.tools:
-    print(f"Tool: {tool.name}")
-    print(f"  Description: {tool.description}")
-    print(f"  Input schema: {tool.input_schema}")
-    print(f"  Output schema: {tool.output_schema}")
+# List ALL tools for a provider — page until exhausted (do not stop after one call)
+page_token = None
+while True:
+    page = sk_client.actions.get_tools(
+        providers=["GMAIL"], page_size=100, page_token=page_token
+    )
+    for tool in page.tools:
+        print(f"Tool: {tool.name}")
+        print(f"  Description: {tool.description}")
+        print(f"  Input schema: {tool.input_schema}")
+        print(f"  Output schema: {tool.output_schema}")
+    page_token = getattr(page, "next_page_token", None) or getattr(page, "nextPageToken", None)
+    if not page_token:
+        break
 
 # Get a specific tool by name
 tool = sk_client.actions.get_tools(tool_name="gmail_fetch_mails")
@@ -84,12 +91,20 @@ const client = new ScalekitClient(
   process.env.SCALEKIT_CLIENT_SECRET!
 );
 
-// List all tools for a provider (uppercase connector type slug)
-const tools = await client.actions.getTools({ providers: ['GMAIL'], pageSize: 100 });
-for (const tool of tools.tools) {
-  console.log(`Tool: ${tool.name}`);
-  console.log(`  Description: ${tool.description}`);
-}
+// List ALL tools for a provider — page until exhausted
+let pageToken: string | undefined;
+do {
+  const page = await client.actions.getTools({
+    providers: ['GMAIL'],
+    pageSize: 100,
+    pageToken,
+  });
+  for (const tool of page.tools) {
+    console.log(`Tool: ${tool.name}`);
+    console.log(`  Description: ${tool.description}`);
+  }
+  pageToken = page.nextPageToken;
+} while (pageToken);
 
 // Get a specific tool by name
 const tool = await client.actions.getTools({ toolName: 'gmail_fetch_mails' });
@@ -111,7 +126,7 @@ Use `connector` in explanations. Only use `provider` when the SDK or API filter 
 - **MUST NOT** execute tools or authorize connected accounts here — that belongs to `integrating-agentkit`. This skill only discovers and explains schemas.
 - `connection_name` is the exact dashboard value — may not equal the connector slug.
 
-**Pagination:** `get_tools` returns up to `page_size` results (100 in the examples). If a connector exposes more, page through until the result set is exhausted — do not assume one call returns every tool.
+**Pagination:** `get_tools` returns up to `page_size` results per call. The examples above loop on `next_page_token` / `nextPageToken` until empty — **MUST** do the same; never assume one call returns every tool.
 
 **If `get_tools` returns empty:** verify the connector is configured in the dashboard and the connection name matches exactly.
 
