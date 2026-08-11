@@ -36,7 +36,7 @@ curl -s -o /dev/null -w "%{http_code}" -X POST "$SCALEKIT_ENVIRONMENT_URL/oauth/
   rg -n --hidden -g '!**/.git/**' -g '!**/node_modules/**' 'skc_|SCALEKIT_CLIENT_SECRET\s*=' . || true
   # Expect no real secrets committed — only env var *names* or placeholders
   ```
-- [ ] Redirect URIs registered in dashboard match exactly what the app sends
+- [ ] Redirect URIs registered in dashboard match exactly what the app sends (**user verifies** in Dashboard → Settings → Redirects; agent compares code/env values and tells user what to register)
 
 ---
 
@@ -71,7 +71,7 @@ curl -s -o /dev/null -w "%{http_code}" -X POST "$SCALEKIT_ENVIRONMENT_URL/oauth/
 
 ## Monitoring and incident readiness
 
-- [ ] Auth logs monitoring configured in **Dashboard > Auth Logs**
+- [ ] Auth logs monitoring configured (**user checks** Dashboard → Auth Logs; agent cannot open the dashboard)
 - [ ] Error tracking configured for OAuth failures and token refresh errors
 - [ ] Alerts configured for repeated authorization failures
 - [ ] Log retention policies configured
@@ -80,6 +80,8 @@ curl -s -o /dev/null -w "%{http_code}" -X POST "$SCALEKIT_ENVIRONMENT_URL/oauth/
 **Key metrics:** Token refresh success/failure rate, OAuth completion rate (initiated vs completed), per-service API error rates, token expiry distribution.
 
 ## Final smoke test
+
+> Dashboard / browser OAuth steps are **user actions**. Agent runs SDK/curl steps and pauses for the user when a browser or dashboard is required.
 
 Run the full cycle against the **production** Scalekit environment (URL ends in `.scalekit.com`). Prefer a non-customer test user. The host app may be local/staging — credentials must still be production AgentKit env vars.
 
