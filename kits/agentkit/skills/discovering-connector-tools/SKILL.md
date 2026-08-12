@@ -9,9 +9,33 @@ Use live AgentKit metadata as the source of truth for tool names, required input
 
 Do not rely on static connector notes as a complete catalog. Those may lag the live platform.
 
+## Prerequisites
+
+**Install the SDK** (pick the project's language):
+
+```bash
+# Python
+pip install scalekit-sdk-python python-dotenv
+
+# Node.js
+npm install @scalekit-sdk/node dotenv
+```
+
+**Environment variables** — put these in `.env` (or export them) before running discovery:
+
+```bash
+SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com
+SCALEKIT_CLIENT_ID=<from dashboard>
+SCALEKIT_CLIENT_SECRET=<from dashboard>
+```
+
+Get credentials from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
+
+**Connector / provider slugs:** `providers` in the SDK expects uppercase connector type slugs (e.g. `GMAIL`, `SLACK`, `SALESFORCE`, `NOTION`, `GITHUB`, `GOOGLECALENDAR`). Source of truth for available connectors: [Connectors catalog](https://docs.scalekit.com/agentkit/connectors/) and the Scalekit Dashboard → AgentKit → Connections. Prefer the live `get_tools` response over any static list.
+
 ## Discovery workflow
 
-1. Identify the target connector or exact tool name.
+1. Identify the target connector (slug from the catalog/dashboard above) or exact tool name.
 2. Use the Scalekit SDK to fetch live tool metadata (see code below).
 3. Summarize:
    - tool name
@@ -28,7 +52,7 @@ Do not rely on static connector notes as a complete catalog. Those may lag the l
 from scalekit import ScalekitClient
 import os
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv()  # loads SCALEKIT_* from .env
 
 sk_client = ScalekitClient(
     client_id=os.getenv("SCALEKIT_CLIENT_ID"),
@@ -36,36 +60,51 @@ sk_client = ScalekitClient(
     env_url=os.getenv("SCALEKIT_ENVIRONMENT_URL"),
 )
 
-# List all tools for a provider
-tools = sk_client.actions.get_tools(providers=["GMAIL"], page_size=100)
-for tool in tools.tools:
-    print(f"Tool: {tool.name}")
-    print(f"  Description: {tool.description}")
-    print(f"  Input schema: {tool.input_schema}")
-    print(f"  Output schema: {tool.output_schema}")
+# List ALL tools for a provider — page until exhausted (do not stop after one call)
+page_token = None
+while True:
+    page = sk_client.actions.get_tools(
+        providers=["GMAIL"], page_size=100, page_token=page_token
+    )
+    for tool in page.tools:
+        print(f"Tool: {tool.name}")
+        print(f"  Description: {tool.description}")
+        print(f"  Input schema: {tool.input_schema}")
+        print(f"  Output schema: {tool.output_schema}")
+    page_token = getattr(page, "next_page_token", None) or getattr(page, "nextPageToken", None)
+    if not page_token:
+        break
 
 # Get a specific tool by name
 tool = sk_client.actions.get_tools(tool_name="gmail_fetch_mails")
 ```
 
-## Live tool discovery (Node.js)
+## Live tool discovery (Node.js / TypeScript)
 
 ```typescript
 import { ScalekitClient } from '@scalekit-sdk/node';
-import 'dotenv/config';
+import 'dotenv/config'; // loads SCALEKIT_* from .env
 
 const client = new ScalekitClient(
-  process.env.SCALEKIT_ENVIRONMENT_URL!,
-  process.env.SCALEKIT_CLIENT_ID!,
-  process.env.SCALEKIT_CLIENT_SECRET!
+  process.env.SCALEKIT_ENVIRONMENT_URL as string,
+  process.env.SCALEKIT_CLIENT_ID as string,
+  process.env.SCALEKIT_CLIENT_SECRET as string
 );
 
-// List all tools for a provider
-const tools = await client.actions.getTools({ providers: ['GMAIL'], pageSize: 100 });
-for (const tool of tools.tools) {
-  console.log(`Tool: ${tool.name}`);
-  console.log(`  Description: ${tool.description}`);
-}
+// List ALL tools for a provider — page until exhausted
+let pageToken: string | undefined;
+do {
+  const page = await client.actions.getTools({
+    providers: ['GMAIL'],
+    pageSize: 100,
+    pageToken,
+  });
+  for (const tool of page.tools) {
+    console.log(`Tool: ${tool.name}`);
+    console.log(`  Description: ${tool.description}`);
+  }
+  pageToken = page.nextPageToken;
+} while (pageToken);
 
 // Get a specific tool by name
 const tool = await client.actions.getTools({ toolName: 'gmail_fetch_mails' });
@@ -87,7 +126,7 @@ Use `connector` in explanations. Only use `provider` when the SDK or API filter 
 - **MUST NOT** execute tools or authorize connected accounts here — that belongs to `integrating-agentkit`. This skill only discovers and explains schemas.
 - `connection_name` is the exact dashboard value — may not equal the connector slug.
 
-**Pagination:** `get_tools` returns up to `page_size` results (100 in the examples). If a connector exposes more, page through until the result set is exhausted — do not assume one call returns every tool.
+**Pagination:** `get_tools` returns up to `page_size` results per call. The examples above loop on `next_page_token` / `nextPageToken` until empty — **MUST** do the same; never assume one call returns every tool.
 
 **If `get_tools` returns empty:** verify the connector is configured in the dashboard and the connection name matches exactly.
 
