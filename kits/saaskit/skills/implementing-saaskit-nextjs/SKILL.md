@@ -45,12 +45,27 @@ SCALEKIT_SCOPES=openid profile email offline_access  # optional, space-separated
 
 ## SDK client (`lib/scalekit.ts`)
 
-Singleton pattern — always use `getScalekitClient()`, never instantiate directly. Throws if env vars are missing.
+**Implement this module** (singleton — always use `getScalekitClient()`, never instantiate ad hoc). Throws if env vars are missing. Full pattern is also in the [reference repo](https://github.com/scalekit-inc/scalekit-nextjs-auth-example).
 
 ```ts
-import { getScalekitClient, getDefaultScopes } from '@/lib/scalekit';
+// lib/scalekit.ts
+import { ScalekitClient } from '@scalekit-sdk/node';
 
-const client = getScalekitClient();
+let client: ScalekitClient | null = null;
+
+export function getScalekitClient() {
+  if (client) return client;
+  const env = process.env.SCALEKIT_ENVIRONMENT_URL;
+  const id = process.env.SCALEKIT_CLIENT_ID;
+  const secret = process.env.SCALEKIT_CLIENT_SECRET;
+  if (!env || !id || !secret) throw new Error('Missing SCALEKIT_* env vars');
+  client = new ScalekitClient(env, id, secret);
+  return client;
+}
+
+export function getDefaultScopes() {
+  return (process.env.SCALEKIT_SCOPES ?? 'openid profile email offline_access').split(/\s+/);
+}
 ```
 
 ## Session shape (`lib/cookies.ts`)
@@ -63,6 +78,8 @@ interface SessionData {
   tokens: { access_token, refresh_token, id_token, expires_at, expires_in };
   roles?: string[];
   permissions?: string[];
+  /** Short-lived lock for cross-tab refresh (see Token refresh race condition). */
+  refresh_in_progress?: boolean;
 }
 ```
 
@@ -94,7 +111,7 @@ return NextResponse.json({ authUrl });
    - Permission claims checked in order: `permissions` → `https://scalekit.com/permissions` → `scalekit:permissions`
 5. Name resolution priority: `user.name` → `claims.name` → `givenName + familyName` → `email` → `preferred_username` → `'User'`
 6. `setSession({ user, tokens, roles, permissions })`
-7. Redirect to `/dashboard`
+7. Redirect to the stored `next` path if valid relative (`/...`), else `/dashboard` (see Deep link preservation)
 
 ### Logout (`app/api/auth/logout/route.ts` — POST)
 
@@ -111,9 +128,32 @@ return NextResponse.json({ logoutUrl });
 ### Token refresh (`app/api/auth/refresh/route.ts` — POST)
 
 ```ts
-const refreshResponse = await client.refreshAccessToken(session.tokens.refresh_token);
-// Decode exp from JWT using jose.decodeJwt(); fallback to 3600s if missing
-await setSession({ ...session, tokens: { ...session.tokens, access_token, refresh_token, expires_at, expires_in } });
+const session = await getSession();
+if (!session?.tokens.refresh_token) return NextResponse.json({ error: 'no session' }, { status: 401 });
+// Cross-tab lock (see Tactics → Token refresh race condition)
+if (session.refresh_in_progress) return new NextResponse(null, { status: 204 });
+await setSession({ ...session, refresh_in_progress: true });
+try {
+  const refreshResponse = await client.refreshAccessToken(session.tokens.refresh_token);
+  const access_token = refreshResponse.accessToken;
+  const refresh_token = refreshResponse.refreshToken ?? session.tokens.refresh_token;
+  const expires_in = refreshResponse.expiresIn ?? 3600;
+  let expires_at = Math.floor(Date.now() / 1000) + expires_in;
+  try {
+    const { decodeJwt } = await import('jose');
+    const exp = decodeJwt(access_token).exp;
+    if (typeof exp === 'number') expires_at = exp;
+  } catch { /* keep expires_in fallback */ }
+  await setSession({
+    ...session,
+    tokens: { ...session.tokens, access_token, refresh_token, expires_at, expires_in },
+    refresh_in_progress: false,
+  });
+  return NextResponse.json({ ok: true });
+} catch {
+  await setSession({ ...session, refresh_in_progress: false });
+  return NextResponse.json({ error: 'refresh failed' }, { status: 401 });
+}
 ```
 
 ## Auth utilities (`lib/auth.ts`)
@@ -162,7 +202,8 @@ if (!allowed) redirect('/permission-denied');
 ## Dependencies
 
 ```bash
-npm install @scalekit-sdk/node jose date-fns js-cookie
+# Session cookies are HttpOnly + server-managed — no client cookie library needed.
+npm install @scalekit-sdk/node jose
 ```
 
 ## Tactics
@@ -241,4 +282,9 @@ return new Response(html, {
 ```
 
 ### Token refresh race condition across tabs
-Multiple browser tabs can simultaneously trigger token refresh with the same refresh token — most IdPs reject the second attempt. Mitigation: set a short-lived `refresh_in_progress` flag in the session before calling the refresh endpoint, and check it at the start of the refresh route to skip concurrent calls.
+Multiple browser tabs can simultaneously trigger token refresh with the same refresh token — most IdPs reject the second attempt. Mitigation in `app/api/auth/refresh/route.ts`:
+
+1. `getSession()` — if `session.refresh_in_progress === true`, return 204 / skip refresh.
+2. `setSession({ ...session, refresh_in_progress: true })` before calling Scalekit.
+3. Call `client.refreshAccessToken(...)`, then `setSession({ ...session, tokens: {...}, refresh_in_progress: false })`.
+4. On failure, clear `refresh_in_progress` and force re-login.
