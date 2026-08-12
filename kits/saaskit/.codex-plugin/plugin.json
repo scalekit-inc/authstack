@@ -1,6 +1,6 @@
 {
   "name": "saaskit",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Enterprise auth for B2B apps without writing protocols — login, sessions, SSO, SCIM, MCP OAuth, and RBAC in one stack.",
   "author": {
     "name": "Scalekit Inc.",
