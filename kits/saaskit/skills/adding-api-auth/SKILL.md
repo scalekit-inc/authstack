@@ -11,12 +11,27 @@ description: Implements machine-to-machine authentication using Scalekit — eit
 - **MUST** validate the opaque token or JWT server-side on every incoming API request; **MUST NOT** trust an unverified token.
 - **MUST** treat the plain-text `token` / `plain_secret` as returned only once at creation and store it securely (never logged or committed); use `token_id` (not the key itself) for list/invalidate lifecycle operations.
 
-## Flow overview
+## Before coding — pick path and stack
+
+**1. Mechanism** (do not mix code from both sections in one flow):
+
+| Path | When to use | Sections |
+|------|-------------|----------|
+| **A. Opaque API keys** | Long-lived keys for partners, CI, personal access tokens; validate via Scalekit token API | §§1–6 + Key rules |
+| **B. OAuth 2.0 client credentials** | Short-lived JWTs, scope-based M2M, JWKS validation | Client Credentials section only |
+
+If the user is unclear, ask once: opaque API keys vs client-credentials JWTs.
+
+**2. Language** — detect from the repo (`package.json` → Node, `requirements.txt`/`pyproject.toml` → Python, `go.mod` → Go, `pom.xml`/`build.gradle` → Java). Implement **only** the matching language snippets; skip other language blocks.
+
+**3. Where to edit** — put client init next to existing SDK setup (or a shared `lib/scalekit` module); put validation middleware on the API route layer that serves protected resources (Express/FastAPI/Gin/etc. middleware directory already used by the app). Prefer extending existing auth middleware over a parallel path.
+
+## Flow overview (Path A — opaque API keys)
 
 ```
-Your app creates token (org or user scoped) → Scalekit returns key + tokenId →
-Customer stores key → API client sends Bearer key → Your server validates →
-Scalekit returns org/user context → Filter data accordingly
+App creates token (org or user scoped) → Scalekit returns key + tokenId once →
+Store tokenId for lifecycle; customer stores the key → Client sends Authorization: Bearer <key> →
+Server validates with Scalekit → Filter data by org/user context
 ```
 
 The plain-text API key is **returned only once at creation**. Scalekit never stores it.
@@ -382,7 +397,9 @@ func AuthenticateToken(sc scalekit.Scalekit) gin.HandlerFunc {
 
 ---
 
-## Client Credentials (OAuth 2.0)
+## Client Credentials (OAuth 2.0) — Path B
+
+> **Separate from Path A.** Do not use opaque-token `createToken` / `validateToken` APIs here. This path registers M2M clients, issues JWTs via `/oauth/token`, and validates with JWKS / `validate_access_token_and_get_claims`.
 
 For service-to-service (machine-to-machine) auth using JWT bearer tokens instead of opaque API keys. Use when APIs need scope-based access control, JWT validation via JWKS, or standard OAuth 2.0 client credentials flow.
 
