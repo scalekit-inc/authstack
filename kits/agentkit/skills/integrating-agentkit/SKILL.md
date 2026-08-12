@@ -31,7 +31,7 @@ Install the SDK and initialize the client:
 
 **Python**
 ```bash
-pip install scalekit-sdk-python
+pip install scalekit-sdk-python python-dotenv requests
 ```
 ```python
 from scalekit import ScalekitClient
@@ -108,17 +108,24 @@ If status is not `ACTIVE`, the user must complete OAuth. In a web app, redirect 
 
 **Python**
 ```python
+import sys
+
 if connected_account.status != "ACTIVE":
     link_response = actions.get_authorization_link(
         connection_name="gmail",
         identifier="user_123"
     )
     print("Authorize here:", link_response.link)
+    # Non-interactive/agent: print link and stop; re-run from Step 3 after user OAuth.
+    if not sys.stdin.isatty():
+        print("Complete OAuth in a browser, then re-run from Step 3 (fetch tokens).")
+        raise SystemExit(0)
     input("Press Enter after authorizing...")
 ```
 
 **Node.js**
 ```typescript
+// Place this import at module top-level (not inside the if):
 import * as readline from 'node:readline/promises';
 
 if (connectedAccount?.status !== 'ACTIVE') {
@@ -128,9 +135,11 @@ if (connectedAccount?.status !== 'ACTIVE') {
   });
   console.log('Authorize here:', linkResponse.link);
   // Web app: redirect the browser to linkResponse.link, then continue after callback.
-  // Agent/non-interactive: print the link, stop, and tell the user to re-run Step 3 after OAuth.
-  // Interactive CLI only (will hang if stdin is not a TTY):
-  if (process.stdin.isTTY) {
+  // Non-interactive/agent: print the link and stop — re-run from Step 3 after OAuth.
+  if (!process.stdin.isTTY) {
+    console.log('Complete OAuth in a browser, then re-run from Step 3 (fetch tokens).');
+    // return; // or process.exit(0) in a one-shot script
+  } else {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     await rl.question('Press Enter after authorizing…');
     rl.close();
