@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Auth infrastructure for developers — connect AI agents to 100+ OAuth services, or add enterprise SSO, SCIM, and MCP auth to your B2B app. Skip the protocol layer.",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "pluginRoot": "kits"
   },
   "plugins": [
