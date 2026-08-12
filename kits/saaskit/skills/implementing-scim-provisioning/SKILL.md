@@ -95,8 +95,11 @@ Use for scheduled jobs, onboarding flows, or bulk imports. Integrate into existi
 
 **Fetch users and sync:**
 
+`orgId` / `org_id` is the Scalekit organization id (e.g. `org_…`) for the customer tenant — take it from the app's org/tenant record or from the webhook event payload, not from the directory list response.
+
 ```javascript
 // Node.js
+// orgId = Scalekit organization id for this tenant (from your DB / request context)
 // Note: this takes the first directory — fine for single-directory orgs.
 // For multi-directory orgs, select the target directory by ID from `directories` instead of indexing [0].
 const { directories } = await scalekit.directory.listDirectories(orgId);
@@ -110,6 +113,7 @@ for (const user of users) {
 
 ```python
 # Python
+# org_id = Scalekit organization id for this tenant (from your DB / request context)
 # Note: this takes the first directory — fine for single-directory orgs.
 # For multi-directory orgs, select the target directory by ID from `directories` instead of indexing [0].
 directory = scalekit_client.directory.list_directories(organization_id=org_id).directories[0]
@@ -136,9 +140,11 @@ Plug `upsertUser` / `syncGroupPermissions` into the project's **existing** user/
 
 Add a new route to the existing HTTP server/router. Match the framework pattern already in use (Express, FastAPI, Spring Boot, net/http, etc.).
 
-**ALWAYS verify the signature before processing. Return 400 on failure.**
+**ALWAYS verify the signature before processing. Return 401 Unauthorized on signature failure** (do not process the payload).
 
 **Node.js (Express):** mount the route with `express.raw({ type: 'application/json' })` so `req.body` is the raw `Buffer` — signature verification must run on the exact bytes that were signed.
+
+Verify the signature **before** any work, then acknowledge with 2xx and process off the request path (queue / background task). Do not `await` full user provisioning inside the HTTP handler in production.
 
 ```javascript
 app.post('/webhooks/scalekit', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -147,15 +153,14 @@ app.post('/webhooks/scalekit', express.raw({ type: 'application/json' }), async 
     req.headers,
     req.body
   );
-  if (!ok) return res.status(401).end();
+  if (!ok) return res.status(401).end(); // invalid signature
 
   const { type, data } = JSON.parse(req.body.toString('utf8'));
-  try {
-    await handleDirectoryEvent(type, data);
-    res.status(201).json({ status: 'processed' });
-  } catch (err) {
-    res.status(500).json({ error: 'Processing failed' });
-  }
+  // Ack fast; process asynchronously (replace with your queue: Bull, SQS, etc.)
+  setImmediate(() => {
+    handleDirectoryEvent(type, data).catch((err) => console.error('SCIM handler failed', err));
+  });
+  return res.status(202).json({ status: 'accepted' });
 });
 ```
 
@@ -163,7 +168,7 @@ app.post('/webhooks/scalekit', express.raw({ type: 'application/json' }), async 
 
 ```python
 @app.post("/webhooks/scalekit")
-async def scalekit_webhook(request: Request):
+async def scalekit_webhook(request: Request, background_tasks: BackgroundTasks):
     raw_body = await request.body()
     valid = scalekit_client.verify_webhook_payload(
         secret=os.getenv("SCALEKIT_WEBHOOK_SECRET"),
@@ -174,8 +179,9 @@ async def scalekit_webhook(request: Request):
         raise HTTPException(status_code=401, detail="Invalid signature")
 
     body = json.loads(raw_body)
-    await handle_directory_event(body.get("type"), body.get("data", {}))
-    return JSONResponse(status_code=201, content={"status": "processed"})
+    # Ack fast; process in background (or enqueue to Celery/RQ/etc.)
+    background_tasks.add_task(handle_directory_event, body.get("type"), body.get("data", {}))
+    return JSONResponse(status_code=202, content={"status": "accepted"})
 ```
 
 For Go and Java, see the [Scalekit SDK documentation](https://docs.scalekit.com/apis).
