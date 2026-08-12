@@ -14,7 +14,17 @@ description: Implements Scalekit SaaSKit authentication (sign-up, login, logout,
 
 ## Setup
 
-Install the SDK and set credentials in `.env`:
+Install the SDK for the project language:
+
+| Stack | Install |
+|---|---|
+| Node.js | `npm install @scalekit-sdk/node` |
+| Python | `pip install scalekit-sdk-python` |
+| Go | `go get github.com/scalekit-inc/scalekit-sdk-go/v2` |
+| Java | Add `com.scalekit:scalekit-sdk-java` via Maven/Gradle |
+| PHP / Laravel | See [laravel-reference.md](laravel-reference.md) |
+
+Set credentials in `.env`:
 
 ```sh
 SCALEKIT_ENVIRONMENT_URL=<your-environment-url>
@@ -25,6 +35,33 @@ SCALEKIT_REDIRECT_URI=<your-callback-url>   # e.g. https://yourapp.com/auth/call
 
 > `SCALEKIT_REDIRECT_URI` must exactly match the callback URL registered in the Scalekit dashboard under Allowed Redirect URIs.
 
+**Initialize the client** (Node.js example used in the snippets below):
+
+```js
+import { ScalekitClient } from '@scalekit-sdk/node';
+
+const scalekit = new ScalekitClient(
+  process.env.SCALEKIT_ENVIRONMENT_URL,
+  process.env.SCALEKIT_CLIENT_ID,
+  process.env.SCALEKIT_CLIENT_SECRET
+);
+const redirectUri = process.env.SCALEKIT_REDIRECT_URI;
+```
+
+Python:
+
+```python
+from scalekit import ScalekitClient
+import os
+
+scalekit = ScalekitClient(
+    env_url=os.getenv("SCALEKIT_ENVIRONMENT_URL"),
+    client_id=os.getenv("SCALEKIT_CLIENT_ID"),
+    client_secret=os.getenv("SCALEKIT_CLIENT_SECRET"),
+)
+redirect_uri = os.getenv("SCALEKIT_REDIRECT_URI")
+```
+
 ## Auth flow
 
 ### 1. Redirect to login
@@ -32,7 +69,7 @@ SCALEKIT_REDIRECT_URI=<your-callback-url>   # e.g. https://yourapp.com/auth/call
 Generate an authorization URL and redirect the user:
 
 ```js
-// Node.js
+// Node.js — `scalekit` from Setup above
 const authorizationUrl = scalekit.getAuthorizationUrl(redirectUri, {
   scopes: ['openid', 'profile', 'email', 'offline_access']
 });
