@@ -68,9 +68,9 @@ When routing, include one or two relevant orientation sentences from below so th
 
 ---
 
-## Step 3: Environment setup (if new project)
+## Step 3: Environment checklist for the user (if new project)
 
-Before starting any skill, verify credentials exist:
+Tell the user to confirm these credentials exist before they run the target skill (**user action** — do not read or write their environment yourself):
 
 ```bash
 SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com
@@ -78,7 +78,7 @@ SCALEKIT_CLIENT_ID=<from dashboard>
 SCALEKIT_CLIENT_SECRET=<from dashboard>
 ```
 
-Get these from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
+Get these from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. If the user cannot confirm, stop and wait rather than inventing values.
 
 **Self-hosted Scalekit**: Use the `SCALEKIT_ENVIRONMENT_URL` and credentials from your self-hosted admin dashboard (typically at `https://app.<your-domain>` after you deploy via the distribution portal). Run `/saaskit:self-hosted` for complete Kubernetes + Helm deployment guidance (or to get integration adjustments for an existing self-hosted instance).
 
