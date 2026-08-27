@@ -42,6 +42,14 @@ This repo contains the complete Scalekit AuthStack — two kits that cover auth 
 
 Each kit ships with implementation skills — see [`kits/agentkit/skills/`](./kits/agentkit/skills/) and [`kits/saaskit/skills/`](./kits/saaskit/skills/).
 
+Portable copies of those skills (no plugin wrapper) live in [scalekit-inc/skills](https://github.com/scalekit-inc/skills):
+
+```bash
+npx skills add scalekit-inc/skills --list
+```
+
+Connector catalog: [docs.scalekit.com/agentkit/connectors.md](https://docs.scalekit.com/agentkit/connectors.md)
+
 ---
 
 [Join our Slack community](https://join.slack.com/t/scalekit-community/shared_invite/zt-3gsxwr4hc-0tvhwT2b_qgVSIZQBQCWRw)

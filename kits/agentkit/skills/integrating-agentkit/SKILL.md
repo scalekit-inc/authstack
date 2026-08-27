@@ -234,7 +234,7 @@ for (const msg of messages) {
 Replace the Connection Name value (`"gmail"` in the examples) with the dashboard name for that connection (e.g. `"slack"`, `"MY_NOTION_PROD"`). Configure non-Gmail connectors in the dashboard first.
 The SDK workflow (Steps 1–3) is identical for all connectors. Only the downstream API call (Step 4) changes.
 
-For connector-specific API details, see the [Scalekit Connectors catalog](https://docs.scalekit.com/agentkit/connectors/).
+For connector-specific API details, fetch the live index: https://docs.scalekit.com/agentkit/connectors.md
 
 ## Building agents
 
@@ -318,7 +318,7 @@ For more examples and framework-specific patterns, see the [AgentKit code sample
 - Connections: [docs.scalekit.com/agentkit/connections](https://docs.scalekit.com/agentkit/connections/)
 - Connected accounts: [docs.scalekit.com/agentkit/connected-accounts](https://docs.scalekit.com/agentkit/connected-accounts/)
 - Tool discovery: [docs.scalekit.com/agentkit/tool-discovery](https://docs.scalekit.com/agentkit/tool-discovery/)
-- Connectors catalog: [docs.scalekit.com/agentkit/connectors](https://docs.scalekit.com/agentkit/connectors/)
+- Connectors catalog: https://docs.scalekit.com/agentkit/connectors.md
 - BYOC (Bring Your Own Credentials): [docs.scalekit.com/agentkit/byoc](https://docs.scalekit.com/agentkit/launch-checklist/byoc/)
 
 ## When to switch skills

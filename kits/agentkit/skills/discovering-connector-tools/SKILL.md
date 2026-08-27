@@ -31,7 +31,7 @@ SCALEKIT_CLIENT_SECRET=<from dashboard>
 
 Get credentials from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
 
-**Connector / provider slugs:** `providers` in the SDK expects uppercase connector type slugs (e.g. `GMAIL`, `SLACK`, `SALESFORCE`, `NOTION`, `GITHUB`, `GOOGLECALENDAR`). Source of truth for available connectors: [Connectors catalog](https://docs.scalekit.com/agentkit/connectors/) and the Scalekit Dashboard → AgentKit → Connections. Prefer the live `get_tools` response over any static list.
+**Connector / provider slugs:** `providers` in the SDK expects uppercase connector type slugs (e.g. `GMAIL`, `SLACK`, `SALESFORCE`, `NOTION`, `GITHUB`, `GOOGLECALENDAR`). Source of truth: https://docs.scalekit.com/agentkit/connectors.md and Dashboard → AgentKit → Connections. Prefer the live `get_tools` response over any static list.
 
 ## Discovery workflow
 
@@ -134,7 +134,7 @@ Use `connector` in explanations. Only use `provider` when the SDK or API filter 
 
 - AgentKit overview: [docs.scalekit.com/agentkit/overview](https://docs.scalekit.com/agentkit/overview/)
 - Tool discovery: [docs.scalekit.com/agentkit/tool-discovery](https://docs.scalekit.com/agentkit/tool-discovery/)
-- Connectors catalog: [docs.scalekit.com/agentkit/connectors](https://docs.scalekit.com/agentkit/connectors/)
+- Connectors catalog: https://docs.scalekit.com/agentkit/connectors.md
 
 ## When to switch skills
 
