@@ -1,19 +1,31 @@
 ---
 name: setup-scalekit
-description: Installs the Scalekit CLI and plugin, and picks which auth plugin (agentkit vs saaskit) — the pre-install onboarding step. Use when the plugin is not yet installed and the user says 'install Scalekit', 'add the Scalekit plugin for Claude Code / Codex / Copilot / Cursor', 'the plugin is not showing up', or 'which Scalekit plugin do I need'. After install, hand off to setup-agentkit or setup-saaskit; do not implement the integration here.
+description: >
+  Installs Scalekit, then picks AgentKit or SaaSKit for the project.
+  Use when the user wants to install Scalekit, add the plugin, or
+  decide which kit to use.
+  It does not configure a dashboard connection (that's `setup-agentkit`)
+  or set app login env (that's `setup-saaskit`).
 ---
 
 # Setup Scalekit
 
+Install the Scalekit CLI and plugin. Pick AgentKit or SaaSKit. Stop.
+
 ## Guardrails
-- **MUST** prefer the CLI (`scalekit setup`) over the native/direct install commands in Step 3 — those are a fallback only.
-- **MUST** verify the plugin appears in the agent's plugin list before moving on.
-- **MUST** stop after install + plugin choice and hand off to setup-agentkit or setup-saaskit — this skill does NOT implement the integration.
-- **MUST NOT** generate integration/implementation code here.
 
-## Step 1 — Install the CLI (recommended)
+- **MUST** stop after install + kit pick and name `setup-agentkit` or `setup-saaskit`.
+- **MUST NOT** start those wizards from this skill.
 
-The Scalekit CLI detects your tools and installs the authstack plugin (AgentKit + SaaSKit) for you.
+## Gotchas
+
+- Run `npx @scalekit-inc/cli setup` first. Use a native plugin command only when that CLI cannot run.
+- Marketplace names are `agentkit` and `saaskit`.
+- Plugin install uses `scalekit-inc/authstack`. Portable skills use `scalekit-inc/skills`.
+- After the kit is picked, name `setup-agentkit` or `setup-saaskit`. Stop. Do not start those wizards here.
+- For current CLI flags, run `npx @scalekit-inc/cli --help`.
+
+## Step 1 — Install
 
 ```bash
 npx @scalekit-inc/cli setup
@@ -26,81 +38,78 @@ npm install -g @scalekit-inc/cli
 scalekit setup
 ```
 
-Target a specific tool:
+Target a specific tool only when the user names it:
 
 ```bash
-scalekit setup claude
-scalekit setup cursor
-scalekit setup codex
-scalekit setup copilot
+npx @scalekit-inc/cli setup claude
+npx @scalekit-inc/cli setup cursor
+npx @scalekit-inc/cli setup codex
+npx @scalekit-inc/cli setup copilot
 ```
 
-**Verify install** (pick the agent you set up):
+Skip this step when the plugin or skills pack is already installed.
 
-| Agent | Verify command / check |
-|-------|------------------------|
-| Claude Code | Restart session, then `/plugin list` — `agentkit` and/or `saaskit` enabled |
-| GitHub Copilot | `copilot plugin list` |
-| Cursor / Codex | Re-open the tool after `scalekit setup`; confirm plugins/skills from authstack are available |
-| Other (skills CLI) | `npx skills add scalekit-inc/authstack --list` shows expected skills |
+**Done when:** the plugin is visible in the current tool.
 
-Do not proceed to Step 4 until verification succeeds.
+| Tool | Check |
+|------|--------|
+| Claude Code | Restart the session. `/plugin list` shows `agentkit` and/or `saaskit`. |
+| GitHub Copilot | `copilot plugin list` shows the plugin. |
+| Cursor / Codex | Re-open the tool. Authstack plugins or skills are available. |
+| Other (skills CLI) | The chosen skill folder exists on disk (for example `setup-agentkit/SKILL.md` in the tool's skills directory). |
 
-## Step 2 — Choose your plugin
+## Step 2 — Pick the kit
 
-| Plugin | Use case |
-|--------|----------|
-| `agentkit` | AI agent needs OAuth access to third-party services — connections, tool discovery, token storage / refresh |
-| `saaskit` | Web app needs login, sessions, SSO, SCIM, MCP server auth, RBAC, or API keys |
+| Kit | Pick when the user needs |
+|-----|--------------------------|
+| AgentKit | connections, token vault, tools |
+| SaaSKit | app login, sessions, SSO, SCIM, MCP server auth, API keys |
 
-## Step 3 — Native / direct install commands (CLI is preferred)
+Ask which kit only when the user has not already named one.
 
-The commands below are the current native forms. Prefer the CLI in Step 1 for most users.
+**Done when:** the user has one kit: AgentKit or SaaSKit.
+
+## Step 3 — Name the next skill and stop
+
+- AgentKit → name `setup-agentkit`. Stop.
+- SaaSKit → name `setup-saaskit`. Stop.
+
+Tell the user the next skill name. Do not start that wizard here.
+
+**Done when:** `setup-agentkit` or `setup-saaskit` is named, and this skill has stopped.
+
+## Fallback — native install
+
+Use this only when Step 1 cannot run. Then apply the same check as Step 1.
 
 ### Claude Code
 
 ```
 /plugin marketplace add scalekit-inc/authstack
-/plugin install agentkit@authstack   # or saaskit@authstack
+/plugin install agentkit@authstack
 ```
 
-Verify: restart Claude Code, then run `/plugin list` — the plugin should appear as enabled.
+Use `saaskit@authstack` when the kit is SaaSKit.
 
 ### GitHub Copilot
 
 ```bash
 copilot plugin marketplace add scalekit-inc/authstack
-copilot plugin install agentkit@authstack   # or saaskit@authstack
+copilot plugin install agentkit@authstack
 ```
 
-Verify: `copilot plugin list` should show the plugin.
-
-### Codex and Cursor
-
-The unified CLI (`scalekit setup codex` / `scalekit setup cursor`) handles download and placement for these tools. Direct installation is managed by the CLI.
-
-### Other agents (OpenCode, Windsurf, Cline, Gemini CLI, 35+)
+### Other agents
 
 ```bash
-npx skills add scalekit-inc/authstack --list              # see available skills
-npx skills add scalekit-inc/authstack --skill integrating-agentkit
-npx skills add scalekit-inc/authstack --skill implementing-saaskit
-npx skills add scalekit-inc/authstack --all                # or install everything
+npx skills add scalekit-inc/skills --all
 ```
 
-## Step 4 — Start building
+`--all` puts the next named skill on disk, not only the two wizards.
 
-Describe your goal and the installed skill will guide implementation:
+Codex and Cursor go through `npx @scalekit-inc/cli setup`.
 
-- *"Add OAuth to my MCP server so Claude Desktop can connect"*
-- *"Implement login and signup with JWT session management"*
-- *"Connect my AI agent to Gmail and Google Calendar"*
-- *"Add enterprise SSO to my existing app"*
+## Live lookups
 
-## Documentation
-
-| Resource | URL | When to use |
-|----------|-----|-------------|
-| LLM doc index | `https://docs.scalekit.com/llms.txt` | Maps each product to its doc set — start here |
-| API reference | `https://docs.scalekit.com/apis` | Full REST API (OpenAPI-generated) |
-| Docs sitemap | `https://docs.scalekit.com/sitemap-0.xml` | Find specific guides or pages |
+- CLI: `npx @scalekit-inc/cli --help`
+- Docs index: https://docs.scalekit.com/llms.txt
+- MCP: https://mcp.scalekit.com
