@@ -10,6 +10,10 @@ Add agent OAuth, tool calling, SSO, SCIM, MCP auth, and session management to an
 
 ### Installation
 
+Pick one path.
+
+**AuthStack plugin** (this repo):
+
 ```bash
 npx @scalekit-inc/cli setup
 ```
@@ -21,6 +25,12 @@ npx @scalekit-inc/cli setup claude
 npx @scalekit-inc/cli setup cursor
 npx @scalekit-inc/cli setup codex
 npx @scalekit-inc/cli setup copilot
+```
+
+**Portable skills pack** (no plugin wrapper) lives in [scalekit-inc/skills](https://github.com/scalekit-inc/skills):
+
+```bash
+npx skills add scalekit-inc/skills --list
 ```
 
 ---
@@ -41,12 +51,6 @@ This repo contains the complete Scalekit AuthStack — two kits that cover auth 
 ---
 
 Each kit ships with implementation skills — see [`kits/agentkit/skills/`](./kits/agentkit/skills/) and [`kits/saaskit/skills/`](./kits/saaskit/skills/).
-
-Portable copies of those skills (no plugin wrapper) live in [scalekit-inc/skills](https://github.com/scalekit-inc/skills):
-
-```bash
-npx skills add scalekit-inc/skills --list
-```
 
 Connector catalog: [docs.scalekit.com/agentkit/connectors.md](https://docs.scalekit.com/agentkit/connectors.md)
 
