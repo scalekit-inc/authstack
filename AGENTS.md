@@ -49,7 +49,7 @@ After `npx @scalekit-inc/cli setup`, English is the normal path. "Setup AgentKit
 | `review-scalekit-code` | "review this Scalekit code" |
 | `deploy-self-hosted` | "self-hosted Scalekit", "Helm" |
 
-Folder names on disk still use the old gerunds until the later rename tickets land. The table is the target.
+Folder names on disk match the table.
 
 ## Writing bar
 
