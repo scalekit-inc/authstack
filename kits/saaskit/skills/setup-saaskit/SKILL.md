@@ -1,76 +1,36 @@
 ---
 name: setup-saaskit
-description: First stop for adding end-user authentication to a web app with Scalekit SaaSKit — login, sessions, enterprise SSO, SCIM directory sync, RBAC, and API keys. Use when the user says 'add login', 'set up SSO', or 'add auth to my app' and it is unclear which SaaSKit skill fits. Picks the right skill by framework and hands the build to it. Not for agents calling external tools — that is setup-agentkit.
+description: >
+  Configures SaaSKit so a project has env credentials, a redirect
+  URI, and a first login URL.
+  Use when the user wants to setup SaaSKit or add login to this app.
+  It does not install the CLI (that's `setup-scalekit`)
+  or write login/callback/session code (that's `implement-saaskit`).
 ---
 
-# SaaSKit — Where to Start
+# Setup SaaSKit
+
+Give this project env credentials, a registered redirect URI, and a first login URL. Then stop.
 
 ## Guardrails
-- **MUST** route to the right SaaSKit skill and stop — this skill does NOT implement auth itself.
-- **MUST NOT** generate implementation code here; the target skill owns that.
-- **MUST** ask the Step 1 questions one at a time when the framework or what's-being-built is unclear, rather than guessing.
 
-> **IMPORTANT:** This skill routes to the right skill — it does NOT implement auth itself. Once you identify the right skill below, tell the user to invoke it and stop. Do not generate implementation code here.
+- **MUST** wait for dashboard credential values. **MUST NOT** invent them.
+- **MUST** keep `SCALEKIT_REDIRECT_URI` identical to the dashboard Allowed callback URL.
+- **MUST NOT** write login, callback, or session code. Name `implement-saaskit` instead.
 
----
+## Gotchas
 
-## Step 1: Determine what to build
+- Read credentials from `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`, and `SCALEKIT_REDIRECT_URI`.
+- `SCALEKIT_REDIRECT_URI` must match an Allowed callback URL in the dashboard, character for character.
+- Default callback is `http://localhost:3000/auth/callback` when the project has no callback path yet.
+- This skill stops at the first login URL. Login, callback, and session code belong to `implement-saaskit`.
+- Wait for the user to supply credentials. Do not invent values.
 
-If answers aren't already clear from context, ask one question at a time:
+## Step 1 — Get API credentials
 
-1. **New or existing codebase?**
-   - New project
-   - Adding auth to an existing app
+Open [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
 
-2. **Framework?**
-   - Next.js (App Router or Pages Router)
-   - Python (Django / FastAPI / Flask)
-   - Go
-   - Other / not sure
-
-3. **What are you adding?**
-   - Login, sessions, and user management (most common starting point)
-   - Enterprise SSO (Okta, Azure AD, Google Workspace, etc.)
-   - SCIM / user provisioning (sync users from a directory)
-   - Secure an MCP server with OAuth 2.1
-   - API keys for developers
-   - Not sure / full auth stack
-
----
-
-## Step 2: Tell the user exactly which skill to invoke
-
-Pick the best match and tell the user: "Run `/saaskit:<skill>` to get started."
-
-| Framework | What you're adding | Tell them to run |
-|---|---|---|
-| Next.js | Login + sessions | `/saaskit:implementing-saaskit-nextjs` |
-| Python | Login + sessions | `/saaskit:implementing-saaskit-python` |
-| Go / other | Login + sessions | `/saaskit:implementing-saaskit` |
-| Any | Enterprise SSO | `/saaskit:implementing-modular-sso` |
-| Any | SCIM provisioning | `/saaskit:implementing-scim-provisioning` |
-| Any | MCP server auth | `/saaskit:adding-mcp-oauth` |
-| Any | API keys | `/saaskit:adding-api-auth` |
-| Any | RBAC / permissions | `/saaskit:implementing-access-control` |
-| Any | Migrating from Auth0 / Firebase / custom auth | `/saaskit:migrating-to-saaskit` |
-
-If the user wants **login + SSO + SCIM** (full B2B auth stack), tell them to start with `/saaskit:implementing-saaskit` (or the framework variant), then chain to `/saaskit:implementing-modular-sso` once login is working.
-
-When routing, include one or two relevant orientation sentences from below so the user has context before reading the skill. Then **stop** — the target skill handles implementation.
-
-### Orientation notes by topic
-
-**Enterprise SSO:** SSO in Scalekit is scoped to an organization — every auth request needs `organizationId` or a domain hint to reach the right IdP. Two modes: Modular SSO (you manage users/sessions) vs Full-Stack SaaSKit (Scalekit manages users). Most B2B SaaS apps with existing user management use Modular SSO.
-
-**SCIM provisioning:** Scalekit bridges the customer's identity provider (Okta, Azure AD) and your app via webhooks. Requires two parts: a webhook endpoint in your app, AND SCIM configuration on the customer's IdP side.
-
-**MCP OAuth:** Requires Streamable HTTP transport — stdio does not support OAuth. The MCP server must expose a `/.well-known/oauth-protected-resource` discovery endpoint.
-
----
-
-## Step 3: Environment checklist for the user (if new project)
-
-Tell the user to confirm these credentials exist before they run the target skill (**user action** — do not read or write their environment yourself):
+Collect:
 
 ```bash
 SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com
@@ -78,16 +38,74 @@ SCALEKIT_CLIENT_ID=<from dashboard>
 SCALEKIT_CLIENT_SECRET=<from dashboard>
 ```
 
-Get these from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. If the user cannot confirm, stop and wait rather than inventing values.
+Self-hosted: use the environment URL and credentials from that admin dashboard.
 
-**Self-hosted Scalekit**: Use the `SCALEKIT_ENVIRONMENT_URL` and credentials from your self-hosted admin dashboard (typically at `https://app.<your-domain>` after you deploy via the distribution portal). Run `/saaskit:self-hosted` for complete Kubernetes + Helm deployment guidance (or to get integration adjustments for an existing self-hosted instance).
+**Done when:** the user has those three values from the dashboard.
 
-Use `/saaskit:testing-auth-setup` to validate credentials and connection end-to-end before writing any auth code.
+## Step 2 — Register the redirect URI
 
----
+Pick the callback URL. Use the project's existing callback path when it has one. Otherwise use `http://localhost:3000/auth/callback`.
 
-## When to switch skills
+In the dashboard: **Authentication → Redirect URLs → Allowed callback URLs**. Add that exact URL.
 
-- **Already know what you need?** Skip this skill and invoke the target directly.
-- **SDK errors or wrong imports?** Use `/saaskit:scalekit-code-doctor`.
-- **Production checklist?** Use `/saaskit:production-readiness-saaskit`.
+Set `SCALEKIT_REDIRECT_URI` to the same string.
+
+**Done when:** the dashboard lists the URL, and `SCALEKIT_REDIRECT_URI` matches it exactly.
+
+## Step 3 — Write project env
+
+```sh
+SCALEKIT_ENVIRONMENT_URL=<your-environment-url>
+SCALEKIT_CLIENT_ID=<your-client-id>
+SCALEKIT_CLIENT_SECRET=<your-client-secret>
+SCALEKIT_REDIRECT_URI=<your-callback-url>
+```
+
+Put these in the project's env file. Keep secrets out of source.
+
+**Done when:** the env file contains all four names.
+
+## Step 4 — Produce the first login URL
+
+Use the Scalekit SDK already in the project. Install `@scalekit-sdk/node` only when the repo has no Scalekit SDK yet.
+
+```js
+import { ScalekitClient } from '@scalekit-sdk/node';
+
+const scalekit = new ScalekitClient(
+  process.env.SCALEKIT_ENVIRONMENT_URL,
+  process.env.SCALEKIT_CLIENT_ID,
+  process.env.SCALEKIT_CLIENT_SECRET
+);
+
+const loginUrl = scalekit.getAuthorizationUrl(process.env.SCALEKIT_REDIRECT_URI, {
+  scopes: ['openid', 'profile', 'email', 'offline_access']
+});
+console.log(loginUrl);
+```
+
+If the repo is Python, call `get_authorization_url` on `scalekit-sdk-python` with the same env names. Do not implement the callback or session here.
+
+The URL looks like `https://<SCALEKIT_ENVIRONMENT_URL>/oauth/authorize?...`.
+
+**Done when:** that authorization URL is printed, or the user has a one-liner that prints it.
+
+## Step 5 — Name the next skill and stop
+
+- Next.js App Router → name `implement-saaskit-nextjs`. Stop.
+- Django, FastAPI, or Flask → name `implement-saaskit-python`. Stop.
+- Anything else → name `implement-saaskit`. Stop.
+
+**Done when:** one of those skills is named, and this skill has stopped.
+
+## Reach for
+
+- `setup-scalekit` if the plugin is missing
+- `run-dryrun` to check credentials after this wizard
+- `deploy-self-hosted` for an on-prem environment
+- `setup-agentkit` if the user wanted connections and tools
+
+## Live lookups
+
+- Docs index: https://docs.scalekit.com/llms.txt
+- MCP: https://mcp.scalekit.com

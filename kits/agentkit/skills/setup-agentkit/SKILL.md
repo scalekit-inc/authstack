@@ -1,56 +1,39 @@
 ---
 name: setup-agentkit
-description: First stop for wiring an AI agent to third-party tools via Scalekit AgentKit — OAuth connections, connected accounts, and tool discovery for Gmail, Slack, Salesforce, and similar. Use when the user says 'add agent auth', 'set up AgentKit', or 'let my agent act in Gmail on a user behalf' and it is unclear which AgentKit skill fits. Routes only and hands the build to the target skill. Not for human sign-in features — that is setup-saaskit.
+description: >
+  Configures AgentKit so a project has a dashboard connection, env
+  credentials, and a first connector path.
+  Use when the user wants to setup AgentKit in this project, add
+  AgentKit, or connect Gmail/Slack.
+  It does not install the CLI (that's `setup-scalekit`)
+  or write app-code tool calls (that's `integrate-agentkit`).
 ---
 
-# AgentKit — Where to Start
+# Setup AgentKit
+
+Give this project a dashboard connection, env credentials, and a first connector path. Then stop.
 
 ## Guardrails
 
-- **MUST** route to the right AgentKit skill and stop — this skill does NOT implement the integration.
-- **MUST NOT** generate integration/implementation code here; the target skill owns that.
-- **MUST** treat the credential block in "Environment setup" as a checklist for the *user* to satisfy — do not attempt to read or write their environment yourself.
+- **MUST** wait for dashboard credential values. **MUST NOT** invent them.
+- **MUST** record the dashboard Connection Name.
+- **MUST NOT** write app-code tool calls. Name `integrate-agentkit` instead.
 
----
+## Gotchas
 
-## Step 1: Determine what to build
+- Read SDK credentials from `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET`. Some samples use `SCALEKIT_ENV_URL` for the same URL; use `SCALEKIT_ENVIRONMENT_URL` here.
+- This skill stops after the **connection**. A **connected account** belongs to `integrate-agentkit`.
+- Gmail can proceed without extra dashboard config. Enable every other connector in the dashboard before the next skill.
+- Record the dashboard **Connection Name**. Later SDK calls use that exact string, not the connector slug.
+- The Scalekit MCP server at https://mcp.scalekit.com needs no extra env vars. It does not replace the SDK credentials.
+- Look up connectors at https://docs.scalekit.com/agentkit/connectors.md.
+- Wait for the user to supply credentials. Do not invent values.
 
-If answers aren't already clear from context, ask one question at a time:
+## Step 1 — Get API credentials
 
-1. **What are you building?**
-   - New agent that needs to call third-party tools on behalf of users (Gmail, Slack, Salesforce, etc.)
-   - Existing agent — adding connector access or fixing auth
-   - MCP server that exposes AgentKit tools
+Open [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
 
-2. **What's your current state?**
-   - Starting from scratch
-   - Have a Scalekit account and environment already
-   - Have AgentKit set up, stuck on a specific step
-
----
-
-## Step 2: Tell the user exactly which skill to invoke
-
-Pick the best match and tell the user: "Run `/agentkit:<skill>` to get started."
-
-| What you're building | Tell them to run |
-|---|---|
-| New agent calling third-party tools (Gmail, Slack, Salesforce…) on behalf of users | `/agentkit:integrating-agentkit` |
-| Existing agent — adding a connector or fixing connected-account / OAuth flow | `/agentkit:integrating-agentkit` |
-| Discover tools available for a connector, inspect schemas | `/agentkit:discovering-connector-tools` |
-| Expose AgentKit tools over MCP for Claude Desktop, Cursor, VS Code | `/agentkit:exposing-agentkit-via-mcp` |
-| Pre-launch checklist, going to production | `/agentkit:production-readiness-agentkit` |
-| SDK errors, wrong imports, broken auth calls | `/saaskit:scalekit-code-doctor` |
-
-Before handing off, point the user at the environment checklist in Step 3. Then **stop** — the target skill handles implementation.
-
----
-
-## Step 3: Environment checklist for the user (if new project)
-
-**Two different credential paths** — do not conflate them:
-
-1. **SDK / app integration** (needed for `integrating-agentkit`, `discovering-connector-tools`, production code): tell the user to confirm these env vars exist before they run the target skill (user action — do not read or set their environment yourself):
+Collect:
 
 ```bash
 SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com
@@ -58,29 +41,54 @@ SCALEKIT_CLIENT_ID=<from dashboard>
 SCALEKIT_CLIENT_SECRET=<from dashboard>
 ```
 
-Get these from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
+**Done when:** the user has those three values from the dashboard.
 
-2. **Scalekit MCP server** (`https://mcp.scalekit.com`, pre-configured in `.mcp.json`): used for interactive tool validation in Claude Code / Cursor. OAuth 2.1 for the MCP connection is handled by the client — **no extra env vars for MCP itself**. That does **not** replace the SDK credentials above for application code.
+## Step 2 — Write project env
 
----
+Put the three variables in the project's env file (`.env` or the existing env file). Keep secrets out of source.
 
-## Core AgentKit concepts (30-second orientation)
+**Done when:** the env file contains all three names, and source files do not hardcode the secret.
 
-| Concept | What it is |
-|---|---|
-| **Connector** | A third-party app (Gmail, Slack, Salesforce, GitHub, etc.) |
-| **Connection** | Your app's agreement with a connector (configured in dashboard) |
-| **Connected account** | A specific user's authorization to use a connection |
-| **Tool** | An action the agent can take (send email, create issue, etc.) |
+## Step 3 — Create the first connection
 
-Flow: User authorizes → connected account created → agent discovers tools → agent executes tool calls using that account.
+Ask which connector to start with only when the user has not named one. Default is Gmail.
 
-**Dashboard setup note:** Gmail works without extra configuration. All other connectors (Slack, Salesforce, GitHub, Google Calendar, etc.) must be enabled and configured in the Scalekit Dashboard before users can connect them.
+If the connector is not Gmail, have the user create it:
 
----
+**Scalekit Dashboard → AgentKit → Connections → Add connection** → select the connector → set **Connection Name** → Save.
 
-## When to switch skills
+For OAuth connectors that need a provider app, open the live guide: https://docs.scalekit.com/agentkit/connections/
 
-- **Already know what you need?** Skip this skill and invoke the target directly.
-- **SDK errors?** Use `/saaskit:scalekit-code-doctor`.
-- **Want to add B2B auth (login, SSO, SCIM) to your app?** Switch to the `saaskit` plugin: `/saaskit:setup-saaskit`.
+Record the **Connection Name** exactly as the dashboard shows it.
+
+**Done when:** a connection exists for the chosen connector, and the Connection Name is written down.
+
+## Step 4 — Record the first connector path
+
+Keep these three items for the next skill:
+
+- Connector (for example Gmail or Slack)
+- Connection Name
+- Catalog: https://docs.scalekit.com/agentkit/connectors.md
+
+**Done when:** those three items are known in this session.
+
+## Step 5 — Name the next skill and stop
+
+Name `integrate-agentkit`. That skill creates a connected account, an authorization link, and one downstream call.
+
+Do not write those app-code calls here.
+
+**Done when:** `integrate-agentkit` is named, and this skill has stopped.
+
+## Reach for
+
+- `setup-scalekit` if the plugin is missing
+- `discover-connectors` for the live tool catalog
+- `setup-saaskit` if the user wanted app login
+
+## Live lookups
+
+- Docs index: https://docs.scalekit.com/llms.txt
+- Connector catalog: https://docs.scalekit.com/agentkit/connectors.md
+- MCP: https://mcp.scalekit.com
