@@ -1,6 +1,6 @@
 # CONTEXT.md
 
-Shared language for this repo. Use these tokens in skills, READMEs, and pointers.
+Shared language for this repo. Define these tokens only here. Use them in skills, READMEs, and pointers.
 
 | Token | Means |
 |-------|--------|
