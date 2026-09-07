@@ -31,6 +31,7 @@ After `npx @scalekit-inc/cli setup`, English is the normal path. "Setup AgentKit
 | `setup-agentkit` | "setup AgentKit", "add AgentKit to this project" |
 | `setup-saaskit` | "setup SaaSKit", "add login to this app" |
 | `integrate-agentkit` | "AgentKit in app code", "connected account", "authorization link" |
+| `integrate-agentkit-host` | "OpenClaw", "Hermes", "clawhub install", "always-on host" |
 | `discover-connectors` | "what connectors", "connector tools" |
 | `expose-agentkit-mcp` | "expose AgentKit over MCP" |
 | `implement-saaskit` | "add SaaSKit login", "callback", "logout" |

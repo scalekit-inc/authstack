@@ -9,6 +9,7 @@ Shared language for this repo. Define these tokens only here. Use them in skills
 | **connection** | Dashboard connector config (Slack, Gmail, …). |
 | **connected account** | One user authorized on one connection. |
 | **dryrun** | Live auth check via the Scalekit CLI. |
+| **host** | Long-lived agent process (OpenClaw or Hermes). Not this git repo. |
 
 Connector index: https://docs.scalekit.com/agentkit/connectors.md
 LLM docs index: https://docs.scalekit.com/llms.txt
