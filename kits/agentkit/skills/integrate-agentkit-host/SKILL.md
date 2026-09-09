@@ -96,7 +96,7 @@ OAuth: if not `ACTIVE`, show the magic link and wait. API key: if missing or not
 
 Name one real host prompt for the user, for example “Show my latest unread emails.” Do not write app-code SDK calls.
 
-The host follows [references/runtime-skill.md](references/runtime-skill.md) at chat time.
+OpenClaw follows the ClawHub skill `scalekit-agent-auth` at chat time. Hermes follows the installed `hermes-delegated-auth` skill.
 
 **Done when:** OpenClaw is installed, env is set, and this skill has stopped.
 
@@ -106,7 +106,7 @@ The host follows [references/runtime-skill.md](references/runtime-skill.md) at c
 - `integrate-agentkit` for AgentKit in app code
 - `expose-agentkit-mcp` for a per-user MCP URL
 - [references/hermes.md](references/hermes.md) for Hermes
-- [references/runtime-skill.md](references/runtime-skill.md) for the host chat loop
+- ClawHub `scalekit-agent-auth` for the OpenClaw chat loop
 
 ## Live lookups
 

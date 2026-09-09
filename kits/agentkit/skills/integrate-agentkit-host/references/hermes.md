@@ -6,7 +6,7 @@ Wire Hermes so it can act as a named user through AgentKit. Then stop.
 
 ## Guardrails
 
-- **MUST** copy the runtime skill and `scripts/` onto the Hermes profile. Do not `hermes skills install` this parent folder. That file is for coding agents.
+- **MUST** install the host skill with `hermes skills install`. Do not `hermes skills install` this parent folder. That file is for coding agents.
 - **MUST** put only Scalekit client credentials in the Hermes env file.
 - **MUST NOT** run `hermes mcp login` against Scalekit. **MUST NOT** mint a Virtual MCP session token.
 
@@ -16,24 +16,15 @@ Wire Hermes so it can act as a named user through AgentKit. Then stop.
 - Hermes already injects declared env vars into the process. The script reads the environment. It does not open the Hermes env file.
 - The Slack gateway bot is a channel. It is not the named user.
 - Cron cannot click a magic link. The connected account must already be `ACTIVE`.
+- Do not install from `scalekit-inc/hermes-skill`. That repo is archived.
 
-## Step 1 — Copy the runtime skill
-
-Clone the public repo, then copy from the skill directory:
+## Step 1 — Install the host skill
 
 ```bash
-git clone --depth 1 https://github.com/scalekit-inc/authstack.git
-cd authstack/kits/agentkit/skills/integrate-agentkit-host
-DEST="${HERMES_HOME:-$HOME/.hermes}/skills/scalekit-agent-auth"
-mkdir -p "$DEST/scripts"
-cp references/runtime-skill.md "$DEST/SKILL.md"
-cp scripts/tool_exec.py scripts/pyproject.toml "$DEST/scripts/"
-cd "$DEST/scripts" && uv sync
+hermes skills install scalekit-inc/authstack/kits/agentkit/host/hermes-delegated-auth
 ```
 
-The on-host folder name stays `scalekit-agent-auth` so it matches the shipped ClawHub **install slug**. The ClawHub listing frontmatter `name` is `openclaw-tool-executor`. That is slug parity, not skill-name parity.
-
-**Done when:** `hermes skills list` shows `scalekit-agent-auth`.
+**Done when:** `hermes skills list` shows `hermes-delegated-auth`.
 
 ## Step 2 — Write host env
 
@@ -51,8 +42,9 @@ SCALEKIT_IDENTIFIER=<named user>
 ## Step 3 — Confirm the connection
 
 ```bash
-cd "${HERMES_HOME:-$HOME/.hermes}/skills/scalekit-agent-auth/scripts"
-uv run tool_exec.py --list-connections --provider GMAIL
+cd "${HERMES_HOME:-$HOME/.hermes}/skills/hermes-delegated-auth"
+uv sync
+uv run scripts/tool_exec.py --list-connections --provider GMAIL
 ```
 
 Use the Connection Name from `setup-agentkit`. Gmail with no dashboard row is `gmail`.
@@ -62,7 +54,7 @@ Use the Connection Name from `setup-agentkit`. Gmail with no dashboard row is `g
 ## Step 4 — Authorize if needed
 
 ```bash
-uv run tool_exec.py --generate-link --connection-name <CONNECTION_NAME>
+uv run scripts/tool_exec.py --generate-link --connection-name <CONNECTION_NAME>
 ```
 
 OAuth: if not `ACTIVE`, show the magic link and wait.
@@ -71,9 +63,9 @@ OAuth: if not `ACTIVE`, show the magic link and wait.
 
 ## Step 5 — Stop
 
-Name one real Hermes prompt, for example `/scalekit-agent-auth show my unread emails`. Do not write app-code SDK calls.
+Name one real Hermes prompt, for example `/hermes-delegated-auth show my unread emails`. Do not write app-code SDK calls.
 
-**Done when:** the runtime skill is on the Hermes profile, env is set, and this file has stopped.
+**Done when:** the host skill is on the Hermes profile, env is set, and this file has stopped.
 
 ## Live lookups
 
