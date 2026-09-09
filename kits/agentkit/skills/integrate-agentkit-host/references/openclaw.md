@@ -19,6 +19,6 @@ Prefer `SCALEKIT_*`. The shipped skill also reads `TOOL_ENV_URL`, `TOOL_CLIENT_I
 
 ## Chat loop
 
-The host follows [runtime-skill.md](runtime-skill.md).
+The host follows the ClawHub skill `scalekit-agent-auth`.
 
 **Done when:** `clawhub` lists `scalekit-agent-auth` and the four env names exist.

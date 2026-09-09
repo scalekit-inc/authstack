@@ -13,6 +13,7 @@ Marketplace plugin names stay `agentkit` and `saaskit`. Do not add a third.
 ```
 skills/setup-scalekit/     # router: install + pick a kit
 kits/agentkit/             # AgentKit plugin + skills
+kits/agentkit/host/        # Hermes-installable runtime (not a plugin skill)
 kits/saaskit/              # SaaSKit plugin + skills
 scripts/validate.sh        # writing-bar + marketplace names
 ```
