@@ -2,7 +2,7 @@
 name: expose-agentkit-mcp
 description: >
   Exposes AgentKit tools over MCP so a client can call them
-  on a per-user instance URL.
+  on one static mcp_server_url plus a per-run session token.
   Use when the user wants to expose AgentKit over MCP, generate
   a per-user MCP URL, or connect LangChain via MCP.
   It does not list connectors (that's `discover-connectors`)
@@ -11,18 +11,19 @@ description: >
 
 # Expose AgentKit over MCP
 
-Create an AgentKit MCP config, a per-user instance URL, and one Streamable HTTP client call. Then stop.
+Create an AgentKit MCP config, mint a per-run session token, and make one Streamable HTTP client call. Then stop.
 
 ## Guardrails
 
 - **MUST** use Streamable HTTP. stdio and SSE are not supported.
 - **MUST** pass the exact dashboard Connection Name (`connection_name`). Never invent a slug. Never use a `connector` field for that value.
-- **MUST** give each user their own instance URL. Do not share one URL across users.
+- **MUST** reuse one static `mcp_server_url`. Mint a session token per identifier and per run with `create_session_token`.
 
 ## Gotchas
 
 - Read SDK credentials from `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET`. Some samples use `SCALEKIT_ENV_URL`; use `SCALEKIT_ENVIRONMENT_URL` here. Do not prepend `https://` if the value already has a scheme.
-- A **connection** is dashboard connector config. A **connected account** is one user authorized on that connection. This skill authorizes through the MCP instance auth link, not `integrate-agentkit` app-code token calls.
+- A **connection** is dashboard connector config. A **connected account** is one user authorized on that connection. This skill authorizes through `list_mcp_connected_accounts` auth links, not `integrate-agentkit` app-code token calls.
+- `create_session_token` is remint. Call it again before the next run. Do not reuse a token from a previous session.
 - Gmail can use Connection Name `gmail` when the dashboard has no Gmail row. Every other connector must already have a dashboard connection. Record that name exactly.
 - Default language is Python. The Node SDK has no MCP config API. Stay on Python.
 - Look up tool names with `discover-connectors`. Do not copy connector pages into the repo.
@@ -69,9 +70,9 @@ Set `OPENAI_API_KEY` in the environment for the LangChain client in Step 5.
 
 **Done when:** the client initializes from those three env vars, and source files do not hardcode the secret.
 
-## Step 3 — Create the MCP config and instance
+## Step 3 — Create the MCP config
 
-Replace `"user_123"` with the project's user id. Replace `"MY_CALENDAR"` with the recorded Calendar Connection Name.
+Replace `"MY_CALENDAR"` with the recorded Calendar Connection Name. Create the config once. Reuse `config_id` and `mcp_server_url`.
 
 ```python
 cfg_response = my_mcp.create_config(
@@ -88,31 +89,28 @@ cfg_response = my_mcp.create_config(
         ),
     ],
 )
-config_name = cfg_response.config.name
-
-inst_response = my_mcp.ensure_instance(
-    config_name=config_name,
-    user_identifier="user_123",
-)
-mcp_url = inst_response.instance.url
-print("Instance URL:", mcp_url)
+config_id = cfg_response.config.id
+mcp_server_url = cfg_response.config.mcp_server_url
+print("MCP server URL:", mcp_server_url)
 ```
 
-**Done when:** `mcp_url` is a per-user instance URL.
+**Done when:** `config_id` and a static `mcp_server_url` exist.
 
 ## Step 4 — Print auth links if needed
 
+Replace `"user_123"` with the project's user id.
+
 ```python
-auth_state_response = my_mcp.get_instance_auth_state(
-    instance_id=inst_response.instance.id,
-    include_auth_links=True,
+accounts_response = my_mcp.list_mcp_connected_accounts(
+    config_id=config_id,
+    identifier="user_123",
+    include_auth_link=True,
 )
-for conn in auth_state_response.connections:
+for account in accounts_response.connected_accounts:
     print(
-        "Connection:", conn.connection_name,
-        " Provider:", conn.provider,
-        " Auth Link:", conn.authentication_link,
-        " Status:", conn.connected_account_status,
+        "Connection:", account.connection_name,
+        " Auth Link:", account.authentication_link,
+        " Status:", account.connected_account_status,
     )
 ```
 
@@ -120,15 +118,25 @@ Tell the user to open every printed auth link and finish OAuth. A non-interactiv
 
 **Done when:** each mapped connection is authorized, or every needed auth link is printed.
 
-## Step 5 — Call the instance over Streamable HTTP
+## Step 5 — Mint a session token and call over Streamable HTTP
 
 ```python
+from datetime import timedelta
+
+token_response = my_mcp.create_session_token(
+    mcp_config_id=config_id,
+    identifier="user_123",
+    expiry=timedelta(hours=1),
+)
+token = token_response.token
+
 async def main():
     client = MultiServerMCPClient(
         {
             "reminder_demo": {
                 "transport": "streamable_http",
-                "url": mcp_url,
+                "url": mcp_server_url,
+                "headers": {"Authorization": f"Bearer {token}"},
             },
         }
     )
