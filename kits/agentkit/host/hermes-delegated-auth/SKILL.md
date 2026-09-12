@@ -41,7 +41,7 @@ Hermes is the host. Scalekit is the vault. Run tools as `SCALEKIT_IDENTIFIER`.
 
 - **MUST** wait for dashboard credential values. **MUST NOT** invent them.
 - **MUST** put only Scalekit client credentials on the host. Provider tokens stay in Scalekit.
-- **MUST NOT** run `hermes mcp login` against Scalekit. **MUST NOT** mint a Virtual MCP session token.
+- **MUST NOT** run `hermes mcp login` against Scalekit. **MUST NOT** mint a Virtual MCP session token for another end user inside this host. A single-operator host may hold one operator bearer. See https://docs.scalekit.com/agentkit/hermes/
 
 Run every command from this skill directory
 (`~/.hermes/skills/hermes-delegated-auth/` after install).
@@ -136,7 +136,9 @@ Honor `SCALEKIT_IDENTIFIER` as the named user.
 Return a magic link when the connected account is not `ACTIVE`.
 Do not write Gmail, Slack-user, or Calendar tokens to disk.
 Do not run `hermes mcp login` against Scalekit.
-Do not mint a Virtual MCP session token.
+Do not mint a Virtual MCP session token for another end user inside this host.
+A single-operator host may hold one operator bearer. See
+https://docs.scalekit.com/agentkit/hermes/
 Do not treat the Slack gateway bot as the named user.
 
 Cron cannot click a magic link. The connected account must already be `ACTIVE`.

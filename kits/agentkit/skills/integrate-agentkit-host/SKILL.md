@@ -28,7 +28,7 @@ A **host** is a long-lived agent process (OpenClaw or Hermes). It is not this gi
 - Read `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`, and `SCALEKIT_IDENTIFIER`. OpenClaw also accepts `TOOL_*` aliases. Never `SCALEKIT_ENV_URL`.
 - A **connection** already exists from `setup-agentkit`. This skill starts there.
 - The Slack gateway bot is a channel. It is not the named user.
-- Do not run `hermes mcp login` against Scalekit. Do not mint a Virtual MCP session token.
+- Do not run `hermes mcp login` against Scalekit. Do not mint a Virtual MCP session token for another end user inside this host. A single-operator host may hold one operator bearer. See https://docs.scalekit.com/agentkit/hermes/
 - Default host is OpenClaw. Hermes is [references/hermes.md](references/hermes.md).
 
 ## Step 1 — Pick the host

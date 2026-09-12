@@ -8,7 +8,7 @@ Wire Hermes so it can act as a named user through AgentKit. Then stop.
 
 - **MUST** install the host skill with `hermes skills install`. Do not `hermes skills install` this parent folder. That file is for coding agents.
 - **MUST** put only Scalekit client credentials in the Hermes env file.
-- **MUST NOT** run `hermes mcp login` against Scalekit. **MUST NOT** mint a Virtual MCP session token.
+- **MUST NOT** run `hermes mcp login` against Scalekit. **MUST NOT** mint a Virtual MCP session token for another end user inside this host. A single-operator host may hold one operator bearer. See https://docs.scalekit.com/agentkit/hermes/
 
 ## Gotchas
 
