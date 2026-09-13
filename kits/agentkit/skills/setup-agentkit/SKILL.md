@@ -17,7 +17,7 @@ Give this project a dashboard connection, env credentials, and a first connector
 
 - **MUST** wait for dashboard credential values. **MUST NOT** invent them.
 - **MUST** record the Connection Name (`gmail` when the dashboard has no Gmail row).
-- **MUST NOT** write app-code tool calls. Name `integrate-agentkit` instead.
+- **MUST NOT** write app-code tool calls. **MUST** name `integrate-agentkit` before waiting for credentials.
 
 ## Gotchas
 
@@ -41,7 +41,9 @@ SCALEKIT_CLIENT_ID=<from dashboard>
 SCALEKIT_CLIENT_SECRET=<from dashboard>
 ```
 
-**Done when:** the user has those three values from the dashboard.
+Before you wait: record Connection Name `gmail` when the user named no connector. Name `integrate-agentkit` as the next skill after they write `.env`. Then wait.
+
+**Done when:** the three names are shown, Connection Name `gmail` is recorded if no other connector was named, `integrate-agentkit` is named, and you are waiting for the three values.
 
 ## Step 2 — Write project env
 

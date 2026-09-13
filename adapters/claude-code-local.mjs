@@ -4,6 +4,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { promisify } from "node:util";
 import { createAgentAdapter } from "@netlify/axis";
+import { writeClaudeSkills } from "@netlify/axis/dist/adapters/utils/skills.js";
 
 const execFile = promisify(childProcess.execFile);
 
@@ -71,6 +72,9 @@ export default createAgentAdapter({
           if (fs.existsSync(homeCreds)) fs.copyFileSync(homeCreds, credsDest);
         }
       }
+    }
+    if (configDir && ctx.input.resolvedSkills?.length) {
+      writeClaudeSkills(configDir, ctx.input.resolvedSkills);
     }
   },
   buildArgs: (input) => {

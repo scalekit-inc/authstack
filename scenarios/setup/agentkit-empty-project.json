@@ -1,5 +1,6 @@
 {
   "name": "AgentKit empty-project setup",
+  "skip": true,
   "prompt": "Setup AgentKit in this project.",
   "agents": ["claude-code-local"],
   "judge": [

@@ -4,6 +4,7 @@
   "adapters": {
     "claude-code-local": "./adapters/claude-code-local.mjs"
   },
+  "skills": ["./kits/agentkit/skills/setup-agentkit"],
   "env": ["ANTHROPIC_API_KEY"],
   "settings": {
     "concurrency": 1,

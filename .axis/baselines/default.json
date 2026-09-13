@@ -1,0 +1,20 @@
+{
+  "name": "default",
+  "createdAt": "2026-09-13T17:41:53.361Z",
+  "updatedAt": "2026-09-13T17:41:53.361Z",
+  "results": {
+    "setup-agentkit": {
+      "claude-code-local": {
+        "axisScore": 97,
+        "goalAchievement": 95,
+        "environment": 100,
+        "service": 100,
+        "agent": 96,
+        "durationMs": 10237,
+        "tokens": 69085,
+        "fromReportId": "2026-09-13-174115",
+        "timestamp": "2026-09-13T17:41:38.847Z"
+      }
+    }
+  }
+}
