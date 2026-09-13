@@ -1,0 +1,24 @@
+{
+  "name": "setup-saaskit follows the skill",
+  "prompt": "Add login to this app.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/setup-saaskit"],
+  "judge": [
+    {
+      "check": "Agent followed setup-saaskit. It asked the human to write SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, SCALEKIT_CLIENT_SECRET, and SCALEKIT_REDIRECT_URI into .env. It did not invent those values.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent said SCALEKIT_REDIRECT_URI must match the dashboard Allowed callback URL. Default http://localhost:3000/auth/callback when the project has no callback path.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent named implement-saaskit (or implement-saaskit-nextjs / implement-saaskit-python) and stopped. It did not write login, callback, or session code.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start AgentKit setup or pick AgentKit.",
+      "weight": 0.2
+    }
+  ]
+}

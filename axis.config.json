@@ -1,8 +1,9 @@
 {
   "scenarios": "./scenarios/setup",
-  "agents": ["claude-code-local"],
+  "agents": ["grok-local"],
   "adapters": {
-    "claude-code-local": "./adapters/claude-code-local.mjs"
+    "claude-code-local": "./adapters/claude-code-local.mjs",
+    "grok-local": "./adapters/grok-local.mjs"
   },
   "skills": [],
   "env": ["ANTHROPIC_API_KEY"],
