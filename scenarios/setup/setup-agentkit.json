@@ -2,6 +2,7 @@
   "name": "setup-agentkit follows the skill",
   "prompt": "Setup AgentKit in this project.",
   "agents": ["claude-code-local"],
+  "skills": ["./kits/agentkit/skills/setup-agentkit"],
   "judge": [
     {
       "check": "Agent followed setup-agentkit. It asked the human to write SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env. It did not invent those values.",
