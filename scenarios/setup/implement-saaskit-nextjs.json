@@ -1,0 +1,24 @@
+{
+  "name": "implement-saaskit-nextjs follows the skill",
+  "prompt": "Add SaaSKit login in the Next.js App Router.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/implement-saaskit-nextjs"],
+  "judge": [
+    {
+      "check": "Agent followed implement-saaskit-nextjs. It stayed on App Router login, callback, scalekit_session, logout, and refresh. It did not write Express cookie-parser or Python auth.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, SCALEKIT_CLIENT_SECRET, and SCALEKIT_REDIRECT_URI into .env. It did not invent those values. It kept redirectUri identical to the dashboard callback.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent used sameSite lax on auth cookies, not strict. It treated next as a relative path only. It did not import ScalekitClient in middleware.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start implement-saaskit (generic Node) or implement-saaskit-python.",
+      "weight": 0.25
+    }
+  ]
+}
