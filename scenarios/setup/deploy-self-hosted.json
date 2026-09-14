@@ -1,0 +1,24 @@
+{
+  "name": "deploy-self-hosted follows the skill",
+  "prompt": "Deploy Scalekit self-hosted with Helm.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/deploy-self-hosted"],
+  "judge": [
+    {
+      "check": "Agent followed deploy-self-hosted. It used Helm with external PostgreSQL 15+ and Redis 6.2+ for production. It set app.domain with no scheme and no trailing slash. It did not write SaaSKit login.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent set SCALEKIT_ENVIRONMENT_URL=https://app.<domain>. It never used SCALEKIT_ENV_URL. It never used app.scalekit.com. It did not invent or commit registry tokens, SMTP passwords, or DB passwords.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent named implement-saaskit for login against this env and stopped. It did not write login, callback, or session code.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start implement-saaskit login writes or check-saaskit-prod.",
+      "weight": 0.2
+    }
+  ]
+}
