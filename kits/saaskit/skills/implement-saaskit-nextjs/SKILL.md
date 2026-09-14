@@ -19,6 +19,7 @@ Add login, callback, a `scalekit_session` cookie, logout, and refresh in the App
 - **MUST** keep `redirectUri` identical to the dashboard Allowed callback URL.
 - **MUST** set `sameSite: 'lax'` on every auth cookie. **MUST NOT** use `'strict'` — it drops the cookie on the OAuth callback.
 - **MUST** treat `next` as a relative path only (`/...`, not `//…`). **MUST NOT** redirect to an arbitrary URL.
+- **MUST** write the App Router files in this repo and stop. **MUST NOT** run `create-next-app` or `next dev`.
 
 ## Gotchas
 - `setup-saaskit` already wrote env and registered the redirect. Start there.
@@ -184,12 +185,11 @@ Then re-check: `const session = await getSession(); if (!session?.accessToken) r
 
 ## Step 8 — Stop
 
-Do not write Express `cookie-parser` middleware or Python auth.
+Do not write Express `cookie-parser` middleware or Python auth. Do not start `next dev` or run a live smoke. Ask the user to write `.env`. Then stop.
 
 **Done when:** login, callback, `scalekit_session`, logout, and refresh are in the App Router, and this skill has stopped.
 
 ## Reach for
-
 - `setup-saaskit` if env or the redirect URI is missing
 - `implement-saaskit` for Node, Express, or Pages Router
 - `implement-saaskit-python` for Django, FastAPI, or Flask
