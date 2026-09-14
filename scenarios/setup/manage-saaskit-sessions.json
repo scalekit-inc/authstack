@@ -1,0 +1,24 @@
+{
+  "name": "manage-saaskit-sessions follows the skill",
+  "prompt": "Add session refresh and revoke.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/manage-saaskit-sessions"],
+  "judge": [
+    {
+      "check": "Agent followed manage-saaskit-sessions. It stayed on Node cookies, validateAccessToken on /api, POST /auth/refresh, and scalekit.session revoke. It did not write login, callback, or the logout redirect.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env. It did not invent those values.",
+      "weight": 0.2
+    },
+    {
+      "check": "Agent kept accessToken path-scoped to /api and refreshToken path-scoped to /auth/refresh. It used sameSite lax. It did not put the access token in localStorage. It returned 401 when refresh failed.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent did not start implement-saaskit. It named implement-saaskit for login, callback, and logout, then stopped.",
+      "weight": 0.2
+    }
+  ]
+}
