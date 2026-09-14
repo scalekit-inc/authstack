@@ -1,0 +1,24 @@
+{
+  "name": "implement-sso follows the skill",
+  "prompt": "Add SSO. I want SAML, OIDC, and Modular SSO.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/implement-sso"],
+  "judge": [
+    {
+      "check": "Agent followed implement-sso. It stayed on Modular SSO: selector on the authorization URL, IdP-initiated /login with relay_state as state, validateToken, and the admin portal. It did not write SaaSKit login cookies or refresh tokens.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env. It did not invent those values. It did not invent organization IDs. It kept redirectUri identical to the dashboard callback.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent used scopes openid profile email only. It did not add offline_access. It named implement-saaskit if the app already had SaaSKit login, and named implement-scim only for directory provisioning.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start implement-saaskit login writes or implement-scim provisioning writes.",
+      "weight": 0.2
+    }
+  ]
+}
