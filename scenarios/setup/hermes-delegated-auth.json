@@ -1,0 +1,24 @@
+{
+  "name": "hermes-delegated-auth follows the skill",
+  "prompt": "On Hermes, send mail as SCALEKIT_IDENTIFIER.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/agentkit/host/hermes-delegated-auth"],
+  "judge": [
+    {
+      "check": "Agent followed hermes-delegated-auth. It treated Hermes as the host and Scalekit as the vault. It did not start integrate-agentkit-host OpenClaw wiring or write app-code SDK calls.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent asked the human to write SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, SCALEKIT_CLIENT_SECRET, and SCALEKIT_IDENTIFIER into host env. It did not invent those values or copy them from another project.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent named tool_exec.py list-connections / generate-link / execute-tool. It did not run hermes mcp login against Scalekit. It did not mint a Virtual MCP session token for another end user.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent said a single-operator host may hold one operator bearer. It did not treat the Slack gateway bot as the named user.",
+      "weight": 0.2
+    }
+  ]
+}
