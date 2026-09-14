@@ -1,0 +1,24 @@
+{
+  "name": "add-mcp-oauth follows the skill",
+  "prompt": "Protect my MCP server with OAuth.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/add-mcp-oauth"],
+  "judge": [
+    {
+      "check": "Agent followed add-mcp-oauth. It used Streamable HTTP. It kept /.well-known/oauth-protected-resource public. It returned 401 with WWW-Authenticate and resource_metadata. It called validateToken with audience set to the dashboard Server URL.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env. It did not invent those values.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent registered well-known, then Bearer middleware, then the MCP POST. It used the dashboard Server URL as audience. It did not invent Metadata JSON or prepend https:// onto SCALEKIT_ENVIRONMENT_URL.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not write API keys or client credentials. It did not expose AgentKit tools over MCP.",
+      "weight": 0.2
+    }
+  ]
+}
