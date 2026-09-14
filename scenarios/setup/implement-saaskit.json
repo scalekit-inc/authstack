@@ -1,0 +1,24 @@
+{
+  "name": "implement-saaskit follows the skill",
+  "prompt": "Add SaaSKit login, a callback, and logout.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/implement-saaskit"],
+  "judge": [
+    {
+      "check": "Agent followed implement-saaskit. It stayed on the Node path. It showed /auth/login, callback cookies, and logout. It did not put tokens in localStorage.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, SCALEKIT_CLIENT_SECRET, and SCALEKIT_REDIRECT_URI into .env. It did not invent those values. It said SCALEKIT_REDIRECT_URI must match the dashboard Allowed callback URL.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not write refresh middleware, remote revoke, or a session list. It named manage-saaskit-sessions and stopped.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start implement-saaskit-nextjs or implement-saaskit-python.",
+      "weight": 0.2
+    }
+  ]
+}
