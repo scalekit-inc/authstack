@@ -1,7 +1,7 @@
 {
   "name": "default",
   "createdAt": "2026-09-13T17:41:53.361Z",
-  "updatedAt": "2026-09-14T10:50:33.064Z",
+  "updatedAt": "2026-09-14T10:55:53.960Z",
   "results": {
     "setup-agentkit": {
       "claude-code-local": {
@@ -222,6 +222,84 @@
         "tokens": 1717360,
         "fromReportId": "2026-09-14-104452",
         "timestamp": "2026-09-14T10:49:12.518Z"
+      }
+    },
+    "add-api-auth": {
+      "grok-local": {
+        "axisScore": 96,
+        "goalAchievement": 100,
+        "environment": 94,
+        "service": 93,
+        "agent": 92,
+        "durationMs": 104383,
+        "tokens": 220082,
+        "fromReportId": "2026-09-14-102210",
+        "timestamp": "2026-09-14T10:25:56.716Z"
+      }
+    },
+    "add-mcp-oauth": {
+      "grok-local": {
+        "axisScore": 97,
+        "goalAchievement": 100,
+        "environment": 100,
+        "service": 94,
+        "agent": 92,
+        "durationMs": 59003,
+        "tokens": 128429,
+        "fromReportId": "2026-09-14-102354",
+        "timestamp": "2026-09-14T10:26:15.871Z"
+      }
+    },
+    "check-saaskit-prod": {
+      "grok-local": {
+        "axisScore": 93,
+        "goalAchievement": 94,
+        "environment": 100,
+        "service": 94,
+        "agent": 82,
+        "durationMs": 214239,
+        "tokens": 332535,
+        "fromReportId": "2026-09-14-103208",
+        "timestamp": "2026-09-14T10:38:42.896Z"
+      }
+    },
+    "migrate-to-saaskit": {
+      "grok-local": {
+        "axisScore": 94,
+        "goalAchievement": 100,
+        "environment": 100,
+        "service": 93,
+        "agent": 77,
+        "durationMs": 236879,
+        "tokens": 536127,
+        "fromReportId": "2026-09-14-101446",
+        "timestamp": "2026-09-14T10:21:51.544Z"
+      }
+    },
+    "review-scalekit-code": {
+      "grok-local": {
+        "axisScore": 97,
+        "goalAchievement": 100,
+        "environment": 100,
+        "service": 91,
+        "agent": 95,
+        "durationMs": 182072,
+        "tokens": 64506,
+        "fromReportId": "2026-09-14-103406",
+        "timestamp": "2026-09-14T10:39:03.465Z"
+      }
+    },
+    "run-dryrun": {
+      "grok-local": {
+        "axisScore": 94,
+        "goalAchievement": 96,
+        "environment": 94,
+        "service": 95,
+        "agent": 91,
+        "durationMs": 28643,
+        "tokens": 112136,
+        "fromReportId": "2026-09-14-103545",
+        "timestamp": "2026-09-14T10:37:51.111Z"
       }
     }
   }
