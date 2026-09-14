@@ -1,0 +1,24 @@
+{
+  "name": "check-saaskit-prod follows the skill",
+  "prompt": "Go live SaaSKit. Check this app for production.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/check-saaskit-prod"],
+  "judge": [
+    {
+      "check": "Agent followed check-saaskit-prod. It created a go-live record with PASS or WAIVE plus a reason on every item. It did not sign off with empty rows.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env. It did not invent those values. It required SCALEKIT_ENVIRONMENT_URL to end in .scalekit.com, not .scalekit.dev.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent did not write login. It named implement-saaskit instead. It did not run dryrun. It named run-dryrun instead.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent kept credentials in environment variables only. It did not start implement-saaskit login writes or run-dryrun.",
+      "weight": 0.15
+    }
+  ]
+}
