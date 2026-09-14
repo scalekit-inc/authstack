@@ -1,0 +1,24 @@
+{
+  "name": "integrate-agentkit follows the skill",
+  "prompt": "Create a Gmail connected account and call one tool.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/agentkit/skills/integrate-agentkit"],
+  "judge": [
+    {
+      "check": "Agent followed integrate-agentkit. It used Connection Name gmail. It did not invent a connector slug.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent initialized the SDK from SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET. It asked the human to write missing values into .env. It did not invent those values.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent showed get_or_create_connected_account, then get_authorization_link when status is not ACTIVE. In this non-interactive run it printed the link and stopped. It did not call the Gmail API without a token.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent did not start integrate-agentkit-host or expose-agentkit-mcp.",
+      "weight": 0.2
+    }
+  ]
+}
