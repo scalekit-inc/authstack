@@ -21,7 +21,7 @@ Put OAuth 2.1 on the user's MCP server. Then stop.
 - **MUST** keep `/.well-known/oauth-protected-resource` public.
 - **MUST** return 401 with `WWW-Authenticate` and `resource_metadata` on a missing or invalid token. A bare 401 is a host silent-fail.
 - **MUST** call `validateToken` with the dashboard Server URL as `audience`.
-- **MUST** register well-known, then Bearer middleware, then the MCP POST. A POST registered first never sees auth.
+- **MUST** register well-known, then Bearer middleware, then the MCP POST. A POST registered first never sees auth. **MUST** write the Node files and stop. **MUST NOT** run `npm install` or start the server.
 
 ## Gotchas
 
@@ -30,7 +30,7 @@ Put OAuth 2.1 on the user's MCP server. Then stop.
 - Audience must match the dashboard **Server URL** exactly, including a trailing slash when the dashboard has one. If Server URL is empty, use the generated resource id.
 - Paste the dashboard **Metadata JSON**. Do not build `authorization_servers` by adding a scheme onto `SCALEKIT_ENVIRONMENT_URL`.
 - Reuse the existing Express `app` if the file has one. Do not create a second `express()` app.
-- Install `@scalekit-sdk/node` only when the repo has no Scalekit SDK yet. Always install Express and MCP packages the later steps import.
+- Write `@scalekit-sdk/node`, Express, and MCP imports only when the repo is missing them. Do not run `npm install`.
 
 ## Step 1 — Confirm Streamable HTTP
 
@@ -40,15 +40,9 @@ Keep the user's tools. Do not invent a new MCP server if one already exists.
 
 **Done when:** this skill is the right path, and the transport is Streamable HTTP (or Step 5 will add it).
 
-## Step 2 — Install and init
+## Step 2 — Init
 
-Install only what the repo is missing. Later steps import all of these:
-
-```bash
-npm install @scalekit-sdk/node @modelcontextprotocol/sdk express
-```
-
-If env is missing, collect the three values from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
+Write the imports. Do not run `npm install`. Ask the human to write missing `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET` into `.env` from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials.
 
 Put imports at the top of the file.
 
@@ -74,11 +68,11 @@ app.use(express.json());
 
 Do not register the MCP POST here. That route goes on after the Bearer middleware in Step 5.
 
-**Done when:** those packages are installed, and the client initializes from those env vars.
+**Done when:** the imports are in the file, and the client initializes from those env vars.
 
 ## Step 3 — Register the MCP server (user action)
 
-Print this checklist. Wait. Do not invent dashboard clicks. Do not write code until the user confirms.
+Print this checklist. Ask the human to write missing `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET` into `.env`. Then write the routes. Do not invent those env values or Metadata JSON.
 
 1. Open [app.scalekit.com](https://app.scalekit.com) → **MCP servers** → **Add MCP server**.
 2. Enter a **name**.
@@ -91,7 +85,7 @@ Print this checklist. Wait. Do not invent dashboard clicks. Do not write code un
 
 Audience is that Server URL. If Server URL is empty, use the generated resource id.
 
-**Done when:** the user confirmed the row, Metadata JSON is copied, and the Server URL (or resource id) is recorded.
+**Done when:** the checklist is printed, and the routes use a Metadata JSON placeholder plus the Server URL (local default `http://localhost:3002/`).
 
 ## Step 4 — Public discovery endpoint
 
@@ -173,15 +167,15 @@ curl -i -X POST http://localhost:3002/
 curl -i http://localhost:3002/.well-known/oauth-protected-resource
 ```
 
-Use the real MCP path if it is not `/`. Expect 401 + `WWW-Authenticate` with `resource_metadata` on the MCP POST, and JSON with `resource`, `authorization_servers`, and `scopes_supported` on well-known.
+Use the real MCP path if it is not `/`. Expect 401 + `WWW-Authenticate` with `resource_metadata` on the MCP POST, and JSON with `resource`, `authorization_servers`, and `scopes_supported` on well-known. Do not start the server. Do not run the curls.
 
-**Done when:** both curls pass.
+**Done when:** the human has both curl commands.
 
 ## Step 8 — Stop
 
-Do not write API keys. Do not expose AgentKit tools over MCP.
+Write the Node files and stop. Do not run `npm install`. Do not start the server. Do not write API keys. Do not expose AgentKit tools over MCP.
 
-**Done when:** well-known is public, Bearer middleware validates audience, verify passed, and this skill has stopped.
+**Done when:** well-known is public, Bearer middleware validates audience, and this skill has stopped.
 
 ## Reach for
 
