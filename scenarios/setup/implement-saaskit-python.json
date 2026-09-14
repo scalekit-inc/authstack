@@ -1,0 +1,24 @@
+{
+  "name": "implement-saaskit-python follows the skill",
+  "prompt": "Add SaaSKit login in FastAPI.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/implement-saaskit-python"],
+  "judge": [
+    {
+      "check": "Agent followed implement-saaskit-python. It stayed on FastAPI ScalekitAuth, auth.install(app), sk_session, logout, and requires_auth. It did not write Express cookie-parser or Next.js App Router auth.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, SCALEKIT_CLIENT_SECRET, SCALEKIT_REDIRECT_URI, and COOKIE_ENCRYPTION_SECRET into .env. It did not invent those values. It kept redirect_uri identical to the dashboard callback.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent set cookie_secure=False on local HTTP. It treated returnTo as a relative path only. It did not add /auth/refresh. It did not return a Response from a protected endpoint.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start implement-saaskit (generic Node) or implement-saaskit-nextjs.",
+      "weight": 0.25
+    }
+  ]
+}
