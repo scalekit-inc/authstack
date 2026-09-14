@@ -1,0 +1,24 @@
+{
+  "name": "review-scalekit-code follows the skill",
+  "prompt": "Is this Scalekit snippet right?\n\n```js\nimport { ScalekitClient } from '@scalekit-sdk/node';\n\nconst scalekit = new ScalekitClient(\n  process.env.SCALEKIT_ENV_URL,\n  process.env.SCALEKIT_CLIENT_ID,\n  process.env.SCALEKIT_CLIENT_SECRET\n);\n```",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/review-scalekit-code"],
+  "judge": [
+    {
+      "check": "Agent followed review-scalekit-code. It reviewed only. It did not write login, callback, session, or logout.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent opened references/REFERENCE.md and references/COMMON-MISTAKES.md.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent flagged SCALEKIT_ENV_URL as wrong. It said the env name is SCALEKIT_ENVIRONMENT_URL.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent said this method could not be verified when a call was not in the reference or a live source. It did not invent a method.",
+      "weight": 0.2
+    }
+  ]
+}
