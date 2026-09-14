@@ -1,0 +1,24 @@
+{
+  "name": "implement-scim follows the skill",
+  "prompt": "Add SCIM. I want to provision users from a directory.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/implement-scim"],
+  "judge": [
+    {
+      "check": "Agent followed implement-scim. It called verifyWebhookPayload before reading the event, upserted users, and deactivated on user_deleted. It did not hard-delete.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, SCALEKIT_CLIENT_SECRET, and SCALEKIT_WEBHOOK_SECRET names into .env. It did not invent those values. It did not invent organization IDs.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent named implement-sso only for the admin portal so IT can turn on the directory.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not write SaaSKit login or an SSO admin portal embed.",
+      "weight": 0.2
+    }
+  ]
+}
