@@ -18,6 +18,7 @@ Name tools and schemas from the live catalog and Scalekit MCP. Then stop.
 - **MUST** treat the live catalog and Scalekit MCP as the source of truth. Do not cache a connector list in the repo.
 - **MUST** page `list_tools` / `search_tools` until the next-page token is empty. One call is not the full catalog.
 - **MUST NOT** execute tools or authorize a connected account. Name `integrate-agentkit` for that.
+- **MUST** ask the user to write missing `SCALEKIT_*` values into this project's `.env` when Scalekit MCP is not connected. **MUST NOT** invent them or skip the ask.
 
 ## Gotchas
 
@@ -43,7 +44,7 @@ If the repo is Node, follow [references/node.md](references/node.md) from here.
 
 If Scalekit MCP is already connected, skip this step and go to Step 3.
 
-If env vars are missing, collect them from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. Put them in the project env file. Do not invent values.
+If env vars are missing, collect them from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. Ask the user to put them in this project's env file. Do not invent values. Do not skip this ask because the catalog page already lists tools.
 
 ```bash
 pip install scalekit-sdk-python python-dotenv
@@ -65,7 +66,7 @@ sk_client = ScalekitClient(
 tools = sk_client.actions.tools
 ```
 
-**Done when:** MCP is connected, or the client initializes from those three env vars and source files do not hardcode the secret.
+**Done when:** MCP is connected, or you have asked the user to write the three names into this project's `.env` and shown the client init from those env vars. Source files do not hardcode the secret.
 
 ## Step 3 — Page tools and schemas
 

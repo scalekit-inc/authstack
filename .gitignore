@@ -2,4 +2,5 @@
 .superpowers/
 .axis/reports/
 .axis/remotes/
+.axis/loop-status.md
 node_modules/

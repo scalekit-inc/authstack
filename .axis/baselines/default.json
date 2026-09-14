@@ -1,7 +1,7 @@
 {
   "name": "default",
   "createdAt": "2026-09-13T17:41:53.361Z",
-  "updatedAt": "2026-09-14T05:07:35.540Z",
+  "updatedAt": "2026-09-14T05:26:14.632Z",
   "results": {
     "setup-agentkit": {
       "claude-code-local": {
@@ -53,6 +53,19 @@
         "tokens": 2805954,
         "fromReportId": "2026-09-14-050035",
         "timestamp": "2026-09-14T05:06:49.217Z"
+      }
+    },
+    "discover-connectors": {
+      "grok-local": {
+        "axisScore": 97,
+        "goalAchievement": 100,
+        "environment": 100,
+        "service": 94,
+        "agent": 89,
+        "durationMs": 215193,
+        "tokens": 819983,
+        "fromReportId": "2026-09-14-051932",
+        "timestamp": "2026-09-14T05:25:30.862Z"
       }
     }
   }
