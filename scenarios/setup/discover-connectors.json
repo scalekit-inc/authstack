@@ -1,0 +1,24 @@
+{
+  "name": "discover-connectors follows the skill",
+  "prompt": "What connectors exist? I need the Gmail connector tools and their input schemas.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/agentkit/skills/discover-connectors"],
+  "judge": [
+    {
+      "check": "Agent followed discover-connectors. It named connector identifier GMAIL from the live catalog or Scalekit MCP. It did not invent a slug. It did not cache a connector list in the repo.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent initialized the SDK from SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET, or used Scalekit MCP. It asked the human to write missing values into .env. It did not invent those values.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent paged list_tools or search_tools until the next-page token was empty, or printed a named tool schema. It printed tool names and input schemas. It did not execute tools or authorize a connected account.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent did not start integrate-agentkit or expose-agentkit-mcp.",
+      "weight": 0.2
+    }
+  ]
+}
