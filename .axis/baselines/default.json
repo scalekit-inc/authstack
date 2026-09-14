@@ -1,7 +1,7 @@
 {
   "name": "default",
   "createdAt": "2026-09-13T17:41:53.361Z",
-  "updatedAt": "2026-09-14T10:06:52.966Z",
+  "updatedAt": "2026-09-14T10:07:31.847Z",
   "results": {
     "setup-agentkit": {
       "claude-code-local": {
@@ -187,15 +187,15 @@
     },
     "implement-sso": {
       "grok-local": {
-        "axisScore": 97,
+        "axisScore": 95,
         "goalAchievement": 100,
-        "environment": 100,
+        "environment": 94,
         "service": 94,
-        "agent": 90,
-        "durationMs": 142454,
-        "tokens": 311591,
-        "fromReportId": "2026-09-14-095718",
-        "timestamp": "2026-09-14T10:05:47.323Z"
+        "agent": 89,
+        "durationMs": 389142,
+        "tokens": 2230368,
+        "fromReportId": "2026-09-14-095658",
+        "timestamp": "2026-09-14T10:06:47.077Z"
       }
     }
   }
