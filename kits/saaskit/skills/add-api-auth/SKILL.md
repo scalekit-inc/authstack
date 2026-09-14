@@ -16,7 +16,8 @@ Add an API key or client credentials to protect an API. Then stop.
 
 - **MUST** read `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET` from env. **MUST NOT** hardcode them.
 - **MUST** validate the token server-side on every request. Return 401 on invalid, expired, or revoked.
-- **MUST** show plain-text `token` / `plainSecret` once. Store `tokenId` for list and invalidate. **MUST NOT** log or commit the secret.
+- **MUST** show plain-text `token` / `plainSecret` once from the create path. Store `tokenId` for list and invalidate. **MUST NOT** log or commit the secret.
+- **MUST** write create, validate, list, and invalidate even when env is missing. Ask for the three env names and the dashboard organization ID. Do not invent those values. Do not wait for a live create.
 
 ## Gotchas
 
@@ -33,9 +34,12 @@ Add an API key or client credentials to protect an API. Then stop.
 - Client credentials, M2M JWT, or `/oauth/token` → open [references/client-credentials.md](references/client-credentials.md). Stay on that file.
 - Anything else → stay here. Default is an org-scoped API key.
 
-If env is missing, collect the three values from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. Copy the organization ID from Organizations.
+Print this checklist. Ask the human to write missing `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`, and the organization ID into `.env`. Then write create, validate, list, and invalidate. Do not wait.
 
-**Done when:** this skill is the right path, the three env names exist, and an organization ID is copied from the dashboard.
+1. [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials
+2. Organizations → copy the organization ID. Do not invent `org_…` values.
+
+**Done when:** this skill is the right path, the three env names exist, and the organization ID is named as a dashboard copy.
 
 ## Step 2 — Init the SDK
 
@@ -65,9 +69,11 @@ const opaqueToken = response.token;
 const tokenId = response.tokenId;
 ```
 
-Show `token` once. Store `tokenId` (`apit_…`). Scalekit cannot return the secret later.
+Print `opaqueToken` once to stdout. Then drop it. Store `tokenId` (`apit_…`). Scalekit cannot return the secret later.
 
-**Done when:** the user saw `token` once, and the app stored `tokenId`.
+If env is missing, still write this create path. Quote the one-time print in the reply (`token: <response.token>`). Do not invent a token string. Do not call Scalekit.
+
+**Done when:** the create path prints `token` once, and the app stored `tokenId`.
 
 ## Step 4 — Validate on every request
 
@@ -108,7 +114,7 @@ Invalidate is instant and idempotent. Rotate: create new → update consumer →
 
 ## Step 6 — Stop
 
-Do not write MCP OAuth or SaaSKit login.
+Write the Node files and stop. Do not wait. Do not write MCP OAuth or SaaSKit login.
 
 **Done when:** create, validate, list, and invalidate are in the repo, and this skill has stopped.
 
