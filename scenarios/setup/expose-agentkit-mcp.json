@@ -1,0 +1,24 @@
+{
+  "name": "expose-agentkit-mcp follows the skill",
+  "prompt": "Expose AgentKit over MCP for user_123.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/agentkit/skills/expose-agentkit-mcp"],
+  "judge": [
+    {
+      "check": "Agent followed expose-agentkit-mcp. It used create_config plus create_session_token and one static mcp_server_url. It did not call ensure_instance.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env. It did not invent those values or copy them from another project.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent used Connection Name gmail and waited for the Calendar dashboard Connection Name. It named list_mcp_connected_accounts auth links and Streamable HTTP with a Bearer session token.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start integrate-agentkit app-code token calls. It treated create_session_token as remint.",
+      "weight": 0.2
+    }
+  ]
+}
