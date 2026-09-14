@@ -18,6 +18,7 @@ Take this repo from a **connection** to a **connected account**, an authorized t
 - **MUST** pass the exact dashboard Connection Name (`connection_name` in Python, `connectionName` in Node). Never invent a slug. Never use a `connector` field for that value.
 - **MUST** re-fetch the connected account immediately before using the token. Scalekit auto-refreshes.
 - **MUST** print the authorization link and stop when the process is not interactive. Re-run from the token step after the user finishes OAuth.
+- **MUST** take missing `SCALEKIT_*` values from the user. **MUST NOT** copy them from another project, home directory, or skill folder.
 
 ## Gotchas
 
@@ -43,7 +44,7 @@ If none is recorded:
 
 If the repo is Node, follow [references/node.md](references/node.md) from here.
 
-If env vars are missing, collect them from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. Put them in the project env file. Do not invent values.
+If env vars are missing, collect them from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. Ask the user to put them in this project's env file. Do not invent values. Do not copy values from another directory.
 
 ```bash
 pip install scalekit-sdk-python python-dotenv requests
