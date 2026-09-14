@@ -1,7 +1,7 @@
 {
   "name": "default",
   "createdAt": "2026-09-13T17:41:53.361Z",
-  "updatedAt": "2026-09-14T06:27:14.912Z",
+  "updatedAt": "2026-09-14T06:35:26.739Z",
   "results": {
     "setup-agentkit": {
       "claude-code-local": {
@@ -105,6 +105,19 @@
         "tokens": 1157526,
         "fromReportId": "2026-09-14-062123",
         "timestamp": "2026-09-14T06:26:16.493Z"
+      }
+    },
+    "hermes-delegated-auth": {
+      "grok-local": {
+        "axisScore": 92,
+        "goalAchievement": 100,
+        "environment": 92,
+        "service": 93,
+        "agent": 73,
+        "durationMs": 109431,
+        "tokens": 717074,
+        "fromReportId": "2026-09-14-063120",
+        "timestamp": "2026-09-14T06:34:16.967Z"
       }
     }
   }
