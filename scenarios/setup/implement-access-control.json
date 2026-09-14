@@ -1,0 +1,24 @@
+{
+  "name": "implement-access-control follows the skill",
+  "prompt": "Add roles and permissions. Protect a route with RBAC.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/implement-access-control"],
+  "judge": [
+    {
+      "check": "Agent followed implement-access-control. It used validateToken before reading roles or permissions, enforced the check on the server, and returned 403 when the role or permission was missing. It did not write login, callback, or logout.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env. It did not invent those values. It did not invent role names.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent mounted requireAuth before requireRole or requirePermission. It used admin/member and a resource:action permission such as projects:read. It named implement-saaskit for login.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start implement-saaskit login writes or manage-saaskit-sessions refresh and revoke.",
+      "weight": 0.2
+    }
+  ]
+}

@@ -21,7 +21,7 @@ Put roles and permissions on a route. Then stop.
 
 ## Gotchas
 
-- Login must already exist. If it does not, name `implement-saaskit` and stop.
+- Login may be missing. Name `implement-saaskit` for login. Still write the guards.
 - Default language is Node. Same client as `implement-saaskit`.
 - Read `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`. Never `SCALEKIT_ENV_URL`.
 - Express: read `req.cookies.accessToken` as-is (`path: '/api'`). Do not `decrypt` unless `manage-saaskit-sessions` already encrypts that same cookie.
@@ -35,20 +35,20 @@ Put roles and permissions on a route. Then stop.
 
 ## Step 1 — Confirm login and roles
 
-If the app has no SaaSKit login, name `implement-saaskit` and stop.
+If the app has no SaaSKit login, name `implement-saaskit` for login. Still write the route guards here. Do not write login.
 
 - Express → stay here. Read the `accessToken` cookie.
 - Next.js App Router → stay here. Read `getSession().accessToken` from `scalekit_session`.
 - Django, FastAPI, or Flask → stay here. Check `user["roles"]` from `requires_auth`.
 
-Print this checklist. Wait for the user. Then continue.
+Print this checklist. Ask the human to write missing `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET` into `.env`. Then write the guards.
 
 1. [app.scalekit.com](https://app.scalekit.com) → Roles & Permissions
 2. Confirm `admin` and `member` exist. Add a permission such as `projects:read` only if the route needs one.
 
-Do not invent role names.
+Do not invent role names. Do not invent those env values.
 
-**Done when:** login exists and the dashboard shows the roles this route will check.
+**Done when:** this skill is the right path, `implement-saaskit` is named if login is missing, and the three env names exist.
 
 ## Step 2 — Init the SDK
 
