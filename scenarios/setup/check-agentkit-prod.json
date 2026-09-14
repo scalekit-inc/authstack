@@ -1,0 +1,24 @@
+{
+  "name": "check-agentkit-prod follows the skill",
+  "prompt": "Check this project for AgentKit production. I want to go live AgentKit.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/agentkit/skills/check-agentkit-prod"],
+  "judge": [
+    {
+      "check": "Agent followed check-agentkit-prod. It created a go-live record with PASS or WAIVE plus a reason on every item from Steps 2–7. It did not sign off with empty rows.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env. It did not invent those values. It required SCALEKIT_ENVIRONMENT_URL to end in .scalekit.com, not .scalekit.dev.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent kept credentials in environment variables only. It did not start integrate-agentkit app-code writes. It named integrate-agentkit for smoke-test SDK calls.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start check-saaskit-prod or write a connected account.",
+      "weight": 0.2
+    }
+  ]
+}
