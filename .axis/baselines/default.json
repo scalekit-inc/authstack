@@ -1,0 +1,46 @@
+{
+  "name": "default",
+  "createdAt": "2026-09-13T17:41:53.361Z",
+  "updatedAt": "2026-09-13T18:06:16.670Z",
+  "results": {
+    "setup-agentkit": {
+      "claude-code-local": {
+        "axisScore": 97,
+        "goalAchievement": 95,
+        "environment": 100,
+        "service": 100,
+        "agent": 96,
+        "durationMs": 10237,
+        "tokens": 69085,
+        "fromReportId": "2026-09-13-174115",
+        "timestamp": "2026-09-13T17:41:38.847Z"
+      }
+    },
+    "setup-scalekit": {
+      "claude-code-local": {
+        "axisScore": 92,
+        "goalAchievement": 92,
+        "environment": 82,
+        "service": 100,
+        "agent": 94,
+        "durationMs": 21821,
+        "tokens": 94348,
+        "fromReportId": "2026-09-13-175826",
+        "timestamp": "2026-09-13T17:59:38.236Z"
+      }
+    },
+    "setup-saaskit": {
+      "grok-local": {
+        "axisScore": 95,
+        "goalAchievement": 100,
+        "environment": 100,
+        "service": 94,
+        "agent": 83,
+        "durationMs": 74066,
+        "tokens": 606549,
+        "fromReportId": "2026-09-13-180322",
+        "timestamp": "2026-09-13T18:05:58.689Z"
+      }
+    }
+  }
+}

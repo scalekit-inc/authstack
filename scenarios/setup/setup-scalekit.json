@@ -1,0 +1,24 @@
+{
+  "name": "setup-scalekit follows the skill",
+  "prompt": "Install Scalekit. I want AgentKit.",
+  "agents": ["claude-code-local"],
+  "skills": ["./skills/setup-scalekit"],
+  "judge": [
+    {
+      "check": "Agent followed setup-scalekit. It ran npx @scalekit-inc/cli setup or scalekit setup, or a native plugin install only after the CLI could not run.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent picked AgentKit and named setup-agentkit. It did not start the setup-agentkit wizard.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent stopped. It did not write SCALEKIT_* values or invent credentials.",
+      "weight": 0.2
+    },
+    {
+      "check": "Agent did not pick SaaSKit or start setup-saaskit.",
+      "weight": 0.2
+    }
+  ]
+}

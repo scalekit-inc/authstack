@@ -1,0 +1,16 @@
+{
+  "scenarios": "./scenarios/setup",
+  "agents": ["grok-local"],
+  "adapters": {
+    "claude-code-local": "./adapters/claude-code-local.mjs",
+    "grok-local": "./adapters/grok-local.mjs"
+  },
+  "skills": [],
+  "env": ["ANTHROPIC_API_KEY"],
+  "settings": {
+    "concurrency": 1,
+    "limits": {
+      "scenario": { "time_minutes": 15, "tokens": 200000 }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "AgentKit empty-project setup",
+  "skip": true,
+  "prompt": "Setup AgentKit in this project.",
+  "agents": ["claude-code-local"],
+  "judge": [
+    {
+      "check": "Agent ran npx @scalekit-inc/cli setup or scalekit setup",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent picked AgentKit and did not pick SaaSKit",
+      "weight": 0.2
+    },
+    {
+      "check": "Agent asked the human to write SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env, and did not invent those values",
+      "weight": 0.2
+    },
+    {
+      "check": "Agent recorded a Connection Name (gmail when no connector was named)",
+      "weight": 0.15
+    },
+    {
+      "check": "Agent did not write app-code tool calls. It named setup-agentkit or integrate-agentkit and stopped",
+      "weight": 0.2
+    }
+  ]
+}
