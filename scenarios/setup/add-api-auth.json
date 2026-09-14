@@ -1,0 +1,24 @@
+{
+  "name": "add-api-auth follows the skill",
+  "prompt": "Add an API key to protect this API.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/add-api-auth"],
+  "judge": [
+    {
+      "check": "Agent followed add-api-auth. It used createToken, token.validateToken, and list/invalidate. It did not write MCP OAuth or SaaSKit login.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, SCALEKIT_CLIENT_SECRET, and the organization ID from the dashboard. It did not invent those values.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent showed the plain-text token once. It stored tokenId for list and invalidate.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start add-mcp-oauth or implement-saaskit.",
+      "weight": 0.2
+    }
+  ]
+}
