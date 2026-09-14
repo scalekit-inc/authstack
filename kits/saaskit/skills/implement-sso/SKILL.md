@@ -18,7 +18,7 @@ Add SAML/OIDC, IdP-initiated login, and the admin portal. Then stop.
 - **MUST** keep `redirectUri` identical to the dashboard Allowed callback URL.
 - **MUST** call `validateToken` before using claims.
 - **MUST** keep `relay_state` as `state` on IdP-initiated login.
-- **MUST** print dashboard checklists, wait for the user, then continue. Do not click the dashboard.
+- **MUST** print dashboard checklists. Do not click the dashboard. **MUST** write the Node files and stop. **MUST NOT** run `npm install` or start the server.
 
 ## Gotchas
 
@@ -36,7 +36,7 @@ Add SAML/OIDC, IdP-initiated login, and the admin portal. Then stop.
 
 If the app already uses SaaSKit or Full-Stack Auth login, name `implement-saaskit` and stop.
 
-Print this checklist. Wait for the user. Then continue.
+Print this checklist. Ask the human to write missing `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET` into `.env`. Then write the routes.
 
 1. [app.scalekit.com](https://app.scalekit.com) → Settings → Authentication Mode → Modular Auth
 2. Developers → Settings → API Credentials. Copy the three env names.
@@ -44,13 +44,13 @@ Print this checklist. Wait for the user. Then continue.
    - Allowed callback URLs: the app `/auth/callback` (local default `http://localhost:3000/auth/callback`)
    - Initiate login URL: the app `/login` (local default `http://localhost:3000/login`)
 
-Put the three env names in the project env file. Do not invent values.
+Do not invent those env values. Do not invent `org_…` IDs.
 
-**Done when:** mode is Modular Auth, the three env names exist, and both redirect URLs are registered.
+**Done when:** this skill is the right path, the three env names exist, and both redirect URL names are listed.
 
 ## Step 2 — Init the SDK
 
-Install `@scalekit-sdk/node` only when the repo has no Scalekit SDK yet.
+Write the `@scalekit-sdk/node` import. Do not run `npm install`.
 
 ```js
 import { ScalekitClient } from '@scalekit-sdk/node';
@@ -131,14 +131,14 @@ Do not write SaaSKit HttpOnly cookies. Modular SSO does not return a refresh tok
 
 ## Step 6 — Test with the simulator
 
-Print this checklist. Wait for the user. Then continue.
+Print this checklist. Do not start the app. Do not open the simulator.
 
 1. Dashboard → Organizations → Test Organization
 2. Copy the test `organization_id` or `connection_id`. Domains are `example.com` and `example.org`.
 3. Open `/auth/login` with one of: `organizationId=<id>`, `connectionId=<id>`, or `loginHint=user@example.com`
 4. Complete the simulator (SP-initiated, then IdP-initiated)
 
-**Done when:** the callback created the app session for a simulator login.
+**Done when:** the human has the simulator checklist.
 
 ## Step 7 — Admin portal
 
@@ -161,7 +161,7 @@ On `message`, if `event.data.event_type` is `PORTAL_SESSION_EXPIRY`, generate a 
 
 ## Step 8 — Stop
 
-Name `implement-scim` only if the user wants directory provisioning.
+Write the Node files and stop. Do not run `npm install`. Do not start the server. Name `implement-scim` only if the user wants directory provisioning.
 
 **Done when:** SAML/OIDC, IdP-initiated `/login`, and the admin portal are in the repo, and this skill has stopped.
 
