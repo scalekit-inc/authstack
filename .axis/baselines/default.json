@@ -1,7 +1,7 @@
 {
   "name": "default",
   "createdAt": "2026-09-13T17:41:53.361Z",
-  "updatedAt": "2026-09-14T10:07:31.847Z",
+  "updatedAt": "2026-09-14T10:50:33.064Z",
   "results": {
     "setup-agentkit": {
       "claude-code-local": {
@@ -196,6 +196,32 @@
         "tokens": 2230368,
         "fromReportId": "2026-09-14-095658",
         "timestamp": "2026-09-14T10:06:47.077Z"
+      }
+    },
+    "implement-scim": {
+      "grok-local": {
+        "axisScore": 97,
+        "goalAchievement": 100,
+        "environment": 100,
+        "service": 93,
+        "agent": 90,
+        "durationMs": 109001,
+        "tokens": 229561,
+        "fromReportId": "2026-09-14-103112",
+        "timestamp": "2026-09-14T10:37:15.536Z"
+      }
+    },
+    "deploy-self-hosted": {
+      "grok-local": {
+        "axisScore": 95,
+        "goalAchievement": 100,
+        "environment": 100,
+        "service": 94,
+        "agent": 80,
+        "durationMs": 157926,
+        "tokens": 1717360,
+        "fromReportId": "2026-09-14-104452",
+        "timestamp": "2026-09-14T10:49:12.518Z"
       }
     }
   }
