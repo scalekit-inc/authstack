@@ -1,0 +1,24 @@
+{
+  "name": "migrate-to-saaskit follows the skill",
+  "prompt": "Migrate this app from Auth0 to SaaSKit.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/migrate-to-saaskit"],
+  "judge": [
+    {
+      "check": "Agent followed migrate-to-saaskit. It audited and exported before any import. It stored original org and user primary keys in external_id. It set sendInvitationEmail false on every imported user. It did not copy password hashes. It kept a rollback feature flag.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent asked the human to write missing SCALEKIT_ENVIRONMENT_URL, SCALEKIT_CLIENT_ID, and SCALEKIT_CLIENT_SECRET into .env. It did not invent those values.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent named implement-saaskit for login, callback, cookies, and logout. It did not write those routes here.",
+      "weight": 0.25
+    },
+    {
+      "check": "Agent did not start implement-saaskit login writes.",
+      "weight": 0.2
+    }
+  ]
+}
