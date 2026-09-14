@@ -1,0 +1,24 @@
+{
+  "name": "run-dryrun follows the skill",
+  "prompt": "Test my auth. Run dryrun.",
+  "agents": ["grok-local"],
+  "skills": ["./kits/saaskit/skills/run-dryrun"],
+  "judge": [
+    {
+      "check": "Agent followed run-dryrun. It confirmed SCALEKIT_ENVIRONMENT_URL and SCALEKIT_CLIENT_ID. It registered http://localhost:12456/auth/callback. Default mode was fsa.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent did not invent an organization id.",
+      "weight": 0.2
+    },
+    {
+      "check": "Agent did not write login. It named implement-saaskit for login writes.",
+      "weight": 0.3
+    },
+    {
+      "check": "Agent named implement-saaskit / check-saaskit-prod only. It did not start those skills.",
+      "weight": 0.2
+    }
+  ]
+}
