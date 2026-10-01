@@ -27,10 +27,10 @@ npx @scalekit-inc/cli setup codex
 npx @scalekit-inc/cli setup copilot
 ```
 
-**Portable skills pack** (no plugin wrapper) lives in [scalekit-inc/skills](https://github.com/scalekit-inc/skills):
+**Skills without a plugin**: any agent that reads Agent Skills can install the same skills straight from this repo:
 
 ```bash
-npx skills add scalekit-inc/skills --list
+npx skills add scalekit-inc/authstack --list
 ```
 
 ---

@@ -53,6 +53,7 @@ Install `@scalekit-sdk/node` only when the repo has no Scalekit SDK yet. Install
 ```js
 import { ScalekitClient } from '@scalekit-sdk/node';
 import cookieParser from 'cookie-parser';
+import { randomBytes } from 'node:crypto';
 
 const scalekit = new ScalekitClient(
   process.env.SCALEKIT_ENVIRONMENT_URL,
@@ -67,24 +68,49 @@ app.use(cookieParser());
 
 ## Step 3 — Login route
 
+Generate a random `state` per login and keep it in a short-lived `HttpOnly` cookie. The callback checks it (CSRF).
+
 ```js
 app.get('/auth/login', (req, res) => {
+  const state = randomBytes(32).toString('hex');
+  res.cookie('oauthState', state, {
+    maxAge: 10 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/auth/callback',
+  });
   const authorizationUrl = scalekit.getAuthorizationUrl(redirectUri, {
-    scopes: ['openid', 'profile', 'email', 'offline_access']
+    scopes: ['openid', 'profile', 'email', 'offline_access'],
+    state,
   });
   res.redirect(authorizationUrl);
 });
 ```
 
-**Done when:** `/auth/login` redirects to that URL.
+**Done when:** `/auth/login` sets the `oauthState` cookie and redirects to that URL with the same `state`.
 
 ## Step 4 — Callback and session cookies
 
-Use the same `redirectUri` as Step 3. Then redirect off `/auth/callback`.
+Use the same `redirectUri` as Step 3. Check `state` and `error` before the code exchange. Then redirect off `/auth/callback`.
 
 ```js
 app.get('/auth/callback', async (req, res) => {
-  const { code } = req.query;
+  const { code, error, error_description, state } = req.query;
+  const storedState = req.cookies.oauthState;
+  res.clearCookie('oauthState', { path: '/auth/callback' });
+
+  if (!state || state !== storedState) {
+    return res.redirect('/login?error=invalid_state');
+  }
+  if (error) {
+    console.error('Authentication error:', error, error_description);
+    return res.redirect('/login?error=auth_failed');
+  }
+  if (!code) {
+    return res.redirect('/login?error=missing_code');
+  }
+
   const { idToken, accessToken, refreshToken, expiresIn } =
     await scalekit.authenticateWithCode(code, redirectUri);
 
@@ -119,7 +145,7 @@ app.get('/auth/callback', async (req, res) => {
 
 Do not validate or refresh here. That is `manage-saaskit-sessions`.
 
-**Done when:** the callback exchanges `code`, sets the three cookies, and the browser leaves `/auth/callback`.
+**Done when:** the callback rejects a missing or mismatched `state` and an `error` param, exchanges `code`, sets the three cookies, and the browser leaves `/auth/callback`.
 
 ## Step 5 — Logout
 
@@ -164,5 +190,5 @@ Name `manage-saaskit-sessions` for store, validate, refresh, and revoke.
 
 - Docs index: https://docs.scalekit.com/llms.txt
 - Auth flow: https://docs.scalekit.com/authenticate/fsa/quickstart/
-- Sessions: https://docs.scalekit.com/authenticate/fsa/sessions/
+- Sessions: https://docs.scalekit.com/authenticate/fsa/manage-session/
 - MCP: https://mcp.scalekit.com

@@ -47,7 +47,7 @@ uv sync
 uv run scripts/tool_exec.py --list-connections --provider GMAIL
 ```
 
-Use the Connection Name from `setup-agentkit`. Gmail with no dashboard row is `gmail`.
+Use the Connection Name from `setup-agentkit`. With none recorded, GitHub is `github-connect`. Every other connector, Gmail included, needs its own dashboard connection.
 
 **Done when:** a completed connection is listed, or `setup-agentkit` is named and this file has stopped.
 

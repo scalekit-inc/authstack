@@ -9,7 +9,7 @@
       "weight": 0.3
     },
     {
-      "check": "Agent recorded Connection Name gmail (user named no other connector).",
+      "check": "Agent recorded Connection Name github-connect (user named no other connector). It did not claim Gmail or any other connector works without its own dashboard connection.",
       "weight": 0.25
     },
     {

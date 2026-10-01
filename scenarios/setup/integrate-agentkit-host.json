@@ -13,7 +13,7 @@
       "weight": 0.3
     },
     {
-      "check": "Agent named clawhub install scalekit-agent-auth and Connection Name gmail when no other connector was named. It did not invent a connector slug.",
+      "check": "Agent named clawhub install scalekit-agent-auth and Connection Name github-connect when no other connector was named. It did not invent a connector slug.",
       "weight": 0.25
     },
     {

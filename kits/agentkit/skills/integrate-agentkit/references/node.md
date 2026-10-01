@@ -1,124 +1,113 @@
 # Integrate AgentKit — Node
 
-Same default path as `SKILL.md`: **connection** → **connected account** → authorization link if not `ACTIVE` → fetch token → one downstream API call.
+Same default path as `SKILL.md`: **connection** → **connected account** → authorization link if not `ACTIVE` → re-check status → one `executeTool` call.
 
-Use this file when the repo is Node. Do not run the Python samples in `SKILL.md`.
+Use this file when the repo is Node. Do not run the Python samples in `SKILL.md`. Docs: https://docs.scalekit.com/agentkit/quickstart/
 
 Env names: `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, `SCALEKIT_CLIENT_SECRET`. Some samples use `SCALEKIT_ENV_URL`; use `SCALEKIT_ENVIRONMENT_URL` here.
 
 Field name is `connectionName`. Never pass a `connector` field.
+
+`status` is the numeric `ConnectorStatus` enum, not a string. Compare it to `ConnectorStatus.ACTIVE`, imported from `@scalekit-sdk/node`.
+
+Confirm a tool name on the connector's page in https://docs.scalekit.com/agentkit/connectors.md, or with `actions.listTools`, before you call it.
 
 ## Step 2 — Init the SDK
 
 If env vars are missing, collect them from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. Put them in the project env file. Do not invent values.
 
 ```bash
-npm install @scalekit-sdk/node
+npm install @scalekit-sdk/node dotenv
 ```
 
 ```typescript
-import { ScalekitClient } from '@scalekit-sdk/node';
 import 'dotenv/config';
+import { ConnectorStatus, ScalekitClient } from '@scalekit-sdk/node';
 
-const scalekitClient = new ScalekitClient(
+const scalekit = new ScalekitClient(
   process.env.SCALEKIT_ENVIRONMENT_URL!,
   process.env.SCALEKIT_CLIENT_ID!,
-  process.env.SCALEKIT_CLIENT_SECRET!
+  process.env.SCALEKIT_CLIENT_SECRET!,
 );
-const { actions } = scalekitClient;
+const actions = scalekit.actions;
 ```
 
 **Done when:** the client initializes from those three env vars, and source files do not hardcode the secret.
 
 ## Step 3 — Create the connected account
 
-Replace `"user_123"` with the project's user id. Replace `"gmail"` with the recorded Connection Name.
+Replace `'user_123'` with the project's stable user id. Replace `'github-connect'` with the recorded Connection Name.
 
 ```typescript
-const response = await actions.getOrCreateConnectedAccount({
-  connectionName: 'gmail',
-  identifier: 'user_123',
+const connectionName = 'github-connect';
+const userId = 'user_123';
+
+let { connectedAccount: account } = await actions.getOrCreateConnectedAccount({
+  connectionName,
+  identifier: userId,
 });
-const connectedAccount = response.connectedAccount;
 ```
 
 **Done when:** a connected account exists for that identifier and Connection Name.
 
-## Step 4 — Authorization link if not ACTIVE
+## Step 4 — Authorize, then re-check status
 
-If `connectedAccount?.status` is `ACTIVE`, skip this step.
+If `account?.status` is `ConnectorStatus.ACTIVE`, skip this step.
 
 Put the `readline` import at the top of the file.
 
 ```typescript
-import * as readline from 'node:readline/promises';
+import { createInterface } from 'node:readline/promises';
 
-if (connectedAccount?.status !== 'ACTIVE') {
-  const linkResponse = await actions.getAuthorizationLink({
-    connectionName: 'gmail',
-    identifier: 'user_123',
-  });
-  console.log('Authorize here:', linkResponse.link);
+if (account?.status !== ConnectorStatus.ACTIVE) {
+  const { link } = await actions.getAuthorizationLink({ connectionName, identifier: userId });
+  console.log(`Open this link and approve access:\n${link}`);
   if (!process.stdin.isTTY) {
-    console.log('Complete OAuth in a browser, then re-run from Step 5 (fetch tokens).');
+    console.log('Finish OAuth in a browser, then run this script again.');
     process.exit(0);
   }
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  await rl.question('Press Enter after authorizing…');
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  await rl.question("Press Enter when you're done...");
   rl.close();
+
+  ({ connectedAccount: account } = await actions.getConnectedAccount({
+    connectionName,
+    identifier: userId,
+  }));
+  if (account?.status !== ConnectorStatus.ACTIVE) {
+    throw new Error('The account is not ACTIVE yet. Run the script again.');
+  }
 }
 ```
 
-In a web app, redirect the browser to `linkResponse.link`.
+In a web app, redirect the browser to `link`, then check the status again when the user returns.
 
-**Done when:** status is `ACTIVE`, or the authorization link is printed. A non-interactive run stops here until the user finishes OAuth.
+**Done when:** status is `ConnectorStatus.ACTIVE` after the re-check, or the link is printed and a non-interactive run has stopped.
 
-## Step 5 — Fetch the token
+## Step 5 — Call one tool
 
-Re-fetch immediately. Do not reuse a token from Step 3.
+Default: `github_user_get_authenticated`, a read-only GitHub tool with no input.
 
 ```typescript
-const accountResponse = await actions.getConnectedAccount({
-  connectionName: 'gmail',
-  identifier: 'user_123',
+const result = await actions.executeTool({
+  toolName: 'github_user_get_authenticated',
+  toolInput: {},
+  connectedAccountId: account!.id,
 });
-// authorizationDetails is a oneof: when case is 'oauthToken', value holds the tokens
-const authDetails = accountResponse?.connectedAccount?.authorizationDetails;
-const oauth = authDetails?.details?.case === 'oauthToken'
-  ? authDetails.details.value
-  : undefined;
-const accessToken = oauth?.accessToken;
-const refreshToken = oauth?.refreshToken;
+console.log(result.data);
 ```
 
-**Done when:** `accessToken` is present.
-
-## Step 6 — Call one downstream API
-
-Use `accessToken` as a Bearer token. Default: five unread Gmail messages.
+For another connector, list the tools on that connection and pick a read-only one:
 
 ```typescript
-const listUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/messages';
-const params = new URLSearchParams({ q: 'is:unread', maxResults: '5' });
-
-const { messages = [] } = await fetch(`${listUrl}?${params}`, {
-  headers: { Authorization: `Bearer ${accessToken}` },
-}).then(r => r.json());
-
-for (const msg of messages) {
-  const msgData = await fetch(
-    `${listUrl}/${msg.id}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  ).then(r => r.json());
-
-  const h = msgData.payload?.headers ?? [];
-  console.log('Subject:', h.find(x => x.name === 'Subject')?.value ?? 'No Subject');
-  console.log('From:', h.find(x => x.name === 'From')?.value ?? 'Unknown');
-  console.log('Snippet:', msgData.snippet ?? '');
-  console.log('-'.repeat(50));
-}
+const { toolNames } = await actions.listTools({
+  connectionName,
+  identifier: userId,
+  pageSize: 100,
+});
+console.log(toolNames);
 ```
 
-For a non-Gmail connector, keep the same token path. Change only this HTTP call. Look up the provider API from https://docs.scalekit.com/agentkit/connectors.md.
+Change only `toolName` and `toolInput` in Step 5. Keep Steps 3–4.
 
-**Done when:** one downstream API call succeeds with the fetched token.
+**Done when:** one `executeTool` call returns data for the connected account.

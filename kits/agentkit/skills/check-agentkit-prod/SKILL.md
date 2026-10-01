@@ -91,7 +91,7 @@ For each of those connections, record `PASS` or `WAIVE` plus a reason for:
 
 1. OAuth end-to-end
 2. Minimum required scopes only
-3. Downstream API call with a valid token succeeds
+3. One `execute_tool` call on that connection succeeds
 4. Expired token triggers refresh
 5. Permission denied (user revoked access in the third-party app) is handled
 
@@ -128,14 +128,14 @@ After go-live, track token refresh success rate, OAuth completion rate (started 
 
 Use `integrate-agentkit` for SDK calls. Pause for the user on browser OAuth. Default language is Python.
 
-Default smoke connection is the Connection Name already recorded. If none, Gmail, Connection Name `gmail`.
+Default smoke connection is the Connection Name already recorded. If none, GitHub, Connection Name `github-connect`. Confirm the tool name on the connector's page in https://docs.scalekit.com/agentkit/connectors.md or with `list_tools` before calling it.
 
 Record `PASS` or `WAIVE` plus a reason for:
 
 1. `get_or_create_connected_account` returns a connected account for a test user
 2. Auth link → user completes OAuth → re-fetch status is `ACTIVE`
-3. Fetch access token → one downstream API call succeeds
-4. Force-refresh (or wait for expiry) → re-fetch succeeds
+3. One `execute_tool` call for that connected account succeeds
+4. After the provider token expires, another `execute_tool` call still succeeds (Scalekit refreshes)
 5. User revokes access in the third-party app → the app errors without leaking tokens
 
 **Done when:** all 5 rows have `PASS` or `WAIVE` plus a reason.
@@ -148,7 +148,7 @@ Print the full record. If any item has no result, go back to that step. Do not s
 
 ## Reach for
 
-- `integrate-agentkit` to create a connected account, token, and one downstream call
+- `integrate-agentkit` to create a connected account and one `execute_tool` call
 - `setup-agentkit` if the connection or env is missing
 - `check-saaskit-prod` for SaaSKit login, SSO, or SCIM go-live
 - `discover-connectors` for the live tool catalog

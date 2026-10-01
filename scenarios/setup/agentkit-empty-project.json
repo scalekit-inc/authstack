@@ -17,7 +17,7 @@
       "weight": 0.2
     },
     {
-      "check": "Agent recorded a Connection Name (gmail when no connector was named)",
+      "check": "Agent recorded a Connection Name (github-connect when no connector was named)",
       "weight": 0.15
     },
     {

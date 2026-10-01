@@ -21,7 +21,7 @@ Install the Scalekit CLI and plugin. Pick AgentKit or SaaSKit. Stop.
 
 - Run `npx @scalekit-inc/cli setup` first. Use a native plugin command only when that CLI cannot run.
 - Marketplace names are `agentkit` and `saaskit`.
-- Plugin install uses `scalekit-inc/authstack`. Portable skills use `scalekit-inc/skills`.
+- Plugins and portable skills both install from `scalekit-inc/authstack`. `scalekit-inc/skills` is retired.
 - After the kit is picked, name `setup-agentkit` or `setup-saaskit`. Stop. Do not start those wizards here.
 - For current CLI flags, run `npx @scalekit-inc/cli --help`.
 
@@ -101,7 +101,7 @@ copilot plugin install agentkit@authstack
 ### Other agents
 
 ```bash
-npx skills add scalekit-inc/skills --all
+npx skills add scalekit-inc/authstack --all
 ```
 
 `--all` puts the next named skill on disk, not only the two wizards.

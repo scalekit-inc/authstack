@@ -1,9 +1,9 @@
 ---
 name: integrate-agentkit
 description: >
-  Integrates AgentKit so an agent can create a connection, a connected
-  account, and an authorized token, then call one downstream API.
-  Use when the user wants AgentKit in app code, a Gmail/Slack/Notion
+  Integrates AgentKit so an agent can create a connected account,
+  authorize it, then call one tool through Scalekit.
+  Use when the user wants AgentKit in app code, a GitHub/Gmail/Slack/Notion
   connected account, or an authorization link.
   It does not list connectors (that's `discover-connectors`)
   or wire an always-on host (that's `integrate-agentkit-host`).
@@ -11,21 +11,24 @@ description: >
 
 # Integrate AgentKit
 
-Take this repo from a **connection** to a **connected account**, an authorized token, and one downstream API call. Then stop.
+Take this repo from a **connection** to a **connected account**, an authorization link, and one tool call with `execute_tool`. Then stop.
+
+This is the docs quickstart path: https://docs.scalekit.com/agentkit/quickstart/
 
 ## Guardrails
 
 - **MUST** pass the exact dashboard Connection Name (`connection_name` in Python, `connectionName` in Node). Never invent a slug. Never use a `connector` field for that value.
-- **MUST** re-fetch the connected account immediately before using the token. Scalekit auto-refreshes.
-- **MUST** print the authorization link and stop when the process is not interactive. Re-run from the token step after the user finishes OAuth.
+- **MUST** call tools with `execute_tool` (`executeTool` in Node). Scalekit adds the user's token to the outgoing request. Scalekit does not return raw user tokens to your app.
+- **MUST** confirm a tool name on the connector's page in https://docs.scalekit.com/agentkit/connectors.md, or with `list_tools` scoped to the Connection Name, before you call it.
+- **MUST** re-check the connected account status after the user finishes OAuth. Call the tool only when it is `ACTIVE`.
+- **MUST** print the authorization link and stop when the process is not interactive. Re-run the script after the user finishes OAuth.
 - **MUST** take missing `SCALEKIT_*` values from the user. **MUST NOT** copy them from another project, home directory, or skill folder.
 
 ## Gotchas
 
 - Read SDK credentials from `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET`. Some samples use `SCALEKIT_ENV_URL`; use `SCALEKIT_ENVIRONMENT_URL` here.
 - A **connection** is dashboard connector config. A **connected account** is one user authorized on that connection.
-- The **connection** already exists from `setup-agentkit`. This skill starts there.
-- Gmail can use Connection Name `gmail` when the dashboard has no Gmail row. Every other connector must already have a dashboard connection. Record that name exactly.
+- New environments ship one connection: GitHub, Connection Name `github-connect`. Every other connector, Gmail included, needs its own connection in **AgentKit → Connections**. `setup-agentkit` creates it.
 - Default language is Python. If the repo is Node, open [references/node.md](references/node.md). If the language is unknown, stay on Python.
 
 ## Step 1 — Confirm the Connection Name
@@ -34,11 +37,11 @@ Use the Connection Name already recorded by `setup-agentkit`.
 
 If none is recorded:
 
-- User named a connector: use the dashboard **Connection Name** exactly as shown.
-- User did not name one: Gmail, Connection Name `gmail`.
-- Non-Gmail with no dashboard row: name `setup-agentkit` and stop.
+- User named no connector: GitHub, Connection Name `github-connect`.
+- User named a connector: use its dashboard **Connection Name** exactly as shown.
+- That connector has no dashboard connection yet: name `setup-agentkit` and stop.
 
-**Done when:** a Connection Name is written down. For Gmail with no dashboard row, that name is `gmail`.
+**Done when:** a Connection Name that exists in the dashboard is written down.
 
 ## Step 2 — Init the SDK
 
@@ -47,112 +50,103 @@ If the repo is Node, follow [references/node.md](references/node.md) from here.
 If env vars are missing, collect them from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. Ask the user to put them in this project's env file. Do not invent values. Do not copy values from another directory.
 
 ```bash
-pip install scalekit-sdk-python python-dotenv requests
+pip install scalekit-sdk-python python-dotenv
 ```
 
 ```python
-from scalekit import ScalekitClient
 import os
 from dotenv import load_dotenv
+from scalekit import ScalekitClient
+
 load_dotenv()
 
-sk_client = ScalekitClient(
-    client_id=os.getenv("SCALEKIT_CLIENT_ID"),
-    client_secret=os.getenv("SCALEKIT_CLIENT_SECRET"),
-    env_url=os.getenv("SCALEKIT_ENVIRONMENT_URL"),
+scalekit_client = ScalekitClient(
+    env_url=os.environ["SCALEKIT_ENVIRONMENT_URL"],
+    client_id=os.environ["SCALEKIT_CLIENT_ID"],
+    client_secret=os.environ["SCALEKIT_CLIENT_SECRET"],
 )
-actions = sk_client.actions
+actions = scalekit_client.actions
 ```
 
 **Done when:** the client initializes from those three env vars, and source files do not hardcode the secret.
 
 ## Step 3 — Create the connected account
 
-Replace `"user_123"` with the project's user id. Replace `"gmail"` with the recorded Connection Name.
+Replace `"user_123"` with the project's stable user id. Replace `"github-connect"` with the recorded Connection Name.
 
 ```python
-response = actions.get_or_create_connected_account(
-    connection_name="gmail",
-    identifier="user_123"
-)
-connected_account = response.connected_account
+connection_name = "github-connect"
+user_id = "user_123"
+
+account = actions.get_or_create_connected_account(
+    connection_name=connection_name,
+    identifier=user_id,
+).connected_account
 ```
 
 **Done when:** a connected account exists for that identifier and Connection Name.
 
-## Step 4 — Authorization link if not ACTIVE
+## Step 4 — Authorize, then re-check status
 
-If `connected_account.status` is `ACTIVE`, skip this step.
+If `account.status` is `ACTIVE`, skip this step.
 
 ```python
 import sys
 
-if connected_account.status != "ACTIVE":
-    link_response = actions.get_authorization_link(
-        connection_name="gmail",
-        identifier="user_123"
-    )
-    print("Authorize here:", link_response.link)
+if account.status != "ACTIVE":
+    link = actions.get_authorization_link(
+        connection_name=connection_name,
+        identifier=user_id,
+    ).link
+    print(f"Open this link and approve access:\n{link}")
     if not sys.stdin.isatty():
-        print("Complete OAuth in a browser, then re-run from Step 5 (fetch tokens).")
-        raise SystemExit(0)
-    input("Press Enter after authorizing...")
+        raise SystemExit("Finish OAuth in a browser, then run this script again.")
+    input("Press Enter when you're done...")
+
+    account = actions.get_connected_account(
+        connection_name=connection_name,
+        identifier=user_id,
+    ).connected_account
+    if account.status != "ACTIVE":
+        raise SystemExit(f"The account is {account.status}, not ACTIVE. Run the script again.")
 ```
 
-In a web app, redirect to `link`.
+In a web app, redirect the browser to `link`, then check the status again when the user returns.
 
-**Done when:** status is `ACTIVE`, or the authorization link is printed. A non-interactive run stops here until the user finishes OAuth.
+**Done when:** status is `ACTIVE` after the re-check, or the link is printed and a non-interactive run has stopped.
 
-## Step 5 — Fetch the token
+## Step 5 — Call one tool
 
-Re-fetch immediately. Do not reuse a token from Step 3.
+Default: `github_user_get_authenticated`, a read-only GitHub tool with no input.
 
 ```python
-response = actions.get_connected_account(
-    connection_name="gmail",
-    identifier="user_123"
+result = actions.execute_tool(
+    tool_name="github_user_get_authenticated",
+    tool_input={},
+    connected_account_id=account.id,
 )
-tokens = response.connected_account.authorization_details["oauth_token"]
-access_token = tokens["access_token"]
-refresh_token = tokens["refresh_token"]
+print(result.data)
 ```
 
-**Done when:** `access_token` is present.
-
-## Step 6 — Call one downstream API
-
-Use `access_token` as a Bearer token. Default: five unread Gmail messages.
+For another connector, pick a read-only tool from its page in https://docs.scalekit.com/agentkit/connectors.md, or list the tools on that connection:
 
 ```python
-import requests
-
-headers = {"Authorization": f"Bearer {access_token}"}
-list_url = "https://gmail.googleapis.com/gmail/v1/users/me/messages"
-
-messages = requests.get(
-    list_url, headers=headers, params={"q": "is:unread", "maxResults": 5}
-).json().get("messages", [])
-
-for msg in messages:
-    data = requests.get(
-        f"{list_url}/{msg['id']}", headers=headers,
-        params={"format": "metadata", "metadataHeaders": ["From", "Subject", "Date"]}
-    ).json()
-    hdrs = data.get("payload", {}).get("headers", [])
-    print(next((h["value"] for h in hdrs if h["name"] == "Subject"), "No Subject"))
-    print(next((h["value"] for h in hdrs if h["name"] == "From"), "Unknown"))
-    print(data.get("snippet", ""))
-    print("-" * 50)
+tools = actions.list_tools(
+    connection_name=connection_name,
+    identifier=user_id,
+    page_size=100,
+)
+print(tools.tool_names)
 ```
 
-For a non-Gmail connector, keep the same token path. Change only this HTTP call. Look up the provider API from https://docs.scalekit.com/agentkit/connectors.md.
+Change only `tool_name` and `tool_input` in Step 5. Keep Steps 3–4.
 
-**Done when:** one downstream API call succeeds with the fetched token.
+**Done when:** one `execute_tool` call returns data for the connected account.
 
 ## Reach for
 
 - `setup-agentkit` if the connection or env is missing
-- `discover-connectors` for the live tool catalog
+- `discover-connectors` for the live tool catalog and input schemas
 - `integrate-agentkit-host` for OpenClaw or Hermes
 - `expose-agentkit-mcp` to expose tools over MCP
 - [references/node.md](references/node.md) for the Node SDK path
@@ -160,6 +154,7 @@ For a non-Gmail connector, keep the same token path. Change only this HTTP call.
 
 ## Live lookups
 
+- Quickstart: https://docs.scalekit.com/agentkit/quickstart/
 - Docs index: https://docs.scalekit.com/llms.txt
 - Connector catalog: https://docs.scalekit.com/agentkit/connectors.md
 - MCP: https://mcp.scalekit.com
