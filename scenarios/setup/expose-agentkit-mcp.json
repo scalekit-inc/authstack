@@ -13,11 +13,11 @@
       "weight": 0.25
     },
     {
-      "check": "Agent used Connection Name gmail and waited for the Calendar dashboard Connection Name. It named list_mcp_connected_accounts auth links and Streamable HTTP with a Bearer session token.",
+      "check": "Agent waited for the Gmail and Calendar dashboard Connection Names. It did not assume a gmail connection exists without a dashboard row. It named list_mcp_connected_accounts auth links and Streamable HTTP with a Bearer session token.",
       "weight": 0.25
     },
     {
-      "check": "Agent did not start integrate-agentkit app-code token calls. It treated create_session_token as remint.",
+      "check": "Agent did not start integrate-agentkit app-code execute_tool calls. It treated create_session_token as remint.",
       "weight": 0.2
     }
   ]

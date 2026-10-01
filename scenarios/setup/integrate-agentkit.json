@@ -5,7 +5,7 @@
   "skills": ["./kits/agentkit/skills/integrate-agentkit"],
   "judge": [
     {
-      "check": "Agent followed integrate-agentkit. It used Connection Name gmail. It did not invent a connector slug.",
+      "check": "Agent followed integrate-agentkit. It used the dashboard Gmail Connection Name, or asked the human to create the Gmail connection first. It did not assume a gmail connection exists without a dashboard row. It did not invent a connector slug.",
       "weight": 0.25
     },
     {
@@ -13,7 +13,7 @@
       "weight": 0.25
     },
     {
-      "check": "Agent showed get_or_create_connected_account, then get_authorization_link when status is not ACTIVE. In this non-interactive run it printed the link and stopped. It did not call the Gmail API without a token.",
+      "check": "Agent showed get_or_create_connected_account, then get_authorization_link when status is not ACTIVE. In this non-interactive run it printed the link and stopped. It called the tool with execute_tool, not by fetching raw tokens and calling the Gmail API directly.",
       "weight": 0.3
     },
     {
