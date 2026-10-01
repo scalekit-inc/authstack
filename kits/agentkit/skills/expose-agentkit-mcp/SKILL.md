@@ -6,7 +6,7 @@ description: >
   Use when the user wants to expose AgentKit over MCP, generate
   a per-user MCP URL, or connect LangChain via MCP.
   It does not list connectors (that's `discover-connectors`)
-  or create a connected account and token in app code (that's `integrate-agentkit`).
+  or create a connected account and call a tool in app code (that's `integrate-agentkit`).
 ---
 
 # Expose AgentKit over MCP
@@ -22,24 +22,28 @@ Create an AgentKit MCP config, mint a per-run session token, and make one Stream
 ## Gotchas
 
 - Read SDK credentials from `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET`. Some samples use `SCALEKIT_ENV_URL`; use `SCALEKIT_ENVIRONMENT_URL` here. Do not prepend `https://` if the value already has a scheme.
-- A **connection** is dashboard connector config. A **connected account** is one user authorized on that connection. This skill authorizes through `list_mcp_connected_accounts` auth links, not `integrate-agentkit` app-code token calls.
+- A **connection** is dashboard connector config. A **connected account** is one user authorized on that connection. This skill authorizes through `list_mcp_connected_accounts` auth links, not `integrate-agentkit` app-code `execute_tool` calls.
 - `create_session_token` is remint. Call it again before the next run. Do not reuse a token from a previous session.
-- Gmail can use Connection Name `gmail` when the dashboard has no Gmail row. Every other connector must already have a dashboard connection. Record that name exactly.
-- Default language is Python. The Node SDK has no MCP config API. Stay on Python.
-- Look up tool names with `discover-connectors`. Do not copy connector pages into the repo.
+- New environments ship one connection: GitHub, Connection Name `github-connect`. Every other connector, Gmail and Google Calendar included, needs its own connection in **AgentKit → Connections**. Record each name exactly.
+- Default language is Python. If the repo is Node, follow [references/node.md](references/node.md): the Node SDK has the same API on `scalekit.actions.mcp` (`createConfig`, `listConnectedAccounts`, `createSessionToken`).
+- Confirm every tool name on the connector's page in https://docs.scalekit.com/agentkit/connectors.md, or with `discover-connectors`, before you put it in a config. Do not copy connector pages into the repo.
 
 ## Step 1 — Confirm Connection Names
 
 Default path: Gmail plus Google Calendar, so one email fetch and one reminder event.
 
-- Gmail: Connection Name `gmail` if the dashboard has no Gmail row.
+- Gmail: use the dashboard Gmail Connection Name. If there is no Gmail row, have the user create it at **Scalekit Dashboard → AgentKit → Connections → Add connection → Gmail** → Save.
 - Google Calendar: have the user create it at **Scalekit Dashboard → AgentKit → Connections → Add connection → Google Calendar** → **Connection Name = `MY_CALENDAR`** → Save.
 
-Wait for the user to confirm the Calendar row. Do not invent that name.
+Wait for the user to confirm both rows. Do not invent either name.
 
-**Done when:** Gmail is `gmail` (or the dashboard Gmail name), and Calendar is the exact dashboard Connection Name.
+To test with no setup, map only `github-connect` and a GitHub tool such as `github_user_repos_list`.
+
+**Done when:** Gmail and Calendar each have an exact dashboard Connection Name.
 
 ## Step 2 — Init the SDK
+
+If the repo is Node, follow [references/node.md](references/node.md) from here.
 
 If env vars are missing, collect them from [app.scalekit.com](https://app.scalekit.com) → Developers → Settings → API Credentials. Put them in the project env file. Do not invent values.
 
@@ -72,7 +76,7 @@ Set `OPENAI_API_KEY` in the environment for the LangChain client in Step 5.
 
 ## Step 3 — Create the MCP config
 
-Replace `"MY_CALENDAR"` with the recorded Calendar Connection Name. Create the config once. Reuse `config_id` and `mcp_server_url`.
+Replace `"gmail"` and `"MY_CALENDAR"` with the recorded Connection Names. Create the config once. Reuse `config_id` and `mcp_server_url`.
 
 ```python
 cfg_response = my_mcp.create_config(
@@ -155,7 +159,8 @@ asyncio.run(main())
 ## Reach for
 
 - `discover-connectors` for live tool names and schemas
-- `integrate-agentkit` to create a connected account and token in app code
+- `integrate-agentkit` to create a connected account and call a tool in app code
+- [references/node.md](references/node.md) for the Node SDK path
 - `setup-agentkit` if the connection or env is missing
 
 ## Live lookups
