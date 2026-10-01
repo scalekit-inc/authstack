@@ -22,6 +22,7 @@ A **host** is a long-lived agent process (OpenClaw or Hermes). It is not this gi
 - **MUST** wait for dashboard credential values. **MUST NOT** invent them.
 - **MUST** pass the exact dashboard Connection Name. Never invent a slug.
 - **MUST** put only Scalekit client credentials on the host. Provider tokens stay in Scalekit.
+- **MUST** confirm a tool name with `tool_exec.py --get-tool` or the connector's page in https://docs.scalekit.com/agentkit/connectors.md before calling it.
 
 ## Gotchas
 
@@ -46,7 +47,7 @@ If env is missing, collect the three Scalekit client values from [app.scalekit.c
 
 Use the Connection Name already recorded by `setup-agentkit`.
 
-If none is recorded: Gmail is `gmail` when the dashboard has no Gmail row. Any other connector needs a dashboard row. Else name `setup-agentkit` and stop.
+If none is recorded: GitHub is `github-connect`, the one connection new environments ship. Every other connector, Gmail included, needs its own dashboard row. If that row is missing, name `setup-agentkit` and stop.
 
 **Done when:** a Connection Name is written down.
 

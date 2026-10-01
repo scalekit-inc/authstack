@@ -365,7 +365,10 @@ def proxy_request(
 
 def get_authorization(connection_name: str, identifier: str) -> None:
     """
-    Fetch the connected account and display OAuth access and refresh tokens.
+    Show the connected account's authorization state without printing secrets.
+
+    Prints status, token presence, expiry, and scopes. Never prints access or
+    refresh token values: this output lands in the agent transcript.
     """
     client = get_scalekit_client()
 
@@ -382,19 +385,23 @@ def get_authorization(connection_name: str, identifier: str) -> None:
 
         print(f"   Connected Account ID: {connected_account.id}")
         print(f"   Status: {connected_account.status}")
+        print(f"   Authorization Type: {connected_account.authorization_type}")
+        expires_at = connected_account.token_expires_at
+        print(f"   Token Expires At: {expires_at.isoformat() if expires_at else 'unknown'}")
         print()
 
-        tokens = connected_account.authorization_details["oauth_token"]
-        access_token = tokens["access_token"]
-        refresh_token = tokens["refresh_token"]
+        details = connected_account.authorization_details or {}
+        oauth = details.get("oauth_token")
+        if oauth is None:
+            kinds = ", ".join(sorted(details)) or "none"
+            print(f"{YELLOW}⚠️  No OAuth token on this account (authorization details: {kinds}).{RESET}")
+            return
 
-        print(f"{GREEN}✅ Tokens retrieved:{RESET}")
-        print(f"   Access Token:  {access_token}")
-        print(f"   Refresh Token: {refresh_token}")
+        print(f"{GREEN}✅ Authorization present (token values are never printed):{RESET}")
+        print(f"   Access Token:  {'present' if oauth.get('access_token') else 'missing'}")
+        print(f"   Refresh Token: {'present' if oauth.get('refresh_token') else 'missing'}")
+        print(f"   Scopes: {', '.join(oauth.get('scopes') or []) or 'none'}")
 
-    except KeyError as e:
-        print(f"{RED}❌ Error: Could not find token key {e}. authorization_details: {connected_account.authorization_details}{RESET}")
-        _exit(1)
     except Exception as e:
         print(f"\n{RED}❌ Error: {e}{RESET}")
         _exit(1)
@@ -585,7 +592,7 @@ Required environment variables:
     operation_group.add_argument(
         '--get-authorization',
         action='store_true',
-        help='Fetch OAuth access and refresh tokens for a connected account'
+        help='Show a connected account\'s authorization status, token expiry, and scopes (never token values)'
     )
     operation_group.add_argument(
         '--list-connections',
