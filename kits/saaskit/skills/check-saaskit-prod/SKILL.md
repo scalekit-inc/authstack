@@ -167,5 +167,5 @@ Print the full record. If any item has no result, go back to that step. Do not s
 
 - Docs index: https://docs.scalekit.com/llms.txt
 - Launch checklist: https://docs.scalekit.com/authenticate/launch-checklist/
-- Sessions: https://docs.scalekit.com/authenticate/fsa/sessions/
+- Sessions: https://docs.scalekit.com/authenticate/fsa/manage-session/
 - MCP: https://mcp.scalekit.com

@@ -30,7 +30,7 @@ Store, validate, refresh, and revoke a session. Then stop.
 - `refreshAccessToken` returns `{ accessToken, refreshToken }` only. Reuse a short access-cookie lifetime.
 - `verifySession` returns 401. It does not call `/auth/refresh`. The page does.
 - Remote revoke uses `scalekit.session.*`. That is not the logout redirect.
-- Dashboard session timeouts live at https://docs.scalekit.com/authenticate/fsa/sessions/. Do not cache that page.
+- Dashboard session timeouts live at https://docs.scalekit.com/authenticate/fsa/manage-session/. Do not cache that page.
 
 ## Step 1 — Confirm the store
 
@@ -148,5 +148,5 @@ Do not write login, callback, or the logout redirect.
 ## Live lookups
 
 - Docs index: https://docs.scalekit.com/llms.txt
-- Sessions: https://docs.scalekit.com/authenticate/fsa/sessions/
+- Sessions: https://docs.scalekit.com/authenticate/fsa/manage-session/
 - MCP: https://mcp.scalekit.com
