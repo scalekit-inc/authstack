@@ -6,6 +6,8 @@ description: >
   or the user says patch from AXIS, score lowered, or surgical skill fix.
   It does not write a new skill (that's `authoring-skills`)
   or lint the file alone (that's `dora`).
+metadata:
+  internal: true
 ---
 
 # Patch from AXIS

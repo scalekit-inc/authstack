@@ -35,6 +35,7 @@ ACTION_VERBS = {
     "Integrates",
     "Manages",
     "Migrates",
+    "Patches",
     "Picks",
     "Reviews",
     "Runs",
