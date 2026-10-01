@@ -14,7 +14,7 @@ metadata:
 
 Read the AXIS miss. Edit one kit skill. Re-run the same scenario. Then stop.
 
-Stay in this repo. Do not copy to `scalekit-inc/skills` unless the user says ship.
+Stay in this repo.
 
 ## Guardrails
 

@@ -2,7 +2,7 @@
 
 This repo is the authoring tree for the AgentKit and SaaSKit plugins.
 
-Portable copies of the same `SKILL.md` files live in [scalekit-inc/skills](https://github.com/scalekit-inc/skills). Keep the text aligned. Plugin-only files (manifests, MCP config, marketplaces) live only here.
+It is also the only source for portable installs: `npx skills add scalekit-inc/authstack` and docs.scalekit.com/.well-known/agent-skills/index.json both read the `SKILL.md` files here. `scalekit-inc/skills` is retired; don't copy skills to it.
 
 The four tool-specific repos (`claude-code-authstack`, `cursor-authstack`, `codex-authstack`, `github-copilot-authstack`) are archived. Do not copy skills back into them.
 
@@ -80,4 +80,3 @@ This revamp is a **major** plugin bump because skill names change.
 
 1. `scripts/validate.sh` must pass.
 2. Update the catalog in `README.md` if you add, rename, or remove a skill.
-3. Copy the same `SKILL.md` (and its `references/`) into `scalekit-inc/skills`.
