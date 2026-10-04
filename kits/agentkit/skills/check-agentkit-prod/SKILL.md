@@ -46,7 +46,7 @@ Run:
 ```bash
 echo $SCALEKIT_ENVIRONMENT_URL
 echo $SCALEKIT_CLIENT_ID
-echo $SCALEKIT_CLIENT_SECRET
+[ -n "$SCALEKIT_CLIENT_SECRET" ] && echo "SCALEKIT_CLIENT_SECRET is set" || echo "SCALEKIT_CLIENT_SECRET is NOT set"
 
 curl -s -o /dev/null -w "%{http_code}" -X POST "$SCALEKIT_ENVIRONMENT_URL/oauth/token" \
   -d "client_id=$SCALEKIT_CLIENT_ID&client_secret=$SCALEKIT_CLIENT_SECRET&grant_type=client_credentials"

@@ -19,33 +19,44 @@ Install the Scalekit CLI and plugin. Pick AgentKit or SaaSKit. Stop.
 
 ## Gotchas
 
-- Run `npx @scalekit-inc/cli setup` first. Use a native plugin command only when that CLI cannot run.
-- Marketplace names are `agentkit` and `saaskit`.
+- Run `npx @scalekit-inc/cli setup -y` first. You have no TTY, so the interactive wizard exits without `-y`. Use a native plugin command only when that CLI cannot run.
+- Add `--dry-run` to any setup command to preview it without running it.
+- The marketplace is `authstack`. Its plugins are `agentkit` and `saaskit`.
 - Plugins and portable skills both install from `scalekit-inc/authstack`. `scalekit-inc/skills` is retired.
 - After the kit is picked, name `setup-agentkit` or `setup-saaskit`. Stop. Do not start those wizards here.
 - For current CLI flags, run `npx @scalekit-inc/cli --help`.
 
 ## Step 1 — Install
 
+Set up every detected agent:
+
 ```bash
-npx @scalekit-inc/cli setup
+npx @scalekit-inc/cli setup -y
 ```
 
 For repeated use:
 
 ```bash
 npm install -g @scalekit-inc/cli
-scalekit setup
+scalekit setup -y
 ```
 
 Target a specific tool only when the user names it:
 
 ```bash
-npx @scalekit-inc/cli setup claude
-npx @scalekit-inc/cli setup cursor
-npx @scalekit-inc/cli setup codex
-npx @scalekit-inc/cli setup copilot
+npx @scalekit-inc/cli setup claude -y
+npx @scalekit-inc/cli setup cursor -y
+npx @scalekit-inc/cli setup codex -y
+npx @scalekit-inc/cli setup copilot -y
 ```
+
+Skills only, for other agents:
+
+```bash
+npx @scalekit-inc/cli skills install -y
+```
+
+Preview first with `--dry-run`, for example `npx @scalekit-inc/cli setup -y --dry-run`. A human in their own terminal can run `npx @scalekit-inc/cli setup` without `-y` for the interactive wizard.
 
 Skip this step when the plugin or skills pack is already installed.
 
@@ -106,7 +117,7 @@ npx skills add scalekit-inc/authstack --all
 
 `--all` puts the next named skill on disk, not only the two wizards.
 
-Codex and Cursor go through `npx @scalekit-inc/cli setup`.
+Codex and Cursor go through `npx @scalekit-inc/cli setup codex -y` or `npx @scalekit-inc/cli setup cursor -y`.
 
 ## Live lookups
 
