@@ -57,7 +57,7 @@ Folder names on disk match the table.
 
 - One job per skill.
 - Description contract: action verb first, then `Use when`, then a sibling `It does not … (that's \`name\`)`.
-- Leading words live in `CONTEXT.md`. Do not redefine them here.
+- Leading words live in `GLOSSARY.md`. Do not redefine them here.
 - `SKILL.md` stays at or under 200 lines. Put framework and provider dumps in `references/` in the same folder. One hop only.
 - Every step ends on a checkable completion criterion.
 - Point at the live environment. Do not cache CLI help, `https://docs.scalekit.com/llms.txt`, or MCP output.

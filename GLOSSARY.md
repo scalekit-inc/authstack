@@ -1,4 +1,4 @@
-# CONTEXT.md
+# Authstack
 
 Shared language for this repo. Define these tokens only here. Use them in skills, READMEs, and pointers.
 
