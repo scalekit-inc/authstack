@@ -10,6 +10,7 @@
   "homepage": "https://docs.scalekit.com",
   "repository": "https://github.com/scalekit-inc/authstack",
   "license": "MIT",
+  "logo": "assets/logo.svg",
   "keywords": [
     "scalekit",
     "saaskit",
@@ -20,6 +21,14 @@
     "sessions",
     "rbac",
     "api-keys"
+  ],
+  "tags": [
+    "authentication",
+    "sso",
+    "scim",
+    "rbac",
+    "mcp-auth",
+    "b2b-saas"
   ],
   "skills": "./skills",
   "mcpServers": "./mcp.json"
