@@ -5,8 +5,7 @@ description: >
   credentials, and a first connector path.
   Use when the user wants to setup AgentKit in this project, add
   AgentKit, or connect GitHub/Gmail/Slack.
-  It does not install the CLI (that's `setup-scalekit`)
-  or write app-code tool calls (that's `integrate-agentkit`).
+  It does not write app-code tool calls (that's `integrate-agentkit`).
 ---
 
 # Setup AgentKit
@@ -89,7 +88,7 @@ Do not write those app-code calls here.
 
 ## Reach for
 
-- `setup-scalekit` if the plugin is missing
+- `npx @scalekit-inc/cli setup -y` if the plugin or CLI is missing
 - `discover-connectors` for the live tool catalog
 - `integrate-agentkit-host` for OpenClaw or Hermes
 - `setup-saaskit` if the user wanted app login
