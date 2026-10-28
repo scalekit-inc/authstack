@@ -10,6 +10,7 @@
   "homepage": "https://docs.scalekit.com/agentkit/overview/",
   "repository": "https://github.com/scalekit-inc/authstack",
   "license": "MIT",
+  "logo": "assets/logo.svg",
   "keywords": [
     "scalekit",
     "agentkit",
@@ -19,6 +20,15 @@
     "tool-calling",
     "connected-accounts",
     "mcp"
+  ],
+  "tags": [
+    "agent-integrations",
+    "tool-calling",
+    "mcp-integrations",
+    "mcp-tooling",
+    "mcp-gateway",
+    "agent-auth",
+    "oauth"
   ],
   "skills": "./skills",
   "mcpServers": "./mcp.json"
