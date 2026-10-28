@@ -5,7 +5,7 @@
     "email": "support@scalekit.com"
   },
   "metadata": {
-    "description": "Auth infrastructure for developers — connect AI agents to 100+ OAuth services, or add enterprise SSO, SCIM, and MCP auth to your B2B app. Skip the protocol layer.",
+    "description": "Auth infrastructure for developers — connect AI agents to 600+ connectors and 30,000+ tools, or add enterprise SSO, SCIM, and MCP auth to your B2B app. Skip the protocol layer.",
     "version": "1.2.0",
     "pluginRoot": "kits"
   },
@@ -13,7 +13,7 @@
     {
       "name": "agentkit",
       "source": "agentkit",
-      "description": "Connect your AI agent to 3,000+ services without writing OAuth plumbing — users authorize once, agents act on their behalf.",
+      "description": "Connect your AI agent to 600+ connectors and 30,000+ tools without writing OAuth plumbing — users authorize once, agents act on their behalf.",
       "category": "AI Agent Auth",
       "homepage": "https://docs.scalekit.com/agentkit/overview/"
     },

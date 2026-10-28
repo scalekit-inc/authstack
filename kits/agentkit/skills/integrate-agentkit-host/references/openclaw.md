@@ -8,7 +8,7 @@ Stay on `SKILL.md` for the OpenClaw path. This file is the short host note.
 clawhub install scalekit-agent-auth
 ```
 
-Listing: https://clawhub.dev/skills/scalekit-agent-auth
+Listing: https://clawhub.ai/avinash-kamath/skills/scalekit-agent-auth
 Repo: https://github.com/scalekit-inc/openclaw-skill
 
 Do not create a new GitHub repo.

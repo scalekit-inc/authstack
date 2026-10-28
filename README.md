@@ -45,7 +45,7 @@ This repo contains the complete Scalekit AuthStack — two kits that cover auth 
 
 | Kit | Description |
 |-----|-------------|
-| **AgentKit** | Auth and actions on behalf of users, with 500+ connectors and 20,000+ tools. Includes OAuth, a token vault, tool discovery, and live testing. |
+| **AgentKit** | Auth and actions on behalf of users, with 600+ connectors and 30,000+ tools. Includes OAuth, a token vault, tool discovery, and live testing. |
 | **SaaSKit** | Production-ready auth for B2B SaaS apps. Login, sessions, SSO (Okta, Azure AD, Google), SCIM provisioning, RBAC, MCP server auth, and API key management. |
 
 ---
@@ -55,5 +55,21 @@ Each kit ships with implementation skills — see [`kits/agentkit/skills/`](./ki
 Connector catalog: [docs.scalekit.com/agentkit/connectors.md](https://docs.scalekit.com/agentkit/connectors.md)
 
 ---
+
+### Cursor
+
+Install AuthStack from the Cursor Marketplace. Open Customize and install the plugin. [Plugin docs](https://cursor.com/docs/plugins).
+
+You need a Scalekit account and `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET`.
+
+The `scalekit` MCP server at [mcp.scalekit.com](https://mcp.scalekit.com) asks for OAuth on first use.
+
+**AgentKit** lets an agent act in a user's apps through OAuth and a token vault. **SaaSKit** adds login, sessions, SSO, SCIM, and MCP auth to a B2B app.
+
+---
+
+Requires a Scalekit account. A free tier is available.
+
+[Terms of Service](https://www.scalekit.com/legal/terms-of-service) · [Privacy Policy](https://www.scalekit.com/legal/privacy-policy)
 
 [Join our Slack community](https://join.slack.com/t/scalekit-community/shared_invite/zt-3gsxwr4hc-0tvhwT2b_qgVSIZQBQCWRw)

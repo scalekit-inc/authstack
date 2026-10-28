@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "authstack",
-  "description": "Auth infrastructure for developers — connect AI agents to 100+ OAuth services, or add enterprise SSO, SCIM, and MCP auth to your B2B app. Skip the protocol layer.",
+  "description": "Auth infrastructure for developers — connect AI agents to 600+ connectors and 30,000+ tools, or add enterprise SSO, SCIM, and MCP auth to your B2B app. Skip the protocol layer.",
   "owner": {
     "name": "Scalekit Inc",
     "email": "support@scalekit.com"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "agentkit",
-      "description": "Give your AI agent authenticated access to Gmail, Slack, Salesforce, and 100+ services. OAuth flows, token vault, and tool discovery handled — write agent logic, not auth plumbing.",
+      "description": "Give your AI agent authenticated access to Gmail, Slack, Salesforce, and 600+ connectors with 30,000+ tools. OAuth flows, token vault, and tool discovery handled — write agent logic, not auth plumbing.",
       "source": "./kits/agentkit",
       "category": "AI Agent Auth",
       "homepage": "https://docs.scalekit.com/agentkit/overview/"
