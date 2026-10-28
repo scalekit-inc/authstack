@@ -58,7 +58,7 @@ Connector catalog: [docs.scalekit.com/agentkit/connectors.md](https://docs.scale
 
 ### Cursor
 
-Install the `scalekit` plugin from the Cursor Marketplace. Open Customize and install it; one install covers AgentKit and SaaSKit. [Plugin docs](https://cursor.com/docs/plugins).
+Install `scalekit-agentkit`, `scalekit-saaskit`, or both from the Cursor Marketplace. Open Customize and install the plugin. [Plugin docs](https://cursor.com/docs/plugins).
 
 You need a Scalekit account and `SCALEKIT_ENVIRONMENT_URL`, `SCALEKIT_CLIENT_ID`, and `SCALEKIT_CLIENT_SECRET`.
 

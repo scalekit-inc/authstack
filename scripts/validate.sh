@@ -21,7 +21,7 @@ from pathlib import Path
 ROOT = Path(sys.argv[1]).resolve()
 MAX_LINES = 200
 ALLOWED_PLUGINS = {"agentkit", "saaskit"}
-CURSOR_PLUGINS = {"scalekit"}
+CURSOR_PLUGINS = {"scalekit-agentkit", "scalekit-saaskit"}
 ACTION_VERBS = {
     "Adds",
     "Audits",
@@ -180,5 +180,5 @@ if failures:
     print("\n".join(failures), file=sys.stderr)
     sys.exit(1)
 
-print(f"OK: {len(skills)} skills, marketplace names are agentkit and saaskit (scalekit for Cursor)")
+print(f"OK: {len(skills)} skills, marketplace names are agentkit and saaskit (scalekit-agentkit and scalekit-saaskit for Cursor)")
 PY
