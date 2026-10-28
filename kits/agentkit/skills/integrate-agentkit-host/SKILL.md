@@ -114,5 +114,5 @@ OpenClaw follows the ClawHub skill `scalekit-agent-auth` at chat time. Hermes fo
 - Docs index: https://docs.scalekit.com/llms.txt
 - Connector catalog: https://docs.scalekit.com/agentkit/connectors.md
 - OpenClaw skill: https://github.com/scalekit-inc/openclaw-skill
-- ClawHub: https://clawhub.dev/skills/scalekit-agent-auth
+- ClawHub: https://clawhub.ai/avinash-kamath/skills/scalekit-agent-auth
 - MCP: https://mcp.scalekit.com
