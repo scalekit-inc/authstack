@@ -4,3 +4,6 @@
 .axis/remotes/
 .axis/loop-status.md
 node_modules/
+
+# Local-only eval adapter: uses --dangerously-skip-permissions, so it is not published.
+adapters/claude-code-local.mjs
