@@ -1,7 +1,7 @@
 {
   "name": "agentkit",
   "version": "2.3.2",
-  "description": "Connect your AI agent to 600+ connectors and 30,000+ tools without writing OAuth plumbing — users authorize once, agents act on their behalf.",
+  "description": "Connect your AI agent to 600+ connectors and 35,000+ tools without writing OAuth plumbing — users authorize once, agents act on their behalf.",
   "author": {
     "name": "Scalekit Inc.",
     "email": "hi@scalekit.com",
@@ -23,8 +23,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "AgentKit by Scalekit",
-    "shortDescription": "Connect your AI agent to 600+ connectors and 30,000+ tools without writing OAuth plumbing — users authorize once, agents act on their behalf.",
-    "longDescription": "LLMs can't natively talk to Gmail, Slack, Salesforce, or any OAuth service. Every connector means custom OAuth flows, token storage, refresh logic, and scope enforcement — weeks of plumbing before your agent does anything useful.\n\nAgentKit handles the entire delegation layer: users authorize once, tokens never touch your code, agents call tools under user permissions with full audit trails. 600+ connectors and 30,000+ tools. Works with any LLM or framework. Scoped to the user, not a service account.",
+    "shortDescription": "Connect your AI agent to 600+ connectors and 35,000+ tools without writing OAuth plumbing — users authorize once, agents act on their behalf.",
+    "longDescription": "LLMs can't natively talk to Gmail, Slack, Salesforce, or any OAuth service. Every connector means custom OAuth flows, token storage, refresh logic, and scope enforcement — weeks of plumbing before your agent does anything useful.\n\nAgentKit handles the entire delegation layer: users authorize once, tokens never touch your code, agents call tools under user permissions with full audit trails. 600+ connectors and 35,000+ tools. Works with any LLM or framework. Scoped to the user, not a service account.",
     "developerName": "Scalekit Inc.",
     "category": "AI Agent Auth",
     "capabilities": [

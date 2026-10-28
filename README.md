@@ -45,7 +45,7 @@ This repo contains the complete Scalekit AuthStack — two kits that cover auth 
 
 | Kit | Description |
 |-----|-------------|
-| **AgentKit** | Auth and actions on behalf of users, with 600+ connectors and 30,000+ tools. Includes OAuth, a token vault, tool discovery, and live testing. |
+| **AgentKit** | Auth and actions on behalf of users, with 600+ connectors and 35,000+ tools. Includes OAuth, a token vault, tool discovery, and live testing. |
 | **SaaSKit** | Production-ready auth for B2B SaaS apps. Login, sessions, SSO (Okta, Azure AD, Google), SCIM provisioning, RBAC, MCP server auth, and API key management. |
 
 ---
