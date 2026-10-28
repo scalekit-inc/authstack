@@ -13,3 +13,5 @@ adapters/grok-local.mjs
 .axis/
 .grok/
 axis.config.json
+/package.json
+/package-lock.json
