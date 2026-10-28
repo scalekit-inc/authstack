@@ -4,3 +4,7 @@
 .axis/remotes/
 .axis/loop-status.md
 node_modules/
+
+# Local-only AXIS eval adapters; not published.
+adapters/claude-code-local.mjs
+adapters/grok-local.mjs
