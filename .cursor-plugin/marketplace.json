@@ -6,22 +6,13 @@
   },
   "metadata": {
     "description": "Auth infrastructure for developers — connect AI agents to 600+ connectors and 30,000+ tools, or add enterprise SSO, SCIM, and MCP auth to your B2B app. Skip the protocol layer.",
-    "version": "1.2.0",
-    "pluginRoot": "kits"
+    "version": "3.0.0"
   },
   "plugins": [
     {
-      "name": "agentkit",
-      "source": "agentkit",
-      "description": "Connect your AI agent to 600+ connectors and 30,000+ tools without writing OAuth plumbing — users authorize once, agents act on their behalf.",
-      "category": "AI Agent Auth",
-      "homepage": "https://docs.scalekit.com/agentkit/overview/"
-    },
-    {
-      "name": "saaskit",
-      "source": "saaskit",
-      "description": "Enterprise auth for B2B apps without writing protocols — login, sessions, SSO, SCIM, MCP OAuth, and RBAC in one stack.",
-      "category": "B2B App Auth",
+      "name": "scalekit",
+      "source": "./",
+      "description": "Auth infrastructure for developers — AgentKit connects your AI agent to 600+ connectors and 30,000+ tools; SaaSKit adds login, SSO, SCIM, MCP OAuth, and RBAC to your B2B app.",
       "homepage": "https://docs.scalekit.com"
     }
   ]

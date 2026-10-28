@@ -6,7 +6,7 @@ It is also the only source for portable installs: `npx skills add scalekit-inc/a
 
 The four tool-specific repos (`claude-code-authstack`, `cursor-authstack`, `codex-authstack`, `github-copilot-authstack`) are archived. Do not copy skills back into them.
 
-Marketplace plugin names stay `agentkit` and `saaskit`. Do not add a third.
+Claude, Codex, and Copilot marketplace plugin names stay `agentkit` and `saaskit`. Do not add a third. Cursor publishes one plugin, `scalekit`, from the repo root; it loads both kits' skills plus `skills/setup-scalekit`.
 
 ## Layout
 
@@ -72,7 +72,7 @@ Folder names on disk match the table.
 | Rename a skill, or rewrite steps so an old run does the wrong thing | major |
 | New skill, new `references/` file, new trigger branch | minor |
 | Line-budget split, typo, leading-word swap that keeps the same process | patch |
-| Plugin rename, marketplace path change, MCP filename change | do not do |
+| Plugin rename, marketplace path change, MCP filename change | do not do (Cursor's `scalekit` listing is the one approved rename) |
 
 This revamp is a **major** plugin bump because skill names change.
 
