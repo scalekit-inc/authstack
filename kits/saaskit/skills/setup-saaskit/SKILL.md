@@ -4,8 +4,7 @@ description: >
   Configures SaaSKit so a project has env credentials, a redirect
   URI, and a first login URL.
   Use when the user wants to setup SaaSKit or add login to this app.
-  It does not install the CLI (that's `setup-scalekit`)
-  or write login/callback/session code (that's `implement-saaskit`).
+  It does not write login/callback/session code (that's `implement-saaskit`).
 ---
 
 # Setup SaaSKit
@@ -100,7 +99,7 @@ The URL looks like `<SCALEKIT_ENVIRONMENT_URL>/oauth/authorize?...`.
 
 ## Reach for
 
-- `setup-scalekit` if the plugin is missing
+- `npx @scalekit-inc/cli setup -y` if the plugin or CLI is missing
 - `run-dryrun` to check credentials after this wizard
 - `deploy-self-hosted` for an on-prem environment
 - `setup-agentkit` if the user wanted connections and tools

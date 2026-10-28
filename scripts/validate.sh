@@ -21,6 +21,7 @@ from pathlib import Path
 ROOT = Path(sys.argv[1]).resolve()
 MAX_LINES = 200
 ALLOWED_PLUGINS = {"agentkit", "saaskit"}
+CURSOR_PLUGINS = {"scalekit-agentkit", "scalekit-saaskit"}
 ACTION_VERBS = {
     "Adds",
     "Audits",
@@ -140,6 +141,10 @@ def iter_json(pattern: str):
         yield path
 
 
+def allowed_for(path: Path) -> set[str]:
+    return CURSOR_PLUGINS if ".cursor-plugin" in path.parts else ALLOWED_PLUGINS
+
+
 def check_marketplace(path: Path) -> None:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -148,8 +153,8 @@ def check_marketplace(path: Path) -> None:
         return
     for plugin in data.get("plugins") or []:
         name = plugin.get("name", "")
-        if name not in ALLOWED_PLUGINS:
-            fail(path, f"plugin name {name!r} is not allowed (only agentkit, saaskit)")
+        if name not in allowed_for(path):
+            fail(path, f"plugin name {name!r} is not allowed (only {', '.join(sorted(allowed_for(path)))})")
 
 
 def check_plugin_json(path: Path) -> None:
@@ -159,8 +164,8 @@ def check_plugin_json(path: Path) -> None:
         fail(path, f"invalid JSON ({exc})")
         return
     name = data.get("name", "")
-    if name not in ALLOWED_PLUGINS:
-        fail(path, f"plugin name {name!r} is not allowed (only agentkit, saaskit)")
+    if name not in allowed_for(path):
+        fail(path, f"plugin name {name!r} is not allowed (only {', '.join(sorted(allowed_for(path)))})")
 
 
 skills = [p for p in iter_json("SKILL.md")]
@@ -175,5 +180,5 @@ if failures:
     print("\n".join(failures), file=sys.stderr)
     sys.exit(1)
 
-print(f"OK: {len(skills)} skills, marketplace names are agentkit and saaskit")
+print(f"OK: {len(skills)} skills, marketplace names are agentkit and saaskit (scalekit-agentkit and scalekit-saaskit for Cursor)")
 PY

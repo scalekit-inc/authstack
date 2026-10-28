@@ -21,7 +21,7 @@ Install the Scalekit CLI and plugin. Pick AgentKit or SaaSKit. Stop.
 
 - Run `npx @scalekit-inc/cli setup -y` first. You have no TTY, so the interactive wizard exits without `-y`. Use a native plugin command only when that CLI cannot run.
 - Add `--dry-run` to any setup command to preview it without running it.
-- The marketplace is `authstack`. Its plugins are `agentkit` and `saaskit`.
+- The marketplace is `authstack`. Its plugins are `agentkit` and `saaskit`. Cursor lists them as `scalekit-agentkit` and `scalekit-saaskit`.
 - Plugins and portable skills both install from `scalekit-inc/authstack`. `scalekit-inc/skills` is retired.
 - After the kit is picked, name `setup-agentkit` or `setup-saaskit`. Stop. Do not start those wizards here.
 - For current CLI flags, run `npx @scalekit-inc/cli --help`.
