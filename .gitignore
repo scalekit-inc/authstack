@@ -8,3 +8,8 @@ node_modules/
 # Local-only AXIS eval adapters; not published.
 adapters/claude-code-local.mjs
 adapters/grok-local.mjs
+
+# Local AXIS eval setup; not published.
+.axis/
+.grok/
+axis.config.json
