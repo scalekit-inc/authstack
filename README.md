@@ -14,7 +14,7 @@ It works in Claude Code, Cursor, Codex, GitHub Copilot, and any agent that reads
 | | AgentKit | SaaSKit |
 |---|---|---|
 | **Use it when** | Your agent acts in a user's apps | Your app needs login and enterprise auth |
-| **What you get** | OAuth, a token vault, connections, and tools. 600+ connectors and 35,000+ tools. Every call runs as the user who authorized it. | Login, sessions, SSO (SAML and OIDC), SCIM, RBAC, MCP server auth, and API keys |
+| **What you get** | OAuth, a token vault, connections, and tools. 1,100+ connectors and 55,000+ tools. Every call runs as the user who authorized it. | Login, sessions, SSO (SAML and OIDC), SCIM, RBAC, MCP server auth, and API keys |
 | **Start with** | `setup-agentkit` | `setup-saaskit` |
 
 Not sure? Ask your agent "which Scalekit kit should I use?" and `setup-scalekit` picks one.
