@@ -12,7 +12,7 @@ AgentKit and SaaSKit are versioned separately and released together. Each releas
 
 ### Changed
 
-- Connector and tool counts read 600+ connectors and 35,000+ tools everywhere a count is stated.
+- Connector and tool counts read 1,100+ connectors and 55,000+ tools everywhere a count is stated.
 - `setup-agentkit` and `setup-saaskit` no longer point at `setup-scalekit`. When the plugin or CLI is missing they point at `npx @scalekit-inc/cli setup -y`.
 - `integrate-agentkit-host` points OpenClaw users at the published ClawHub skill.
 
